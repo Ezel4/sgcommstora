@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
 import type { Contact, ContactNote, ContactStatus } from "@/types/crm";
 
@@ -23,4 +24,23 @@ export function mapNote(row: Tables<"crm_notes">): ContactNote {
     content: row.content,
     createdAt: row.created_at,
   };
+}
+
+export async function getCrmData() {
+  const supabase = await createClient();
+
+  const [{ data: contactRows }, { data: noteRows }] = await Promise.all([
+    supabase.from("crm_contacts").select("*").order("created_at", { ascending: false }),
+    supabase.from("crm_notes").select("*").order("created_at", { ascending: false }),
+  ]);
+
+  const contacts = (contactRows ?? []).map(mapContact);
+  const notes = (noteRows ?? []).map(mapNote);
+
+  const notesByContact = notes.reduce<Record<string, ContactNote[]>>((acc, note) => {
+    (acc[note.contactId] ??= []).push(note);
+    return acc;
+  }, {});
+
+  return { contacts, notes, notesByContact };
 }

@@ -15,11 +15,15 @@ type Filter = "all" | ContactStatus;
 export function CrmBoard({
   contacts,
   notesByContact,
+  statusFilter,
+  heading = "Tes leads et clients Sigmood, au même endroit.",
 }: {
   contacts: Contact[];
   notesByContact: Record<string, ContactNote[]>;
+  statusFilter?: ContactStatus;
+  heading?: string;
 }) {
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(statusFilter ?? "all");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -53,31 +57,33 @@ export function CrmBoard({
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
         <p className="text-sm text-ink-3">CRM interne</p>
-        <h2 className="text-2xl font-light tracking-tight text-ink">
-          Tes leads et clients Sigmood, au même endroit.
-        </h2>
+        <h2 className="text-2xl font-light tracking-tight text-ink">{heading}</h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <MetricCard metric={{ label: "Contacts", value: String(metrics.total), change: `${metrics.leads} leads`, tone: "neutral" }} />
-        <MetricCard metric={{ label: "Clients actifs", value: String(metrics.clientsCount), change: "abonnements en cours", tone: "positive" }} />
-        <MetricCard metric={{ label: "MRR total", value: formatCurrency(metrics.mrrTotal), change: "clients uniquement", tone: "positive" }} />
-        <MetricCard metric={{ label: "Taux de conversion", value: `${metrics.conversion.toFixed(0)}%`, change: "leads → clients", tone: "neutral" }} />
-      </div>
+      {!statusFilter && (
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <MetricCard metric={{ label: "Contacts", value: String(metrics.total), change: `${metrics.leads} leads`, tone: "neutral" }} />
+          <MetricCard metric={{ label: "Clients actifs", value: String(metrics.clientsCount), change: "abonnements en cours", tone: "positive" }} />
+          <MetricCard metric={{ label: "MRR total", value: formatCurrency(metrics.mrrTotal), change: "clients uniquement", tone: "positive" }} />
+          <MetricCard metric={{ label: "Taux de conversion", value: `${metrics.conversion.toFixed(0)}%`, change: "leads → clients", tone: "neutral" }} />
+        </div>
+      )}
 
       <Panel
         title={
-          <div className="flex flex-wrap items-center gap-2">
-            <FilterTab label="Tous" active={filter === "all"} onClick={() => setFilter("all")} />
-            {contactStatusOrder.map((status) => (
-              <FilterTab
-                key={status}
-                label={contactStatus[status].label}
-                active={filter === status}
-                onClick={() => setFilter(status)}
-              />
-            ))}
-          </div>
+          statusFilter ? undefined : (
+            <div className="flex flex-wrap items-center gap-2">
+              <FilterTab label="Tous" active={filter === "all"} onClick={() => setFilter("all")} />
+              {contactStatusOrder.map((status) => (
+                <FilterTab
+                  key={status}
+                  label={contactStatus[status].label}
+                  active={filter === status}
+                  onClick={() => setFilter(status)}
+                />
+              ))}
+            </div>
+          )
         }
         action={
           <div className="flex items-center gap-2">
@@ -129,7 +135,9 @@ export function CrmBoard({
         )}
       </Panel>
 
-      {showAddModal && <AddContactModal onClose={() => setShowAddModal(false)} />}
+      {showAddModal && (
+        <AddContactModal defaultStatus={statusFilter ?? "lead"} onClose={() => setShowAddModal(false)} />
+      )}
 
       {selected && (
         <ContactDrawer
@@ -162,7 +170,13 @@ function FilterTab({ label, active, onClick }: { label: string; active: boolean;
   );
 }
 
-function AddContactModal({ onClose }: { onClose: () => void }) {
+function AddContactModal({
+  onClose,
+  defaultStatus,
+}: {
+  onClose: () => void;
+  defaultStatus: ContactStatus;
+}) {
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -194,7 +208,7 @@ function AddContactModal({ onClose }: { onClose: () => void }) {
               <label className="mb-1.5 block text-xs font-medium text-ink-3">Statut</label>
               <select
                 name="status"
-                defaultValue="lead"
+                defaultValue={defaultStatus}
                 className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink focus:border-line-strong focus:outline-none"
               >
                 {contactStatusOrder.map((s) => (
