@@ -41,8 +41,10 @@ function LoginForm() {
   const [mode, setMode] = useState<"signin" | "signup">(
     searchParams.get("mode") === "signup" ? "signup" : "signin",
   );
+  const [step, setStep] = useState<"form" | "verify">("form");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -84,12 +86,95 @@ function LoginForm() {
       return;
     }
     if (data.session) {
+      // la confirmation par email est desactivee sur le projet : deja connecte
       router.push("/onboarding");
       router.refresh();
       return;
     }
-    setInfo("Compte créé. Vérifie ta boîte mail pour confirmer l'adresse, puis connecte-toi.");
-    setMode("signin");
+    setStep("verify");
+  }
+
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: code.trim(),
+      type: "signup",
+    });
+
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    router.push("/onboarding");
+    router.refresh();
+  }
+
+  async function handleResendCode() {
+    setError(null);
+    setInfo(null);
+    const supabase = createClient();
+    const { error } = await supabase.auth.resend({ type: "signup", email });
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setInfo("Nouveau code envoyé.");
+  }
+
+  if (step === "verify") {
+    return (
+      <div className="grid min-h-screen place-items-center bg-base px-4">
+        <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 sm:p-7">
+          <div className="flex items-center gap-2.5">
+            <LogoMark className="size-7" />
+            <span className="text-[1.05rem] font-medium tracking-tight text-ink">Stora AI</span>
+          </div>
+
+          <h1 className="mt-6 text-xl font-light tracking-tight text-ink">Vérifie ton email</h1>
+          <p className="mt-1 text-sm text-ink-3">
+            On a envoyé un code à <span className="text-ink">{email}</span>. Entre-le ci-dessous.
+          </p>
+
+          <form onSubmit={handleVerify} className="mt-6 space-y-3.5">
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-ink-3">Code de vérification</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-center text-lg tracking-[0.3em] text-ink placeholder:text-ink-4 focus:border-line-strong focus:outline-none"
+                placeholder="000000"
+                maxLength={6}
+              />
+            </div>
+
+            {error && <p className="text-sm text-rose">{error}</p>}
+            {info && <p className="text-sm text-accent">{info}</p>}
+
+            <button type="submit" disabled={loading} className="btn btn-light w-full !py-2.5 text-sm">
+              {loading ? "Vérification…" : "Valider le code"}
+            </button>
+          </form>
+
+          <button
+            type="button"
+            onClick={handleResendCode}
+            className="mt-4 w-full text-center text-xs text-ink-3 transition hover:text-ink"
+          >
+            Renvoyer le code
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
