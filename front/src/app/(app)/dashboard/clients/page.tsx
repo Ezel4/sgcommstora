@@ -1,12 +1,6 @@
-import { ComingSoon } from "@/components/dashboard/ComingSoon";
-import { IconUsers } from "@/components/dashboard/icons";
+import { CustomersTable } from "@/components/dashboard/CustomersTable";
+import { customers } from "@/data/mock-commerce";
 
 export default function Page() {
-  return (
-    <ComingSoon
-      Icon={IconUsers}
-      title="Clients"
-      description="Visualisez vos clients, leurs segments et leur valeur dans le temps. Cette section arrive bientôt."
-    />
-  );
+  return <CustomersTable customers={customers} />;
 }

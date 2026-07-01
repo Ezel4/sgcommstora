@@ -130,6 +130,14 @@ export const customers: Customer[] = [
     ordersCount: 3,
     segment: "loyal",
   },
+  {
+    id: "cus_004",
+    name: "Laura Martin",
+    email: "laura.martin@example.fr",
+    totalSpent: 158,
+    ordersCount: 1,
+    segment: "at-risk",
+  },
 ];
 
 export const aiTasks: AiTask[] = [

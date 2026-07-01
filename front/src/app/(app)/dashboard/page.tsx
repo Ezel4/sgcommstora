@@ -73,7 +73,7 @@ export default function DashboardOverviewPage() {
           </div>
           <div className="flex shrink-0 items-center gap-2.5">
             <a
-              href={`https://${activeStore.subdomain}`}
+              href={`/boutique/${activeStore.slug}`}
               target="_blank"
               rel="noreferrer"
               className="btn btn-ghost text-sm"

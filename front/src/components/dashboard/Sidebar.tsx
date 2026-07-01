@@ -122,7 +122,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         </div>
 
         <a
-          href={`https://${activeStore.subdomain}`}
+          href={`/boutique/${activeStore.slug}`}
           target="_blank"
           rel="noreferrer"
           className="flex items-center justify-between rounded-xl border border-line px-3 py-2.5 text-sm text-ink-2 transition hover:bg-white/[0.04] hover:text-ink"

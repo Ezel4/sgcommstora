@@ -1,12 +1,6 @@
-import { ComingSoon } from "@/components/dashboard/ComingSoon";
-import { IconReceipt } from "@/components/dashboard/icons";
+import { OrdersTable } from "@/components/dashboard/OrdersTable";
+import { orders } from "@/data/mock-commerce";
 
 export default function Page() {
-  return (
-    <ComingSoon
-      Icon={IconReceipt}
-      title="Commandes"
-      description="Suivez vos commandes, leurs statuts et leur historique en temps réel. Cette section arrive bientôt."
-    />
-  );
+  return <OrdersTable orders={orders} />;
 }
