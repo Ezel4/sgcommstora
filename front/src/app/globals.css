@@ -1,0 +1,272 @@
+/* ============================================================
+   STORA AI - Design System "Dusk" + Liquid Glass
+   Dark premium · degrade crepusculaire · verre depoli refractif
+   ============================================================ */
+
+/* Les @import distants doivent précéder l'import Tailwind (qui se déploie en règles). */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,300&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-base: #0a0a0c;
+  --color-surface: #121215;
+  --color-surface-2: #17171b;
+  --color-elevated: #1c1c22;
+
+  --color-line: rgba(255, 255, 255, 0.07);
+  --color-line-strong: rgba(255, 255, 255, 0.13);
+
+  --color-ink: #eeeae4;
+  --color-ink-2: rgba(238, 234, 228, 0.62);
+  --color-ink-3: rgba(238, 234, 228, 0.40);
+  --color-ink-4: rgba(238, 234, 228, 0.24);
+
+  --color-pill: #e9e4db;
+  --color-pill-ink: #15120f;
+
+  --color-rose: #cd9089;
+  --color-clay: #9d6c58;
+  --color-plum: #4f3441;
+  --color-amber: #d0a06b;
+  --color-sage: #76916f;
+
+  --color-accent: #54b8a8;
+  --color-accent-soft: rgba(84, 184, 168, 0.14);
+
+  --shadow-pill: 0 10px 30px rgba(0,0,0,0.35);
+
+  /* echelle d'elevation (dimensional layering) */
+  --elevation-1: 0 1px 2px rgba(0,0,0,0.30);
+  --elevation-2: 0 8px 20px -8px rgba(0,0,0,0.45);
+  --elevation-3: 0 18px 44px -14px rgba(0,0,0,0.55);
+  --elevation-4: 0 34px 80px -20px rgba(0,0,0,0.62);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+:root { color-scheme: dark; }
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: #0a0a0c;
+  color: var(--color-ink);
+  line-height: 1.65;
+  overflow-x: hidden;
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  color: inherit;
+}
+
+::selection { background: rgba(205, 144, 137, 0.30); color: #fff; }
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: #0a0a0c; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+:focus-visible { outline: 2px solid rgba(205,144,137,0.6); outline-offset: 3px; }
+
+.shell { @apply mx-auto w-full max-w-6xl px-5 md:px-8; }
+
+/* masque la scrollbar (carrousel Features) */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+.text-dusk {
+  background: linear-gradient(180deg, #f3efe9 0%, rgba(243,239,233,0.72) 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.05);
+  color: var(--color-ink-2);
+  border-radius: 9999px; padding: 7px 8px 7px 16px;
+  font-size: 0.8125rem; font-weight: 400;
+  -webkit-backdrop-filter: blur(10px) saturate(160%); backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 9999px; font-weight: 500; font-size: 0.9375rem; padding: 12px 22px;
+  transition: transform 200ms var(--ease-out-cubic), background 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+  cursor: pointer; white-space: nowrap;
+}
+.btn-light {
+  background: linear-gradient(180deg, #fefdfb, var(--color-pill));
+  color: var(--color-pill-ink);
+  box-shadow: var(--elevation-2), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+.btn-light:hover { transform: translateY(-1px); background: #fff; box-shadow: var(--elevation-3), inset 0 1px 0 rgba(255,255,255,0.4); }
+.btn-ghost {
+  background: rgba(255,255,255,0.06); color: var(--color-ink);
+  -webkit-backdrop-filter: blur(10px) saturate(160%); backdrop-filter: blur(10px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.11); transform: translateY(-1px); }
+
+/* ---------- LIQUID GLASS (glassmorphism) ---------- */
+.glass, .card-dark {
+  position: relative; isolation: isolate; overflow: hidden;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.025);
+  -webkit-backdrop-filter: blur(6px) saturate(150%);
+  backdrop-filter: blur(6px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 0 4px 2px rgba(255, 255, 255, 0.03);
+  transition: transform 480ms var(--ease-out-expo), box-shadow 480ms var(--ease-out-expo), background 480ms ease;
+}
+/* lisere lumineux horizontal (bord haut) */
+.glass::before, .card-dark::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; z-index: 2;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+  pointer-events: none;
+}
+/* lisere lumineux vertical (bord gauche) */
+.glass::after, .card-dark::after {
+  content: ""; position: absolute; top: 0; left: 0; width: 1px; height: 100%; z-index: 2;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), transparent, rgba(255,255,255,0.08));
+  pointer-events: none;
+}
+.glass > *, .card-dark > * { position: relative; z-index: 3; }
+.glass:hover, .card-dark:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 6px 2px rgba(255, 255, 255, 0.05);
+}
+@supports (backdrop-filter: url(#liquidGlass)) {
+  .glass-liquid {
+    -webkit-backdrop-filter: url(#liquidGlass) blur(14px) saturate(165%);
+    backdrop-filter: url(#liquidGlass) blur(14px) saturate(165%);
+  }
+}
+
+/* barre en verre (navbar flottante) */
+.glass-bar {
+  background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.028));
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.06),
+    var(--elevation-3);
+}
+
+.hairline { height: 1px; background: var(--color-line); }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
+/* grain global */
+.grain::before {
+  content: ""; position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* scene crepusculaire */
+.dusk-sky {
+  background:
+    radial-gradient(120% 90% at 50% 8%, rgba(10,10,14,0) 30%, rgba(10,10,14,0) 50%, rgba(10,10,14,0.6) 100%),
+    linear-gradient(180deg, #0a0a0c 0%, #14101a 26%, #3a2230 50%, #6e3a3a 70%, #9a5a44 86%, #b0744d 100%);
+}
+.dusk-haze {
+  background: radial-gradient(60% 70% at 50% 86%, rgba(214,150,110,0.55), rgba(214,150,110,0) 70%);
+  filter: blur(8px);
+}
+
+/* animations */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.animate-fade-up { animation: fadeInUp 0.8s var(--ease-out-expo) both; }
+.animate-fade-in { animation: fadeIn 0.9s var(--ease-out-expo) both; }
+.animate-floaty { animation: floaty 8s ease-in-out infinite; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+/* ---------- TILT 3D (carte qui suit le curseur) ---------- */
+.tilt-card { perspective: 1100px; }
+.tilt-card__inner {
+  position: relative; height: 100%; border-radius: 24px;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 360ms var(--ease-out-expo);
+  will-change: transform;
+}
+.tilt-card__glare {
+  position: absolute; inset: 0; border-radius: 24px; z-index: 4; pointer-events: none;
+  opacity: var(--glare-o, 0);
+  background: radial-gradient(42% 60% at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,0.4), transparent 60%);
+  mix-blend-mode: soft-light;
+  transition: opacity 300ms ease;
+}
+
+/* ---------- MARQUEE (bandeau défilant) ---------- */
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee__track {
+  display: flex; width: max-content;
+  animation: marquee-x 34s linear infinite;
+}
+.marquee:hover .marquee__track { animation-play-state: paused; }
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- ORBITE INTEGRATIONS (rotation douce) ---------- */
+@keyframes orbit-spin { to { transform: rotate(360deg); } }
+.orbit-spin { animation: orbit-spin 80s linear infinite; transform-origin: 50% 50%; }
+.orbit-spin-rev { animation: orbit-spin 80s linear infinite reverse; }
+.orbit-stage:hover .orbit-spin,
+.orbit-stage:hover .orbit-spin-rev { animation-play-state: paused; }
+
+/* accessibilite : on coupe les mouvements continus */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .marquee__track { animation: none; }
+  .tilt-card__inner { transition: none; }
+  .animate-floaty { animation: none; }
+  .orbit-spin, .orbit-spin-rev { animation: none; }
+}
+
+/* reveal GSAP */
+.has-gsap [data-reveal] { opacity: 0; }
