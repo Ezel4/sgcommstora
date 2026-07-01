@@ -8,7 +8,7 @@ import type { ContactStatus } from "@/types/crm";
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/admin/login");
+  redirect("/");
 }
 
 export async function createContact(formData: FormData) {
