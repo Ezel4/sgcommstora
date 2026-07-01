@@ -291,7 +291,14 @@ function ContactDrawer({
       <div className="h-full w-full max-w-md overflow-y-auto border-l border-line bg-surface p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-medium text-ink">{contact.name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-medium text-ink">{contact.name}</h3>
+              {contact.userId && (
+                <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[0.65rem] font-medium text-accent">
+                  Compte créé
+                </span>
+              )}
+            </div>
             <p className="mt-0.5 text-sm text-ink-3">
               {[contact.company, contact.email, contact.phone].filter(Boolean).join(" · ") || "—"}
             </p>
@@ -324,6 +331,29 @@ function ContactDrawer({
             </p>
           </div>
         </div>
+
+        {(contact.companySize || contact.sector || contact.referralSource) && (
+          <div className="mt-4 grid grid-cols-2 gap-3 rounded-xl border border-line bg-white/[0.02] p-3.5 text-xs">
+            {contact.companySize && (
+              <div>
+                <p className="text-ink-4">Taille entreprise</p>
+                <p className="mt-0.5 text-ink-2">{contact.companySize}</p>
+              </div>
+            )}
+            {contact.sector && (
+              <div>
+                <p className="text-ink-4">Secteur</p>
+                <p className="mt-0.5 text-ink-2">{contact.sector}</p>
+              </div>
+            )}
+            {contact.referralSource && (
+              <div className="col-span-2">
+                <p className="text-ink-4">Nous a connu via</p>
+                <p className="mt-0.5 text-ink-2">{contact.referralSource}</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {contact.source && (
           <p className="mt-3 text-xs text-ink-3">Source : {contact.source}</p>

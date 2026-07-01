@@ -32,7 +32,7 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <a href="/dashboard" className="hidden text-sm text-ink-2 transition-colors hover:text-ink sm:inline-flex sm:px-3">
+            <a href="/login" className="hidden text-sm text-ink-2 transition-colors hover:text-ink sm:inline-flex sm:px-3">
               Connexion
             </a>
             <a href="#cta" className="btn btn-light !px-5 !py-2 text-sm">
@@ -68,7 +68,7 @@ export function Navbar() {
               </a>
             ))}
             <a
-              href="#tarifs"
+              href="/login"
               onClick={() => setOpen(false)}
               className="rounded-2xl px-4 py-3 text-sm text-ink-2 transition-colors duration-200 hover:bg-white/[0.06] hover:text-ink sm:hidden"
             >

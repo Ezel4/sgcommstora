@@ -17,5 +17,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/admin/login");
   }
 
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+
+  if (!isAdmin) {
+    redirect("/dashboard");
+  }
+
   return <AdminShell email={user.email ?? ""}>{children}</AdminShell>;
 }

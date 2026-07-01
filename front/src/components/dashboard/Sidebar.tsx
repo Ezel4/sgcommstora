@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "@/app/(app)/actions";
 import { LogoMark } from "@/components/marketing/Logo";
 import { activeStore } from "@/data/mock-commerce";
 import { storeStatus } from "@/lib/commerce-status";
@@ -72,7 +73,13 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
   );
 }
 
-export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+export function Sidebar({
+  email,
+  onNavigate,
+}: {
+  email: string;
+  onNavigate?: () => void;
+}) {
   const st = storeStatus[activeStore.status];
   return (
     <div className="flex h-full flex-col gap-6 p-4">
@@ -133,19 +140,20 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
         <div className="flex items-center gap-3 rounded-xl px-1 py-1">
           <span className="grid size-9 place-items-center rounded-full bg-surface-2 text-sm font-medium text-ink">
-            SG
+            {email.slice(0, 2).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-ink">Sigmood</p>
-            <p className="truncate text-xs text-ink-3">sigmood@outlook.fr</p>
+            <p className="truncate text-xs text-ink-3">{email}</p>
           </div>
-          <button
-            type="button"
-            aria-label="Se déconnecter"
-            className="grid size-8 place-items-center rounded-lg text-ink-3 transition hover:bg-white/[0.05] hover:text-ink"
-          >
-            <IconLogout className="size-[18px]" />
-          </button>
+          <form action={signOut}>
+            <button
+              type="submit"
+              aria-label="Se déconnecter"
+              className="grid size-8 place-items-center rounded-lg text-ink-3 transition hover:bg-white/[0.05] hover:text-ink"
+            >
+              <IconLogout className="size-[18px]" />
+            </button>
+          </form>
         </div>
       </div>
     </div>

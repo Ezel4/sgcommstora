@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_tasks: {
         Row: {
           created_at: string
@@ -55,39 +70,51 @@ export type Database = {
       crm_contacts: {
         Row: {
           company: string | null
+          company_size: string | null
           created_at: string
           email: string | null
           id: string
           mrr: number
           name: string
           phone: string | null
+          referral_source: string | null
+          sector: string | null
           source: string | null
           status: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           company?: string | null
+          company_size?: string | null
           created_at?: string
           email?: string | null
           id?: string
           mrr?: number
           name: string
           phone?: string | null
+          referral_source?: string | null
+          sector?: string | null
           source?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           company?: string | null
+          company_size?: string | null
           created_at?: string
           email?: string | null
           id?: string
           mrr?: number
           name?: string
           phone?: string | null
+          referral_source?: string | null
+          sector?: string | null
           source?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -309,7 +336,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_completed_onboarding: { Args: Record<PropertyKey, never>; Returns: boolean }
+      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
+      submit_onboarding: {
+        Args: {
+          p_company_name: string
+          p_company_size: string
+          p_referral_source: string
+          p_sector: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

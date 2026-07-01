@@ -9,6 +9,10 @@ export interface Contact {
   status: ContactStatus;
   mrr: number;
   source: string | null;
+  companySize: string | null;
+  sector: string | null;
+  referralSource: string | null;
+  userId: string | null;
   createdAt: string;
   updatedAt: string;
 }

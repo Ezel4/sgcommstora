@@ -12,6 +12,10 @@ export function mapContact(row: Tables<"crm_contacts">): Contact {
     status: row.status as ContactStatus,
     mrr: Number(row.mrr),
     source: row.source,
+    companySize: row.company_size,
+    sector: row.sector,
+    referralSource: row.referral_source,
+    userId: row.user_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

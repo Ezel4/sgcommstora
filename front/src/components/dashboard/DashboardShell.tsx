@@ -5,7 +5,13 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({
+  children,
+  email,
+}: {
+  children: React.ReactNode;
+  email: string;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -18,7 +24,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-base">
       {/* sidebar fixe (desktop) */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-line bg-surface lg:block">
-        <Sidebar />
+        <Sidebar email={email} />
       </aside>
 
       {/* tiroir (mobile) */}
@@ -31,7 +37,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             className="absolute inset-0 animate-fade-in bg-black/60 backdrop-blur-sm"
           />
           <aside className="absolute inset-y-0 left-0 w-72 max-w-[84%] animate-fade-in border-r border-line bg-surface">
-            <Sidebar onNavigate={() => setOpen(false)} />
+            <Sidebar email={email} onNavigate={() => setOpen(false)} />
           </aside>
         </div>
       )}
