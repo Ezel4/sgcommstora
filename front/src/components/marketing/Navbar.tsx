@@ -35,7 +35,7 @@ export function Navbar() {
             <a href="/login" className="hidden text-sm text-ink-2 transition-colors hover:text-ink sm:inline-flex sm:px-3">
               Connexion
             </a>
-            <a href="/login" className="btn btn-light !px-5 !py-2 text-sm">
+            <a href="/login?mode=signup" className="btn btn-light !px-5 !py-2 text-sm">
               S'inscrire
             </a>
 
