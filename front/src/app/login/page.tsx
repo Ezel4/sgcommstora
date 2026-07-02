@@ -83,15 +83,13 @@ function LoginForm() {
       setError(error.message);
       return;
     }
-    if (!data.session) {
-      // Supabase n'a pas ouvert de session : "Confirm email" est encore actif côté projet
-      setError(
-        "La confirmation par email est encore activée dans Supabase. Désactive « Confirm email » (Authentication → Sign In / Providers → Email) puis réessaie.",
-      );
+    if (data.session) {
+      router.push("/onboarding");
+      router.refresh();
       return;
     }
-    router.push("/onboarding");
-    router.refresh();
+    setInfo("Compte créé. Vérifie ta boîte mail pour confirmer l'adresse, puis connecte-toi.");
+    setMode("signin");
   }
 
   return (
