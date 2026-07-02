@@ -56,7 +56,7 @@ export function Hero() {
             <span className="text-ink-2">générée par l'IA.</span>
           </h1>
 
-          <p className="animate-fade-up delay-200 mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink-2 sm:text-lg">
+          <p className="animate-fade-up delay-200 mx-auto mt-6 max-w-xl text-[1rem] leading-relaxed text-ink-2 sm:text-lg">
             Décrivez votre idée. Stora crée le design, les produits, les visuels et les
             textes, une boutique prête à vendre en quelques minutes.
           </p>

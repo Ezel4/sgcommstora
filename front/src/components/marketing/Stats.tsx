@@ -28,7 +28,7 @@ export function Stats() {
                   <span data-counter={stat.value} data-counter-decimals={stat.decimals || 0}>
                     0
                   </span>
-                  <span className="text-rose">{stat.suffix}</span>
+                  <span className="text-accent">{stat.suffix}</span>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-ink-2">{stat.label}</p>
               </div>

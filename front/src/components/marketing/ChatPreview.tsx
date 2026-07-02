@@ -23,13 +23,13 @@ export function ChatPreview() {
           <h3 className="text-2xl font-light tracking-tight text-ink sm:text-3xl">
             Bonjour, prêt à vendre ?
           </h3>
-          <p className="mt-2 text-sm text-ink-3 sm:text-base">
+          <p className="mt-2 text-sm text-accent sm:text-[1rem]">
             Décrivez votre boutique, Stora s'occupe du reste.
           </p>
         </div>
 
         <div className="mt-7 rounded-2xl border border-line bg-white/[0.03] p-4">
-          <p className="text-sm text-ink-3">
+          <p data-typewriter className="text-sm text-ink-3">
             Une boutique de cosmétiques naturels, style éditorial crème et vert, pour les
             25-40 ans…
           </p>
