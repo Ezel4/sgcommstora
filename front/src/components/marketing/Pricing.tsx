@@ -6,6 +6,7 @@ type Plan = {
   name: string;
   monthly: number;
   yearly: number;
+  custom?: boolean;
   tagline: string;
   features: string[];
   featured?: boolean;
@@ -17,22 +18,39 @@ const plans: Plan[] = [
     monthly: 0,
     yearly: 0,
     tagline: "Pour tester et lancer une première boutique.",
-    features: ["1 boutique", "50 produits générés / mois", "Visuels IA limités", "Support communauté"],
+    features: [
+      "Génération d'une boutique",
+      "50 clients maximum",
+      "10 visuels IA / mois",
+      "Accès CRM restreint",
+    ],
   },
   {
     name: "Pro",
-    monthly: 24,
-    yearly: 19,
+    monthly: 50,
+    yearly: 40,
     tagline: "Pour les marques qui veulent vendre vite.",
-    features: ["5 boutiques", "Produits illimités", "500 visuels IA / mois", "SEO automatique", "Support prioritaire"],
+    features: [
+      "5 boutiques",
+      "Clients illimités",
+      "200 visuels IA / mois",
+      "Accès CRM avancé",
+      "Hébergement + nom de domaine",
+    ],
     featured: true,
   },
   {
-    name: "Business",
-    monthly: 59,
-    yearly: 49,
-    tagline: "Pour scaler sur plusieurs boutiques.",
-    features: ["Boutiques illimitées", "Visuels IA illimités", "Multi-utilisateurs", "Domaines personnalisés", "Accès API"],
+    name: "Teams",
+    monthly: 0,
+    yearly: 0,
+    custom: true,
+    tagline: "Pour les équipes qui veulent tout, sans limite.",
+    features: [
+      "Tout le plan Pro, en illimité",
+      "Boutiques illimitées",
+      "Visuels IA illimités",
+      "Personnalisation des agents IA",
+    ],
   },
 ];
 
@@ -95,9 +113,9 @@ export function Pricing() {
 
                 <div className="mt-6 flex items-end gap-1.5">
                   <span className="text-5xl font-light tracking-tight text-ink">
-                    {price === 0 ? "Gratuit" : `${price}€`}
+                    {plan.custom ? "Sur devis" : price === 0 ? "Gratuit" : `${price}€`}
                   </span>
-                  {price !== 0 && <span className="pb-1.5 text-sm text-ink-3">/ mois</span>}
+                  {!plan.custom && price !== 0 && <span className="pb-1.5 text-sm text-ink-3">/ mois</span>}
                 </div>
                 <p className="mt-3 text-sm text-ink-2">{plan.tagline}</p>
 
@@ -105,7 +123,7 @@ export function Pricing() {
                   href="#cta"
                   className={`mt-6 ${plan.featured ? "btn btn-light" : "btn btn-ghost"}`}
                 >
-                  Commencer
+                  {plan.custom ? "Nous contacter" : "Commencer"}
                 </a>
 
                 <div className="hairline my-7" />
