@@ -15,6 +15,7 @@ import Lenis from "lenis";
  *  - [data-stagger]           : anime ses enfants directs en cascade.
  *  - [data-parallax="n"]      : translation parallaxe (yPercent) pilotée par le scroll.
  *  - [data-counter="n"]       : compte de 0 jusqu'à n quand l'élément entre dans l'écran.
+ *  - [data-typewriter]        : le texte apparaît lettre par lettre, en fondu.
  */
 export function SmoothScroll() {
   useEffect(() => {
@@ -110,6 +111,32 @@ export function SmoothScroll() {
             scrub: true,
           },
         });
+      });
+
+      // --- Machine à écrire (fondu lettre par lettre) ---
+      const typewriters = gsap.utils.toArray<HTMLElement>("[data-typewriter]");
+      typewriters.forEach((el) => {
+        const text = (el.textContent || "").replace(/\s+/g, " ").trim();
+        el.setAttribute("aria-label", text);
+        el.textContent = "";
+        const chars = Array.from(text).map((ch) => {
+          const span = document.createElement("span");
+          span.textContent = ch;
+          span.setAttribute("aria-hidden", "true");
+          el.appendChild(span);
+          return span;
+        });
+        gsap.fromTo(
+          chars,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.5,
+            ease: "power1.out",
+            stagger: 0.028,
+            scrollTrigger: { trigger: el, start: "top 88%", once: true },
+          },
+        );
       });
 
       // --- Compteurs animés ---

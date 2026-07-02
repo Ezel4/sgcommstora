@@ -50,7 +50,7 @@ export default async function StorefrontPage({
           {store.niche}
         </p>
         <h1 className="mt-4 text-4xl font-light tracking-tight sm:text-5xl">{store.name}</h1>
-        <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-[#231f1b]/65 sm:text-base">
+        <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-[#231f1b]/65 sm:text-[1rem]">
           {store.audience}
         </p>
         <p className="mx-auto mt-2 max-w-xl text-xs italic text-[#231f1b]/45">{store.visualStyle}</p>

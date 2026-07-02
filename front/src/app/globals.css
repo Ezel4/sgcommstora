@@ -270,3 +270,4 @@ h1, h2, h3, h4, h5, h6 {
 
 /* reveal GSAP */
 .has-gsap [data-reveal] { opacity: 0; }
+.has-gsap [data-typewriter] { opacity: 0; }
