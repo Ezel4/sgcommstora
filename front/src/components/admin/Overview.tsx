@@ -4,14 +4,17 @@ import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { contactStatus } from "@/lib/crm-status";
 import { formatCurrency } from "@/lib/format";
+import type { UserStats } from "@/types/admin";
 import type { Contact, ContactNote } from "@/types/crm";
 
 export function Overview({
   contacts,
   notes,
+  userStats,
 }: {
   contacts: Contact[];
   notes: ContactNote[];
+  userStats: UserStats | null;
 }) {
   const clients = contacts.filter((c) => c.status === "client");
   const leads = contacts.filter((c) => c.status === "lead").length;
@@ -37,6 +40,22 @@ export function Overview({
         <MetricCard metric={{ label: "MRR total", value: formatCurrency(mrrTotal), change: "clients uniquement", tone: "positive" }} />
         <MetricCard metric={{ label: "Taux de conversion", value: `${conversion.toFixed(0)}%`, change: "leads → clients", tone: "neutral" }} />
       </div>
+
+      <Panel title="Utilisateurs inscrits">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <MetricCard metric={{ label: "Comptes", value: String(userStats?.total_users ?? 0), change: "total", tone: "neutral" }} />
+          <MetricCard metric={{ label: "Nouveaux (7j)", value: String(userStats?.new_this_week ?? 0), change: "cette semaine", tone: "positive" }} />
+          <MetricCard metric={{ label: "Nouveaux (30j)", value: String(userStats?.new_this_month ?? 0), change: "ce mois-ci", tone: "positive" }} />
+          <MetricCard
+            metric={{
+              label: "Email confirmé",
+              value: String(userStats?.confirmed_users ?? 0),
+              change: `${userStats?.unconfirmed_users ?? 0} non confirmés`,
+              tone: "neutral",
+            }}
+          />
+        </div>
+      </Panel>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel

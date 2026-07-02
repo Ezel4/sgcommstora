@@ -336,8 +336,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      has_completed_onboarding: { Args: Record<PropertyKey, never>; Returns: boolean }
-      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
+      get_user_stats: {
+        Args: never
+        Returns: {
+          confirmed_users: number
+          new_this_month: number
+          new_this_week: number
+          total_users: number
+          unconfirmed_users: number
+        }[]
+      }
+      has_completed_onboarding: { Args: never; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
       submit_onboarding: {
         Args: {
           p_company_name: string
