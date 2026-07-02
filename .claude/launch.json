@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "stora-front",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "front", "run", "dev", "--", "-p", "8080"],
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd front && npm run dev -- -p 8080"],
       "port": 8080
     }
   ]
