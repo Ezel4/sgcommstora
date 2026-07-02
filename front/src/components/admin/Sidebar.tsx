@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import {
   IconBox,
   IconLogout,
+  IconMail,
   IconOverview,
   IconReceipt,
   IconSettings,
@@ -24,6 +25,7 @@ const NAV: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Vue d'ensemble", href: "/admin", Icon: IconOverview },
       { label: "Tous les contacts", href: "/admin/contacts", Icon: IconUsers },
+      { label: "Mail", href: "/admin/mail", Icon: IconMail },
     ],
   },
   {

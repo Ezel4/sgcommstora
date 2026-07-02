@@ -124,3 +124,24 @@ export const IconLogout = base(
     <path d="M10 12h9M16 8l3 4-3 4" />
   </>,
 );
+
+export const IconChartBar = base(
+  <>
+    <path d="M4 20V10M11 20V4M18 20v-7" />
+    <path d="M3 20h18" />
+  </>,
+);
+
+export const IconLock = base(
+  <>
+    <rect x="4.5" y="10.5" width="15" height="10" rx="2" />
+    <path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5" />
+  </>,
+);
+
+export const IconMail = base(
+  <>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m4 7 8 6 8-6" />
+  </>,
+);

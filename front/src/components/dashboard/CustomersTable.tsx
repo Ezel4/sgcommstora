@@ -5,6 +5,7 @@ import { FilterTab } from "@/components/dashboard/FilterTab";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
+import { UpgradeTeaser } from "@/components/dashboard/UpgradeTeaser";
 import { customerSegment } from "@/lib/commerce-status";
 import { formatCurrency } from "@/lib/format";
 import type { Customer } from "@/types/commerce";
@@ -78,6 +79,8 @@ export function CustomersTable({ customers }: { customers: Customer[] }) {
           </div>
         )}
       </Panel>
+
+      <UpgradeTeaser />
     </div>
   );
 }

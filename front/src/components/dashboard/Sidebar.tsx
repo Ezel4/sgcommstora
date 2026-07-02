@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { StatusPill } from "./StatusPill";
 import {
   IconBox,
+  IconChartBar,
   IconChevronDown,
   IconExternal,
   IconImage,
@@ -29,6 +30,7 @@ const NAV: { title: string; items: NavItem[] }[] = [
     title: "Pilotage",
     items: [
       { label: "Vue d'ensemble", href: "/dashboard", Icon: IconOverview },
+      { label: "Statistiques", href: "/dashboard/statistiques", Icon: IconChartBar },
       { label: "Boutiques", href: "/dashboard/boutiques", Icon: IconStore },
       { label: "Produits", href: "/dashboard/produits", Icon: IconBox },
       { label: "Commandes", href: "/dashboard/commandes", Icon: IconReceipt },
