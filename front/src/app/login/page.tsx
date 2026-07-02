@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LogoMark } from "@/components/marketing/Logo";
 import { createClient } from "@/lib/supabase/client";
@@ -47,6 +47,26 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
+  // Origine de l'inscription (ex: "lancement" pour la landing page). Récupérée depuis
+  // l'URL puis conservée en cookie pour survivre à la redirection OAuth vers /auth/callback,
+  // qui n'a plus les query params d'origine.
+  useEffect(() => {
+    const source = searchParams.get("source");
+    if (source) {
+      document.cookie = `stora_signup_source=${encodeURIComponent(source)}; path=/; max-age=${60 * 60 * 24 * 30}`;
+    }
+  }, [searchParams]);
+
+  function getSignupSource() {
+    return (
+      searchParams.get("source") ??
+      document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("stora_signup_source="))
+        ?.split("=")[1]
+    );
+  }
+
   async function handleOAuth(provider: "google" | "azure") {
     setError(null);
     const supabase = createClient();
@@ -77,7 +97,12 @@ function LoginForm() {
       return;
     }
 
-    const { error, data } = await supabase.auth.signUp({ email, password });
+    const signupSource = getSignupSource();
+    const { error, data } = await supabase.auth.signUp({
+      email,
+      password,
+      options: signupSource ? { data: { signup_source: signupSource } } : undefined,
+    });
     setLoading(false);
     if (error) {
       setError(error.message);

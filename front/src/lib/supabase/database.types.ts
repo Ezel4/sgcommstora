@@ -348,6 +348,16 @@ export type Database = {
       }
       has_completed_onboarding: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
+      submit_lead_form: {
+        Args: {
+          p_company: string
+          p_email: string
+          p_name: string
+          p_phone: string
+          p_source: string
+        }
+        Returns: undefined
+      }
       submit_onboarding: {
         Args: {
           p_company_name: string

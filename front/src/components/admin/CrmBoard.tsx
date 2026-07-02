@@ -5,7 +5,7 @@ import { addNote, createContact, deleteContact, updateContactStatus } from "@/ap
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
-import { IconClose, IconPlus } from "@/components/dashboard/icons";
+import { IconClose, IconMegaphone, IconPlus } from "@/components/dashboard/icons";
 import { contactStatus, contactStatusOrder } from "@/lib/crm-status";
 import { formatCurrency } from "@/lib/format";
 import type { Contact, ContactNote, ContactStatus } from "@/types/crm";
@@ -109,6 +109,12 @@ export function CrmBoard({
           <p className="px-5 py-10 text-center text-sm text-ink-3">Aucun contact pour l'instant.</p>
         ) : (
           <div className="divide-y divide-line">
+            <div className="hidden items-center gap-4 px-5 py-2 text-[0.65rem] font-medium uppercase tracking-wide text-ink-4 sm:flex">
+              <span className="flex-1">Contact</span>
+              <span className="w-32 shrink-0">Provenance</span>
+              <span className="w-20 shrink-0">Statut</span>
+              <span className="w-24 shrink-0 text-right">MRR</span>
+            </div>
             {filtered.map((c) => {
               const cs = contactStatus[c.status];
               return (
@@ -123,6 +129,13 @@ export function CrmBoard({
                     <p className="truncate text-xs text-ink-3">
                       {[c.company, c.email].filter(Boolean).join(" · ") || "—"}
                     </p>
+                  </div>
+                  <div className="hidden w-32 shrink-0 sm:block">
+                    {isCampaignSource(c.source) ? (
+                      <CampaignBadge source={c.source} />
+                    ) : (
+                      <span className="text-xs text-ink-4">—</span>
+                    )}
                   </div>
                   <StatusPill tone={cs.tone}>{cs.label}</StatusPill>
                   <span className="w-24 shrink-0 text-right text-sm font-medium tabular-nums text-ink">
@@ -153,6 +166,24 @@ export function CrmBoard({
         />
       )}
     </div>
+  );
+}
+
+// "signup" est la valeur par défaut posée par l'inscription classique (aucune
+// campagne particulière) : on ne badge que les sources identifiables (landing
+// page taguée, ou texte saisi manuellement dans le champ "Source").
+function isCampaignSource(source: string | null): source is string {
+  return !!source && source !== "signup";
+}
+
+function CampaignBadge({ source, className = "" }: { source: string; className?: string }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border border-[rgba(205,144,137,0.34)] bg-[rgba(205,144,137,0.12)] px-2.5 py-0.5 text-[0.7rem] font-medium text-rose ${className}`}
+    >
+      <IconMegaphone className="size-3" />
+      {source}
+    </span>
   );
 }
 
@@ -291,13 +322,14 @@ function ContactDrawer({
       <div className="h-full w-full max-w-md overflow-y-auto border-l border-line bg-surface p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-lg font-medium text-ink">{contact.name}</h3>
               {contact.userId && (
                 <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[0.65rem] font-medium text-accent">
                   Compte créé
                 </span>
               )}
+              {isCampaignSource(contact.source) && <CampaignBadge source={contact.source} />}
             </div>
             <p className="mt-0.5 text-sm text-ink-3">
               {[contact.company, contact.email, contact.phone].filter(Boolean).join(" · ") || "—"}
@@ -353,10 +385,6 @@ function ContactDrawer({
               </div>
             )}
           </div>
-        )}
-
-        {contact.source && (
-          <p className="mt-3 text-xs text-ink-3">Source : {contact.source}</p>
         )}
 
         <div className="mt-6">

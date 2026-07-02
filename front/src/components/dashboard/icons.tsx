@@ -145,3 +145,10 @@ export const IconMail = base(
     <path d="m4 7 8 6 8-6" />
   </>,
 );
+
+export const IconMegaphone = base(
+  <>
+    <path d="M3 11v2a2 2 0 0 0 2 2h1l2 6h2l-1.5-6H10l9 4V5l-9 4H6a2 2 0 0 0-2 2Z" />
+    <path d="M17 9v6" />
+  </>,
+);
