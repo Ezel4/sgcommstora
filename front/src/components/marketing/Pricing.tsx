@@ -6,7 +6,6 @@ type Plan = {
   name: string;
   monthly: number;
   yearly: number;
-  custom?: boolean;
   tagline: string;
   features: string[];
   featured?: boolean;
@@ -27,8 +26,8 @@ const plans: Plan[] = [
   },
   {
     name: "Pro",
-    monthly: 50,
-    yearly: 40,
+    monthly: 39.99,
+    yearly: 39.99,
     tagline: "Pour les marques qui veulent vendre vite.",
     features: [
       "5 boutiques",
@@ -40,19 +39,38 @@ const plans: Plan[] = [
     featured: true,
   },
   {
-    name: "Teams",
-    monthly: 0,
-    yearly: 0,
-    custom: true,
-    tagline: "Pour les équipes qui veulent tout, sans limite.",
+    name: "Advanced",
+    monthly: 199.99,
+    yearly: 199.99,
+    tagline: "Pour les marques qui veulent tout, sans limite.",
     features: [
-      "Tout le plan Pro, en illimité",
       "Boutiques illimitées",
+      "Clients illimités",
       "Visuels IA illimités",
-      "Personnalisation des agents IA",
+      "Accès CRM complet + export",
+      "Hébergement prioritaire + domaine personnalisé",
+      "Support dédié sous 24h",
     ],
   },
 ];
+
+const enterprisePlan: Plan = {
+  name: "Entreprise",
+  monthly: 0,
+  yearly: 0,
+  tagline: "Pour les équipes qui veulent du sur-mesure, sans limite.",
+  features: [
+    "Tout le plan Advanced, en illimité",
+    "Boutiques et visuels IA illimités",
+    "Personnalisation des agents IA",
+    "Account manager dédié",
+    "SLA et onboarding sur-mesure",
+  ],
+};
+
+const SIGNUP_HREF = "/login?mode=signup";
+
+type Mode = "monthly" | "yearly" | "enterprise";
 
 function Check() {
   return (
@@ -63,8 +81,52 @@ function Check() {
   );
 }
 
+function formatPrice(price: number) {
+  return price.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function PlanCard({ plan, price, cta }: { plan: Plan; price: number | null; cta: string }) {
+  return (
+    <article
+      className={`card-dark flex flex-col p-7 ${plan.featured ? "ring-1 ring-[rgba(205,144,137,0.45)] shadow-[0_44px_100px_-34px_rgba(205,144,137,0.45)] lg:-translate-y-3" : ""}`}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium uppercase tracking-[0.16em] text-ink-3">{plan.name}</span>
+        {plan.featured && (
+          <span className="rounded-full border border-line-strong bg-white/[0.06] px-2.5 py-0.5 text-[0.65rem] text-ink">
+            Populaire
+          </span>
+        )}
+      </div>
+
+      <div className="mt-6 flex items-end gap-1.5">
+        <span className="text-5xl font-light tracking-tight text-ink">
+          {price === null ? "Sur devis" : price === 0 ? "Gratuit" : `${formatPrice(price)}€`}
+        </span>
+        {price !== null && price !== 0 && <span className="pb-1.5 text-sm text-ink-3">/ mois</span>}
+      </div>
+      <p className="mt-3 text-sm text-ink-2">{plan.tagline}</p>
+
+      <a href={SIGNUP_HREF} className={`mt-6 ${plan.featured ? "btn btn-light" : "btn btn-ghost"}`}>
+        {cta}
+      </a>
+
+      <div className="hairline my-7" />
+
+      <ul className="flex flex-col gap-3.5">
+        {plan.features.map((feature) => (
+          <li key={feature} className="flex items-center gap-3 text-sm text-ink-2">
+            <Check />
+            {feature}
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
 export function Pricing() {
-  const [yearly, setYearly] = useState(true);
+  const [mode, setMode] = useState<Mode>("yearly");
 
   return (
     <section id="tarifs" className="relative py-20 sm:py-32">
@@ -79,67 +141,40 @@ export function Pricing() {
           {/* toggle */}
           <div className="flex items-center gap-1 rounded-full border border-line bg-surface p-1">
             <button
-              onClick={() => setYearly(false)}
-              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm transition-colors duration-200 ${!yearly ? "bg-white/10 text-ink" : "text-ink-3 hover:text-ink-2"}`}
+              onClick={() => setMode("monthly")}
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm transition-colors duration-200 ${mode === "monthly" ? "bg-white/10 text-ink" : "text-ink-3 hover:text-ink-2"}`}
             >
               Mensuel
             </button>
             <button
-              onClick={() => setYearly(true)}
-              className={`flex cursor-pointer items-center gap-2 rounded-full px-4 py-1.5 text-sm transition-colors duration-200 ${yearly ? "bg-white/10 text-ink" : "text-ink-3 hover:text-ink-2"}`}
+              onClick={() => setMode("yearly")}
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm transition-colors duration-200 ${mode === "yearly" ? "bg-white/10 text-ink" : "text-ink-3 hover:text-ink-2"}`}
             >
               Annuel
-              <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[0.65rem] font-medium text-accent">-20%</span>
+            </button>
+            <button
+              onClick={() => setMode("enterprise")}
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm transition-colors duration-200 ${mode === "enterprise" ? "bg-white/10 text-ink" : "text-ink-3 hover:text-ink-2"}`}
+            >
+              Entreprise
             </button>
           </div>
         </div>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {plans.map((plan) => {
-            const price = yearly ? plan.yearly : plan.monthly;
-            return (
-              <article
-                key={plan.name}
-                className={`card-dark flex flex-col p-7 ${plan.featured ? "ring-1 ring-[rgba(205,144,137,0.45)] shadow-[0_44px_100px_-34px_rgba(205,144,137,0.45)] lg:-translate-y-3" : ""}`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium uppercase tracking-[0.16em] text-ink-3">{plan.name}</span>
-                  {plan.featured && (
-                    <span className="rounded-full border border-line-strong bg-white/[0.06] px-2.5 py-0.5 text-[0.65rem] text-ink">
-                      Populaire
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-6 flex items-end gap-1.5">
-                  <span className="text-5xl font-light tracking-tight text-ink">
-                    {plan.custom ? "Sur devis" : price === 0 ? "Gratuit" : `${price}€`}
-                  </span>
-                  {!plan.custom && price !== 0 && <span className="pb-1.5 text-sm text-ink-3">/ mois</span>}
-                </div>
-                <p className="mt-3 text-sm text-ink-2">{plan.tagline}</p>
-
-                <a
-                  href="#cta"
-                  className={`mt-6 ${plan.featured ? "btn btn-light" : "btn btn-ghost"}`}
-                >
-                  {plan.custom ? "Nous contacter" : "Commencer"}
-                </a>
-
-                <div className="hairline my-7" />
-
-                <ul className="flex flex-col gap-3.5">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-3 text-sm text-ink-2">
-                      <Check />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            );
-          })}
-        </div>
+        {mode === "enterprise" ? (
+          <div className="mx-auto mt-14 max-w-md">
+            <PlanCard plan={enterprisePlan} price={null} cta="Nous contacter" />
+          </div>
+        ) : (
+          <div className="mt-14 grid gap-5 lg:grid-cols-3">
+            {plans.map((plan) => {
+              const price = mode === "yearly" ? plan.yearly : plan.monthly;
+              return (
+                <PlanCard key={plan.name} plan={plan} price={price} cta={price === 0 ? "Commencer" : "S'abonner"} />
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

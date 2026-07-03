@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
-import type { Contact, ContactNote, ContactStatus } from "@/types/crm";
+import type { Appointment, Contact, ContactNote, ContactStatus } from "@/types/crm";
 
 export function mapContact(row: Tables<"crm_contacts">): Contact {
   return {
@@ -47,4 +47,23 @@ export async function getCrmData() {
   }, {});
 
   return { contacts, notes, notesByContact };
+}
+
+export async function getAppointments(): Promise<Appointment[]> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("crm_appointments")
+    .select("*, crm_contacts(name)")
+    .order("scheduled_at", { ascending: true });
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    contactId: row.contact_id,
+    contactName: (row.crm_contacts as { name: string } | null)?.name ?? "Contact supprimé",
+    title: row.title,
+    note: row.note,
+    scheduledAt: row.scheduled_at,
+    createdAt: row.created_at,
+  }));
 }

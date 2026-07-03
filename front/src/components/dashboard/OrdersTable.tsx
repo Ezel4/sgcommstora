@@ -5,6 +5,7 @@ import { FilterTab } from "@/components/dashboard/FilterTab";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
+import { UpgradeTeaser } from "@/components/dashboard/UpgradeTeaser";
 import { orderStatus } from "@/lib/commerce-status";
 import { formatCurrency } from "@/lib/format";
 import type { Order } from "@/types/commerce";
@@ -79,6 +80,11 @@ export function OrdersTable({ orders }: { orders: Order[] }) {
           </div>
         )}
       </Panel>
+
+      <UpgradeTeaser
+        title="Débloquez plus d'insights commandes"
+        description="Passe à un plan supérieur pour accéder aux prévisions de réassort, à l'historique complet et à l'export de tes commandes."
+      />
     </div>
   );
 }

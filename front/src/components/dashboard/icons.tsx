@@ -146,6 +146,13 @@ export const IconMail = base(
   </>,
 );
 
+export const IconCalendar = base(
+  <>
+    <rect x="3" y="5" width="18" height="16" rx="2.5" />
+    <path d="M3 10h18M8 3v4M16 3v4" />
+  </>,
+);
+
 export const IconMegaphone = base(
   <>
     <path d="M3 11v2a2 2 0 0 0 2 2h1l2 6h2l-1.5-6H10l9 4V5l-9 4H6a2 2 0 0 0-2 2Z" />

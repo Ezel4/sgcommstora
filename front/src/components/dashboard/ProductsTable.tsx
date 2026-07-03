@@ -5,6 +5,7 @@ import { FilterTab } from "@/components/dashboard/FilterTab";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
+import { UpgradeTeaser } from "@/components/dashboard/UpgradeTeaser";
 import { productStatus } from "@/lib/commerce-status";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import type { Product } from "@/types/commerce";
@@ -79,6 +80,11 @@ export function ProductsTable({ products }: { products: Product[] }) {
           </div>
         )}
       </Panel>
+
+      <UpgradeTeaser
+        title="Débloquez plus d'insights produits"
+        description="Passe à un plan supérieur pour accéder aux recommandations de prix, aux tendances de vente et à l'export de ton catalogue."
+      />
     </div>
   );
 }

@@ -22,7 +22,7 @@ export function FinalCta() {
                 sans carte bancaire.
               </p>
               <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-                <a href="#top" className="btn btn-light">Commencer gratuitement</a>
+                <a href="/login?mode=signup" className="btn btn-light">Commencer gratuitement</a>
                 <a href="#tarifs" className="btn btn-ghost">Voir les tarifs</a>
               </div>
             </div>

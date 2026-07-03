@@ -67,6 +67,41 @@ export type Database = {
           },
         ]
       }
+      crm_appointments: {
+        Row: {
+          contact_id: string
+          created_at: string
+          id: string
+          note: string | null
+          scheduled_at: string
+          title: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          scheduled_at: string
+          title: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          scheduled_at?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_appointments_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_contacts: {
         Row: {
           company: string | null

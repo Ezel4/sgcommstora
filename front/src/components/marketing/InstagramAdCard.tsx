@@ -25,9 +25,9 @@ function IconSend() {
   );
 }
 
-function IconBookmark({ className = "size-6" }: { className?: string }) {
+function IconBookmark() {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M6 4h12v17l-6-4-6 4Z" />
     </svg>
   );
@@ -75,7 +75,9 @@ export function InstagramAdCard({
           <IconHeart />
           <IconComment />
           <IconSend />
-          <IconBookmark className="ml-auto" />
+          <span className="ml-auto">
+            <IconBookmark />
+          </span>
         </div>
         <p className="mt-2.5 text-sm font-medium text-ink">{likes} j'aime</p>
         <p className="mt-1 text-sm leading-relaxed text-ink-2">{caption}</p>

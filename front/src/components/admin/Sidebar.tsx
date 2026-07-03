@@ -7,6 +7,7 @@ import { signOut } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
 import {
   IconBox,
+  IconCalendar,
   IconLogout,
   IconMail,
   IconOverview,
@@ -25,6 +26,7 @@ const NAV: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Vue d'ensemble", href: "/admin", Icon: IconOverview },
       { label: "Tous les contacts", href: "/admin/contacts", Icon: IconUsers },
+      { label: "Planning", href: "/admin/planning", Icon: IconCalendar },
       { label: "Mail", href: "/admin/mail", Icon: IconMail },
     ],
   },

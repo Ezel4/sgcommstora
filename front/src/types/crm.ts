@@ -23,3 +23,13 @@ export interface ContactNote {
   content: string;
   createdAt: string;
 }
+
+export interface Appointment {
+  id: string;
+  contactId: string;
+  contactName: string;
+  title: string;
+  note: string | null;
+  scheduledAt: string;
+  createdAt: string;
+}

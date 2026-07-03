@@ -62,7 +62,7 @@ export function Hero() {
           </p>
 
           <div className="animate-fade-up delay-300 mt-9 flex flex-wrap items-center justify-center gap-3">
-            <a href="#cta" className="btn btn-light">Commencer gratuitement</a>
+            <a href="/login?mode=signup" className="btn btn-light">Commencer gratuitement</a>
             <a href="#fonctionnalites" className="btn btn-ghost gap-2.5">
               <span className="flex size-5 items-center justify-center rounded-full bg-white/15">▸</span>
               Voir la démo
