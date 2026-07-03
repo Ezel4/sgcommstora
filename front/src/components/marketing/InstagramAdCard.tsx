@@ -39,10 +39,14 @@ export function InstagramAdCard({
   caption,
   likes,
   cta,
+  label,
+  videoSrc,
 }: {
   caption: ReactNode;
   likes: string;
   cta: ReactNode;
+  label: string;
+  videoSrc?: string;
 }) {
   return (
     <article className="card-dark mx-auto w-full max-w-sm overflow-hidden">
@@ -54,15 +58,30 @@ export function InstagramAdCard({
           <p className="text-sm font-medium text-ink">stora.ai</p>
           <p className="text-[0.7rem] text-ink-3">Sponsorisé</p>
         </div>
-        <span className="ml-auto text-ink-3">•••</span>
+        <span className="ml-auto rounded-full border border-line-strong bg-white/[0.06] px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-wide text-accent">
+          {label}
+        </span>
       </div>
 
       <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-gradient-to-br from-[#2a1f22] via-[#1a1518] to-[#0f0d10]">
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{ background: "radial-gradient(60% 60% at 50% 40%, rgba(205,144,137,0.35), transparent 70%)" }}
-        />
-        <LogoMark className="relative size-16 opacity-90" />
+        {videoSrc ? (
+          <video
+            src={videoSrc}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 size-full object-cover"
+          />
+        ) : (
+          <>
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{ background: "radial-gradient(60% 60% at 50% 40%, rgba(205,144,137,0.35), transparent 70%)" }}
+            />
+            <LogoMark className="relative size-16 opacity-90" />
+          </>
+        )}
       </div>
 
       <div className="flex items-center justify-between border-b border-line px-4 py-3">

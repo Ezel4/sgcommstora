@@ -34,6 +34,8 @@ export default function PubsSimulationPage() {
 
         <div className="flex flex-col gap-8">
           <InstagramAdCard
+            label="Conversion"
+            videoSrc="/video/stora-reel.mp4"
             likes="1 284"
             caption={
               <>
@@ -54,6 +56,7 @@ export default function PubsSimulationPage() {
           />
 
           <InstagramAdCard
+            label="Acquisition"
             likes="2 019"
             caption={
               <>
