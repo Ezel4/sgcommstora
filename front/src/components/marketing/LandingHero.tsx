@@ -4,8 +4,8 @@ import { Tilt } from "./Tilt";
 function TrustCheck() {
   return (
     <svg viewBox="0 0 20 20" className="size-4 shrink-0" fill="none" aria-hidden>
-      <circle cx="10" cy="10" r="9" stroke="rgba(84,184,168,0.5)" strokeWidth="1.2" />
-      <path d="M6 10.2 8.6 13 14 7.5" stroke="#54b8a8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="10" cy="10" r="9" stroke="rgba(31,197,190,0.55)" strokeWidth="1.2" />
+      <path d="M6 10.2 8.6 13 14 7.5" stroke="#1fc5be" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -20,7 +20,7 @@ export function LandingHero({ ctaHref }: { ctaHref: string }) {
         <div className="dusk-sky absolute inset-0" />
         <div
           className="absolute left-1/2 top-[-120px] h-[560px] w-[900px] -translate-x-1/2 rounded-full opacity-50 blur-3xl"
-          style={{ background: "radial-gradient(closest-side, rgba(205,144,137,0.4), transparent 70%)" }}
+          style={{ background: "radial-gradient(closest-side, rgba(31,197,190,0.34), transparent 70%)" }}
         />
       </div>
 

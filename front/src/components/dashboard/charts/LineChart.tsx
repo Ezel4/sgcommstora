@@ -1,6 +1,6 @@
 export function LineChart({
   data,
-  color = "#cd9089",
+  color = "#1fc5be",
   height = 160,
 }: {
   data: number[];

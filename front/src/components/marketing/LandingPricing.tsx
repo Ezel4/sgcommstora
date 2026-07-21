@@ -11,8 +11,8 @@ const features = [
 function Check() {
   return (
     <svg viewBox="0 0 20 20" className="size-[18px] shrink-0" fill="none" aria-hidden>
-      <circle cx="10" cy="10" r="9" stroke="rgba(84,184,168,0.5)" strokeWidth="1.2" />
-      <path d="M6 10.2 8.6 13 14 7.5" stroke="#54b8a8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="10" cy="10" r="9" stroke="rgba(31,197,190,0.55)" strokeWidth="1.2" />
+      <path d="M6 10.2 8.6 13 14 7.5" stroke="#1fc5be" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -34,7 +34,7 @@ export function LandingPricing({ ctaHref }: { ctaHref: string }) {
         </AnimateIn>
 
         <AnimateIn className="mx-auto mt-12 max-w-md">
-          <article className="card-dark flex flex-col p-8 ring-1 ring-[rgba(205,144,137,0.35)] shadow-[0_44px_100px_-34px_rgba(205,144,137,0.35)]">
+          <article className="card-dark flex flex-col p-8 ring-1 ring-[rgba(31,197,190,0.38)] shadow-[0_44px_100px_-34px_rgba(31,197,190,0.30)]">
             <span className="text-xs font-medium uppercase tracking-[0.16em] text-ink-3">Découverte</span>
             <div className="mt-4 flex items-end gap-1.5">
               <span className="text-5xl font-light tracking-tight text-ink">Gratuit</span>

@@ -8,6 +8,14 @@ export const metadata: Metadata = {
 };
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const hasSupabaseConfig =
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+  if (!hasSupabaseConfig) {
+    return <DashboardShell email="demo@stora.ai">{children}</DashboardShell>;
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

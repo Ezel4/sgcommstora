@@ -8,7 +8,7 @@ const Orbit3D = dynamic(() => import("./Orbit3D"), {
   ssr: false,
   loading: () => (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div className="size-20 rounded-[28%] border border-line-strong bg-elevated shadow-[0_0_50px_-6px_rgba(205,144,137,0.45)]" />
+      <div className="size-20 rounded-[28%] border border-line-strong bg-elevated shadow-[0_0_50px_-6px_rgba(31,197,190,0.35)]" />
     </div>
   ),
 });

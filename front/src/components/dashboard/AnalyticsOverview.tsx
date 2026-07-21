@@ -78,11 +78,11 @@ export function AnalyticsOverview({ data }: { data: typeof analyticsByPeriod }) 
       </div>
 
       <Panel title="Chiffre d'affaires dans le temps" action={periodTabs}>
-        <LineChart data={current.series.map((p) => p.revenue)} color="#cd9089" />
+        <LineChart data={current.series.map((p) => p.revenue)} color="#1fc5be" />
       </Panel>
 
       <Panel title="Visiteurs & sessions" action={periodTabs}>
-        <LineChart data={current.series.map((p) => p.visitors)} color="#54b8a8" />
+        <LineChart data={current.series.map((p) => p.visitors)} color="#2498c8" />
       </Panel>
 
       <div className="grid gap-6 lg:grid-cols-2">

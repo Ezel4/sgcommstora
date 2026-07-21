@@ -21,7 +21,7 @@ export default function Page() {
       <div className="card-dark relative overflow-hidden p-5 sm:p-6">
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
-            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#f4efe8] to-[#cd9089] text-lg font-semibold text-[#15120f]">
+            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#82a99e] via-[#1fc5be] to-[#2498c8] text-lg font-semibold text-white">
               {activeStore.name.slice(0, 1)}
             </span>
             <div>

@@ -13,7 +13,7 @@ export function ChatPreview() {
     <div className="card-dark glass-liquid mx-auto w-full max-w-3xl overflow-hidden p-2.5">
       <div className="rounded-[20px] border border-line bg-base/55 p-6 sm:p-9">
         <div className="flex items-center justify-between">
-          <span className="size-7 rounded-lg bg-gradient-to-br from-[#f4efe8] to-[#cd9089]" />
+          <span className="size-7 rounded-lg bg-gradient-to-br from-[#82a99e] via-[#1fc5be] to-[#2498c8]" />
           <button className="flex size-8 items-center justify-center rounded-full border border-line text-ink-2" aria-label="Menu">
             <ToolGlyph d="M4 7h16M4 12h16M4 17h16" />
           </button>

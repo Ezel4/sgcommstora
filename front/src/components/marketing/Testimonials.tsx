@@ -16,7 +16,7 @@ const quotes: Quote[] = [
     name: "Camille Ferrand",
     role: "Fondatrice · Maison Brume",
     initials: "CF",
-    tint: "from-[#f4efe8] to-[#cd9089]",
+    tint: "from-[#82a99e] to-[#1fc5be]",
   },
   {
     quote:
@@ -24,7 +24,7 @@ const quotes: Quote[] = [
     name: "Yanis Berkane",
     role: "E-commerçant · Atelier Nord",
     initials: "YB",
-    tint: "from-[#cd9089] to-[#9d6c58]",
+    tint: "from-[#1fc5be] to-[#2498c8]",
   },
   {
     quote:
@@ -32,7 +32,7 @@ const quotes: Quote[] = [
     name: "Sofia Marchetti",
     role: "Directrice · Tre Studio",
     initials: "SM",
-    tint: "from-[#76916f] to-[#54b8a8]",
+    tint: "from-[#82a99e] to-[#1fc5be]",
   },
 ];
 

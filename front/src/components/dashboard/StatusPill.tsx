@@ -6,7 +6,7 @@ const toneClasses: Record<Tone, string> = {
   positive: "text-sage border-[rgba(118,145,111,0.32)] bg-[rgba(118,145,111,0.12)]",
   info: "text-accent border-[rgba(84,184,168,0.32)] bg-accent-soft",
   warning: "text-amber border-[rgba(208,160,107,0.32)] bg-[rgba(208,160,107,0.12)]",
-  danger: "text-rose border-[rgba(205,144,137,0.34)] bg-[rgba(205,144,137,0.12)]",
+  danger: "text-danger border-danger/25 bg-danger-soft",
   neutral: "text-ink-3 border-line bg-white/[0.04]",
 };
 
