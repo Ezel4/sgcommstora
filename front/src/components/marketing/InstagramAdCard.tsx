@@ -51,7 +51,7 @@ export function InstagramAdCard({
   return (
     <article className="card-dark mx-auto w-full max-w-sm overflow-hidden">
       <div className="flex items-center gap-2.5 px-4 py-3">
-        <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-[#f4efe8] to-[#cd9089]">
+        <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-[#82a99e] via-[#1fc5be] to-[#2498c8]">
           <LogoMark className="size-4" />
         </span>
         <div className="leading-tight">
@@ -77,7 +77,7 @@ export function InstagramAdCard({
           <>
             <div
               className="pointer-events-none absolute inset-0"
-              style={{ background: "radial-gradient(60% 60% at 50% 40%, rgba(205,144,137,0.35), transparent 70%)" }}
+              style={{ background: "radial-gradient(60% 60% at 50% 40%, rgba(31,197,190,0.32), transparent 70%)" }}
             />
             <LogoMark className="relative size-16 opacity-90" />
           </>

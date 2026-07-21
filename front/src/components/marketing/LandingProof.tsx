@@ -22,7 +22,7 @@ export function LandingProof() {
               boutique et les fiches produits étaient en ligne.”
             </p>
             <div className="mt-6 flex items-center justify-center gap-3.5">
-              <span className="flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-[#f4efe8] to-[#cd9089] text-sm font-medium text-[#15120f]">
+              <span className="flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-[#82a99e] via-[#1fc5be] to-[#2498c8] text-sm font-medium text-white">
                 CF
               </span>
               <div className="text-left">

@@ -5,7 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Billboard, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
 
-const ROSE = "#cd9089";
+const ROSE = "#1fc5be";
 
 /* Logos (simple-icons) + vraies couleurs de marque ------------------------- */
 const BRANDS: { label: string; color: string; path: string }[] = [

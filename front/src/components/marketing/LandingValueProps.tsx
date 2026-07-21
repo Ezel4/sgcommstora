@@ -26,8 +26,8 @@ function Cross() {
 function Check() {
   return (
     <svg viewBox="0 0 20 20" className="size-[18px] shrink-0" fill="none" aria-hidden>
-      <circle cx="10" cy="10" r="9" stroke="rgba(84,184,168,0.5)" strokeWidth="1.2" />
-      <path d="M6 10.2 8.6 13 14 7.5" stroke="#54b8a8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="10" cy="10" r="9" stroke="rgba(31,197,190,0.55)" strokeWidth="1.2" />
+      <path d="M6 10.2 8.6 13 14 7.5" stroke="#1fc5be" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -56,7 +56,7 @@ export function LandingValueProps() {
             </ul>
           </article>
 
-          <article className="card-dark p-7 ring-1 ring-[rgba(84,184,168,0.35)] sm:p-8">
+          <article className="card-dark p-7 ring-1 ring-[rgba(31,197,190,0.38)] sm:p-8">
             <span className="text-xs font-medium uppercase tracking-[0.16em] text-accent">Avec Stora</span>
             <ul className="mt-6 flex flex-col gap-4">
               {withStora.map((item) => (

@@ -9,7 +9,7 @@ export function LandingFinalCta({ ctaHref }: { ctaHref: string }) {
           <div className="card-dark relative overflow-hidden px-6 py-16 text-center sm:px-10 sm:py-24">
             <div
               className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3"
-              style={{ background: "radial-gradient(60% 100% at 50% 100%, rgba(176,116,77,0.45), rgba(155,90,68,0.12) 45%, transparent 75%)" }}
+              style={{ background: "radial-gradient(60% 100% at 50% 100%, rgba(31,197,190,0.34), rgba(36,152,200,0.10) 45%, transparent 75%)" }}
             />
             <div className="relative">
               <h2 className="mx-auto max-w-xl text-3xl font-light tracking-tight sm:text-5xl sm:leading-[1.06]">

@@ -179,7 +179,7 @@ function isCampaignSource(source: string | null): source is string {
 function CampaignBadge({ source, className = "" }: { source: string; className?: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border border-[rgba(205,144,137,0.34)] bg-[rgba(205,144,137,0.12)] px-2.5 py-0.5 text-[0.7rem] font-medium text-rose ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-[rgba(31,197,190,0.34)] bg-accent-soft px-2.5 py-0.5 text-[0.7rem] font-medium text-accent ${className}`}
     >
       <IconMegaphone className="size-3" />
       {source}

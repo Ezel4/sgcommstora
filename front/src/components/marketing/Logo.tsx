@@ -3,8 +3,9 @@ export function LogoMark({ className = "size-7" }: { className?: string }) {
     <svg viewBox="0 0 40 40" className={className} aria-hidden>
       <defs>
         <linearGradient id="storaMark" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f4efe8" />
-          <stop offset="1" stopColor="#cd9089" />
+          <stop offset="0" stopColor="#82a99e" />
+          <stop offset="0.55" stopColor="#1fc5be" />
+          <stop offset="1" stopColor="#2498c8" />
         </linearGradient>
       </defs>
       <rect
@@ -23,8 +24,8 @@ export function LogoMark({ className = "size-7" }: { className?: string }) {
         height="12.7"
         rx="4.5"
         transform="rotate(45 20 11)"
-        fill="#0a0a0c"
-        fillOpacity="0.22"
+        fill="#ffffff"
+        fillOpacity="0.72"
       />
     </svg>
   );

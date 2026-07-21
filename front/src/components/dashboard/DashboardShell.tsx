@@ -1,51 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
-export function DashboardShell({
-  children,
-  email,
-}: {
-  children: React.ReactNode;
-  email: string;
-}) {
+export function DashboardShell({ children, email }: { children: React.ReactNode; email: string }) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-
-  // ferme le tiroir mobile à chaque changement de page
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   return (
     <div className="min-h-screen bg-base">
-      {/* sidebar fixe (desktop) */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-line bg-surface lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[66px] border-r border-line bg-[#e6e6e6] lg:block">
         <Sidebar email={email} />
       </aside>
 
-      {/* tiroir (mobile) */}
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="Fermer le menu"
-            onClick={() => setOpen(false)}
-            className="absolute inset-0 animate-fade-in bg-black/60 backdrop-blur-sm"
-          />
-          <aside className="absolute inset-y-0 left-0 w-72 max-w-[84%] animate-fade-in border-r border-line bg-surface">
+          <button type="button" aria-label="Fermer le menu" onClick={() => setOpen(false)} className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+          <aside className="absolute inset-y-0 left-0 w-[76px] border-r border-line bg-[#e6e6e6] shadow-2xl">
             <Sidebar email={email} onNavigate={() => setOpen(false)} />
           </aside>
         </div>
       )}
 
-      {/* contenu */}
-      <div className="lg:pl-72">
+      <div className="lg:pl-[66px]">
         <Topbar onMenu={() => setOpen(true)} />
-        <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+        <main className="px-3 pb-5 sm:px-5">{children}</main>
       </div>
     </div>
   );
