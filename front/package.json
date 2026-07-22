@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --incremental false",
-    "check": "npm run lint && npm run typecheck"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run lint && npm run typecheck && npm run test"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -33,6 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }
