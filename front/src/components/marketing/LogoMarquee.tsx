@@ -29,7 +29,7 @@ export function LogoMarquee() {
     <section className="relative py-12 sm:py-16">
       <div className="shell">
         <p className="text-center text-xs font-medium uppercase tracking-[0.18em] text-ink-4">
-          La stack de confiance qui fait tourner Stora
+          La stack de confiance qui fait tourner Sigmood IA
         </p>
       </div>
 

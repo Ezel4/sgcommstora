@@ -6,6 +6,7 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { IconClose, IconMegaphone, IconPlus } from "@/components/dashboard/icons";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { contactStatus, contactStatusOrder } from "@/lib/crm-status";
 import { formatCurrency } from "@/lib/format";
 import type { Contact, ContactNote, ContactStatus } from "@/types/crm";
@@ -16,7 +17,7 @@ export function CrmBoard({
   contacts,
   notesByContact,
   statusFilter,
-  heading = "Tes leads et clients Sigmood, au même endroit.",
+  heading = "Tes leads et clients Sigmood IA, au même endroit.",
 }: {
   contacts: Contact[];
   notesByContact: Record<string, ContactNote[]>;
@@ -27,6 +28,8 @@ export function CrmBoard({
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const metrics = useMemo(() => {
@@ -57,8 +60,14 @@ export function CrmBoard({
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
         <p className="text-sm text-ink-3">CRM interne</p>
-        <h2 className="text-2xl font-light tracking-tight text-ink">{heading}</h2>
+        <h1 className="text-2xl font-light tracking-tight text-ink">{heading}</h1>
       </div>
+
+      {actionError && (
+        <p role="alert" className="rounded-2xl border border-danger/25 bg-danger-soft px-4 py-3 text-sm text-danger">
+          {actionError}
+        </p>
+      )}
 
       {!statusFilter && (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -68,6 +77,18 @@ export function CrmBoard({
           <MetricCard metric={{ label: "Taux de conversion", value: `${metrics.conversion.toFixed(0)}%`, change: "leads → clients", tone: "neutral" }} />
         </div>
       )}
+
+      <div className="sm:hidden">
+        <label htmlFor="crm-mobile-search" className="sr-only">Rechercher un contact</label>
+        <input
+          id="crm-mobile-search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Rechercher un contact…"
+          className="min-h-11 w-full rounded-full border border-line bg-surface px-4 text-sm text-ink shadow-[var(--elevation-1)] placeholder:text-ink-4 focus:border-line-strong focus:outline-none"
+        />
+      </div>
 
       <Panel
         title={
@@ -88,6 +109,7 @@ export function CrmBoard({
         action={
           <div className="flex items-center gap-2">
             <input
+              aria-label="Rechercher un contact"
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -106,10 +128,10 @@ export function CrmBoard({
         bodyClassName="p-0"
       >
         {filtered.length === 0 ? (
-          <p className="px-5 py-10 text-center text-sm text-ink-3">Aucun contact pour l'instant.</p>
+          <p className="px-5 py-10 text-center text-sm text-ink-3">Aucun contact pour l&apos;instant.</p>
         ) : (
           <div className="divide-y divide-line">
-            <div className="hidden items-center gap-4 px-5 py-2 text-[0.65rem] font-medium uppercase tracking-wide text-ink-4 sm:flex">
+            <div className="hidden items-center gap-4 px-5 py-2 text-xs font-medium uppercase tracking-wide text-ink-4 sm:flex">
               <span className="flex-1">Contact</span>
               <span className="w-32 shrink-0">Provenance</span>
               <span className="w-20 shrink-0">Statut</span>
@@ -158,10 +180,35 @@ export function CrmBoard({
           notes={notesByContact[selected.id] ?? []}
           isPending={isPending}
           onClose={() => setSelectedId(null)}
-          onStatusChange={(status) => startTransition(() => updateContactStatus(selected.id, status))}
-          onDelete={() => {
-            startTransition(() => deleteContact(selected.id));
-            setSelectedId(null);
+          onStatusChange={(status) => {
+            setActionError(null);
+            startTransition(async () => {
+              const result = await updateContactStatus(selected.id, status);
+              if (!result.ok) setActionError(result.error);
+            });
+          }}
+          onDelete={() => setContactToDelete(selected)}
+        />
+      )}
+
+      {contactToDelete && (
+        <ConfirmDialog
+          title="Supprimer ce contact ?"
+          description={`Cette action supprimera définitivement ${contactToDelete.name} et ses données CRM associées.`}
+          confirmLabel="Supprimer le contact"
+          pending={isPending}
+          onCancel={() => setContactToDelete(null)}
+          onConfirm={() => {
+            setActionError(null);
+            startTransition(async () => {
+              const result = await deleteContact(contactToDelete.id);
+              if (result.ok) {
+                setSelectedId(null);
+                setContactToDelete(null);
+              } else {
+                setActionError(result.error);
+              }
+            });
           }}
         />
       )}
@@ -179,7 +226,7 @@ function isCampaignSource(source: string | null): source is string {
 function CampaignBadge({ source, className = "" }: { source: string; className?: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border border-[rgba(31,197,190,0.34)] bg-accent-soft px-2.5 py-0.5 text-[0.7rem] font-medium text-accent ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent-ink ${className}`}
     >
       <IconMegaphone className="size-3" />
       {source}
@@ -209,22 +256,25 @@ function AddContactModal({
   defaultStatus: ContactStatus;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    setError(null);
     startTransition(async () => {
-      await createContact(formData);
-      onClose();
+      const result = await createContact(formData);
+      if (result.ok) onClose();
+      else setError(result.error);
     });
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 px-4 py-6 backdrop-blur-sm">
+      <div role="dialog" aria-modal="true" aria-labelledby="add-contact-title" className="max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-line bg-surface p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-ink">Nouveau contact</h3>
-          <button type="button" onClick={onClose} aria-label="Fermer" className="text-ink-3 hover:text-ink">
+          <h3 id="add-contact-title" className="text-lg font-medium text-ink">Nouveau contact</h3>
+          <button type="button" onClick={onClose} aria-label="Fermer" className="grid size-10 place-items-center rounded-full text-ink-3 hover:bg-white/55 hover:text-ink">
             <IconClose className="size-5" />
           </button>
         </div>
@@ -232,12 +282,13 @@ function AddContactModal({
         <form onSubmit={handleSubmit} className="mt-5 space-y-3">
           <Field label="Nom" name="name" required />
           <Field label="Entreprise" name="company" />
-          <Field label="Email" name="email" type="email" />
-          <Field label="Téléphone" name="phone" />
+          <Field label="Email" name="email" type="email" autoComplete="email" />
+          <Field label="Téléphone" name="phone" type="tel" autoComplete="tel" />
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-ink-3">Statut</label>
+              <label htmlFor="new-contact-status" className="mb-1.5 block text-xs font-medium text-ink-3">Statut</label>
               <select
+                id="new-contact-status"
                 name="status"
                 defaultValue={defaultStatus}
                 className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink focus:border-line-strong focus:outline-none"
@@ -253,7 +304,9 @@ function AddContactModal({
           </div>
           <Field label="Source" name="source" placeholder="LinkedIn, bouche à oreille…" />
 
-          <button type="submit" disabled={isPending} className="btn btn-light w-full !py-2.5 text-sm">
+          {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+
+          <button type="submit" disabled={isPending} aria-busy={isPending} className="btn btn-light w-full !py-2.5 text-sm">
             {isPending ? "Ajout…" : "Ajouter le contact"}
           </button>
         </form>
@@ -268,19 +321,24 @@ function Field({
   type = "text",
   required,
   placeholder,
+  autoComplete,
 }: {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
   placeholder?: string;
+  autoComplete?: string;
 }) {
+  const id = `new-contact-${name}`;
   return (
     <div>
-      <label className="mb-1.5 block text-xs font-medium text-ink-3">{label}</label>
+      <label htmlFor={id} className="mb-1.5 block text-xs font-medium text-ink-3">{label}</label>
       <input
+        id={id}
         name={name}
         type={type}
+        autoComplete={autoComplete}
         required={required}
         placeholder={placeholder}
         className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-4 focus:border-line-strong focus:outline-none"
@@ -306,26 +364,29 @@ function ContactDrawer({
 }) {
   const [noteText, setNoteText] = useState("");
   const [notePending, startNoteTransition] = useTransition();
+  const [noteError, setNoteError] = useState<string | null>(null);
 
   function handleAddNote(e: React.FormEvent) {
     e.preventDefault();
     const content = noteText.trim();
     if (!content) return;
+    setNoteError(null);
     startNoteTransition(async () => {
-      await addNote(contact.id, content);
-      setNoteText("");
+      const result = await addNote(contact.id, content);
+      if (result.ok) setNoteText("");
+      else setNoteError(result.error);
     });
   }
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
-      <div className="h-full w-full max-w-md overflow-y-auto border-l border-line bg-surface p-6">
+      <div role="dialog" aria-modal="true" aria-labelledby="contact-drawer-title" className="h-full w-full max-w-md overflow-y-auto border-l border-line bg-surface p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-lg font-medium text-ink">{contact.name}</h3>
+              <h3 id="contact-drawer-title" className="text-lg font-medium text-ink">{contact.name}</h3>
               {contact.userId && (
-                <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[0.65rem] font-medium text-accent">
+                <span className="rounded-full bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent-ink">
                   Compte créé
                 </span>
               )}
@@ -335,15 +396,16 @@ function ContactDrawer({
               {[contact.company, contact.email, contact.phone].filter(Boolean).join(" · ") || "—"}
             </p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Fermer" className="text-ink-3 hover:text-ink">
+          <button type="button" onClick={onClose} aria-label="Fermer" className="grid size-10 place-items-center rounded-full text-ink-3 hover:bg-white/55 hover:text-ink">
             <IconClose className="size-5" />
           </button>
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Statut</label>
+            <label htmlFor="contact-status" className="mb-1.5 block text-xs font-medium text-ink-3">Statut</label>
             <select
+              id="contact-status"
               value={contact.status}
               disabled={isPending}
               onChange={(e) => onStatusChange(e.target.value as ContactStatus)}
@@ -357,7 +419,7 @@ function ContactDrawer({
             </select>
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">MRR</label>
+            <p className="mb-1.5 text-xs font-medium text-ink-3">MRR</p>
             <p className="rounded-xl border border-line bg-white/[0.02] px-3.5 py-2.5 text-sm text-ink">
               {formatCurrency(contact.mrr)}
             </p>
@@ -391,6 +453,7 @@ function ContactDrawer({
           <h4 className="text-sm font-medium text-ink">Notes de suivi</h4>
           <form onSubmit={handleAddNote} className="mt-2.5 flex gap-2">
             <input
+              aria-label="Ajouter une note de suivi"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
               placeholder="Ajouter une note…"
@@ -400,9 +463,10 @@ function ContactDrawer({
               Ajouter
             </button>
           </form>
+          {noteError && <p role="alert" className="mt-2 text-sm text-danger">{noteError}</p>}
 
           <div className="mt-4 space-y-3">
-            {notes.length === 0 && <p className="text-sm text-ink-3">Aucune note pour l'instant.</p>}
+            {notes.length === 0 && <p className="text-sm text-ink-3">Aucune note pour l&apos;instant.</p>}
             {notes.map((n) => (
               <div key={n.id} className="rounded-xl border border-line bg-white/[0.02] p-3.5">
                 <p className="text-sm leading-relaxed text-ink-2">{n.content}</p>
@@ -417,7 +481,7 @@ function ContactDrawer({
         <button
           type="button"
           onClick={onDelete}
-          className="mt-6 w-full rounded-xl border border-line px-3.5 py-2.5 text-sm text-rose transition hover:bg-white/[0.04]"
+          className="mt-6 w-full rounded-xl border border-danger/25 px-3.5 py-2.5 text-sm text-danger transition hover:bg-danger-soft"
         >
           Supprimer le contact
         </button>

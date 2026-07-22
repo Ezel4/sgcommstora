@@ -32,7 +32,7 @@ export function Skeleton({
 /** Bloc de carte squelette prêt à l'emploi pour les états de chargement. */
 export function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-stroke bg-cream/50 p-6">
+    <div className="rounded-[22px] border border-stroke bg-white/65 p-5 shadow-[var(--shadow-soft)] sm:p-6">
       <div className="flex items-center gap-3">
         <Skeleton rounded="full" className="size-10" />
         <div className="flex-1 space-y-2">

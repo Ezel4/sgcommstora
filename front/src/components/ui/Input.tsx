@@ -2,35 +2,51 @@ import { forwardRef, useId } from "react";
 import { cn } from "@/lib/utils";
 
 const fieldBase =
-  "w-full rounded-xl border border-stroke bg-cream/60 px-4 py-2.5 text-sm font-light text-forest " +
-  "placeholder:text-forest/35 transition-colors duration-200 " +
-  "focus:border-forest/40 focus:outline-none focus:ring-2 focus:ring-forest/15 " +
-  "disabled:cursor-not-allowed disabled:opacity-50";
+  "min-h-11 w-full rounded-xl border border-line-strong bg-elevated px-4 py-2.5 text-sm text-ink shadow-[var(--elevation-1)] " +
+  "placeholder:text-ink-4 transition-[background-color,border-color,box-shadow] duration-200 " +
+  "hover:border-ink/20 focus-visible:border-accent-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 " +
+  "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-ink-3 disabled:opacity-70";
 
 interface FieldWrapperProps {
   label?: string;
   hint?: string;
   error?: string;
   id: string;
+  hintId?: string;
+  errorId?: string;
   children: React.ReactNode;
 }
 
-function FieldWrapper({ label, hint, error, id, children }: FieldWrapperProps) {
+function FieldWrapper({
+  label,
+  hint,
+  error,
+  id,
+  hintId,
+  errorId,
+  children,
+}: FieldWrapperProps) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
       {label && (
         <label
           htmlFor={id}
-          className="text-[0.8125rem] font-bold tracking-tight text-forest/80"
+          className="text-[0.8125rem] font-medium tracking-tight text-ink-2"
         >
           {label}
         </label>
       )}
       {children}
       {error ? (
-        <p className="text-xs font-light text-danger">{error}</p>
+        <p id={errorId} role="alert" className="text-xs leading-relaxed text-danger">
+          {error}
+        </p>
       ) : (
-        hint && <p className="text-xs font-light text-forest/50">{hint}</p>
+        hint && (
+          <p id={hintId} className="text-xs leading-relaxed text-ink-3">
+            {hint}
+          </p>
+        )
       )}
     </div>
   );
@@ -44,16 +60,46 @@ export interface InputProps
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, hint, error, id, className, ...props }, ref) => {
+  (
+    {
+      label,
+      hint,
+      error,
+      id,
+      className,
+      "aria-describedby": externalDescription,
+      ...props
+    },
+    ref,
+  ) => {
     const generatedId = useId();
     const fieldId = id ?? generatedId;
+    const hintId = hint ? `${fieldId}-hint` : undefined;
+    const errorId = error ? `${fieldId}-error` : undefined;
+    const describedBy = [externalDescription, errorId ?? hintId]
+      .filter(Boolean)
+      .join(" ") || undefined;
+
     return (
-      <FieldWrapper label={label} hint={hint} error={error} id={fieldId}>
+      <FieldWrapper
+        label={label}
+        hint={hint}
+        error={error}
+        id={fieldId}
+        hintId={hintId}
+        errorId={errorId}
+      >
         <input
           ref={ref}
           id={fieldId}
           aria-invalid={Boolean(error)}
-          className={cn(fieldBase, error && "border-danger/50", className)}
+          aria-describedby={describedBy}
+          aria-errormessage={errorId}
+          className={cn(
+            fieldBase,
+            error && "border-danger/50 focus-visible:border-danger focus-visible:ring-danger/20",
+            className,
+          )}
           {...props}
         />
       </FieldWrapper>
@@ -70,20 +116,47 @@ export interface TextareaProps
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, hint, error, id, className, rows = 4, ...props }, ref) => {
+  (
+    {
+      label,
+      hint,
+      error,
+      id,
+      className,
+      rows = 4,
+      "aria-describedby": externalDescription,
+      ...props
+    },
+    ref,
+  ) => {
     const generatedId = useId();
     const fieldId = id ?? generatedId;
+    const hintId = hint ? `${fieldId}-hint` : undefined;
+    const errorId = error ? `${fieldId}-error` : undefined;
+    const describedBy = [externalDescription, errorId ?? hintId]
+      .filter(Boolean)
+      .join(" ") || undefined;
+
     return (
-      <FieldWrapper label={label} hint={hint} error={error} id={fieldId}>
+      <FieldWrapper
+        label={label}
+        hint={hint}
+        error={error}
+        id={fieldId}
+        hintId={hintId}
+        errorId={errorId}
+      >
         <textarea
           ref={ref}
           id={fieldId}
           rows={rows}
           aria-invalid={Boolean(error)}
+          aria-describedby={describedBy}
+          aria-errormessage={errorId}
           className={cn(
             fieldBase,
-            "resize-none leading-relaxed",
-            error && "border-danger/50",
+            "resize-y leading-relaxed",
+            error && "border-danger/50 focus-visible:border-danger focus-visible:ring-danger/20",
             className,
           )}
           {...props}

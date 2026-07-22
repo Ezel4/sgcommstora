@@ -1,10 +1,15 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseConfig } from "@/lib/supabase/config";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+
+  if (!hasSupabaseConfig()) {
+    return NextResponse.redirect(`${origin}/login?error=configuration`);
+  }
 
   if (code) {
     const supabase = await createClient();
@@ -26,5 +31,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/login`);
+  return NextResponse.redirect(`${origin}/login?error=oauth`);
 }

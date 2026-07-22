@@ -48,8 +48,12 @@ export function MailCenter({
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
         <p className="text-sm text-ink-3">CRM interne</p>
-        <h2 className="text-2xl font-light tracking-tight text-ink">Mail.</h2>
+        <h1 className="text-2xl font-light tracking-tight text-ink">Mail.</h1>
       </div>
+
+      <p role="status" className="rounded-2xl border border-amber-ink/20 bg-[rgba(36,152,200,0.1)] px-4 py-3 text-sm text-amber-ink">
+        <strong className="font-semibold">Mode simulation.</strong> Aucun email ni workflow n’est envoyé ou persisté par ce module.
+      </p>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard metric={{ label: "Emails envoyés", value: String(sentEmails.length), change: "30 derniers jours", tone: "neutral" }} />
@@ -140,8 +144,9 @@ function ComposeTab({
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Destinataire</label>
+            <label htmlFor="mail-recipient" className="mb-1.5 block text-xs font-medium text-ink-3">Destinataire</label>
             <select
+              id="mail-recipient"
               value={recipientId}
               onChange={(e) => setRecipientId(e.target.value)}
               className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink focus:border-line-strong focus:outline-none"
@@ -155,7 +160,10 @@ function ComposeTab({
             </select>
             {recipientId === "custom" && (
               <input
+                id="mail-custom-recipient"
+                aria-label="Adresse email personnalisée"
                 type="email"
+                autoComplete="email"
                 required
                 value={customEmail}
                 onChange={(e) => setCustomEmail(e.target.value)}
@@ -166,8 +174,9 @@ function ComposeTab({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Modèle</label>
+            <label htmlFor="mail-template" className="mb-1.5 block text-xs font-medium text-ink-3">Modèle</label>
             <select
+              id="mail-template"
               value={templateId}
               onChange={(e) => handleTemplateChange(e.target.value)}
               className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink focus:border-line-strong focus:outline-none"
@@ -182,8 +191,9 @@ function ComposeTab({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-ink-3">Objet</label>
+          <label htmlFor="mail-subject" className="mb-1.5 block text-xs font-medium text-ink-3">Objet</label>
           <input
+            id="mail-subject"
             required
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
@@ -192,8 +202,9 @@ function ComposeTab({
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-ink-3">Message</label>
+          <label htmlFor="mail-message" className="mb-1.5 block text-xs font-medium text-ink-3">Message</label>
           <textarea
+            id="mail-message"
             rows={6}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -209,7 +220,7 @@ function ComposeTab({
       <div className="mt-6 border-t border-line pt-5">
         <h4 className="mb-1 text-sm font-medium text-ink">Historique</h4>
         {sentEmails.length === 0 ? (
-          <p className="py-6 text-center text-sm text-ink-3">Aucun email envoyé pour l'instant.</p>
+          <p className="py-6 text-center text-sm text-ink-3">Aucun email envoyé pour l&apos;instant.</p>
         ) : (
           <div className="divide-y divide-line">
             {sentEmails.map((e) => (
@@ -220,7 +231,7 @@ function ComposeTab({
                     À {e.recipientName} · {e.recipientEmail}
                   </p>
                 </div>
-                <StatusPill tone="positive">Envoyé</StatusPill>
+                <StatusPill tone="neutral">Simulation</StatusPill>
                 <span className="shrink-0 text-xs text-ink-3">{e.sentAtLabel}</span>
               </div>
             ))}
@@ -239,7 +250,7 @@ function WorkflowsTab({
   onToggle: (id: string) => void;
 }) {
   if (workflows.length === 0) {
-    return <p className="px-5 py-10 text-center text-sm text-ink-3">Aucun workflow pour l'instant.</p>;
+    return <p className="px-5 py-10 text-center text-sm text-ink-3">Aucun workflow pour l&apos;instant.</p>;
   }
 
   return (
@@ -298,19 +309,20 @@ function NewWorkflowModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 px-4 py-6 backdrop-blur-sm">
+      <div role="dialog" aria-modal="true" aria-labelledby="new-workflow-title" className="max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-line bg-surface p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-ink">Nouveau workflow</h3>
-          <button type="button" onClick={onClose} aria-label="Fermer" className="text-ink-3 hover:text-ink">
+          <h3 id="new-workflow-title" className="text-lg font-medium text-ink">Nouveau workflow</h3>
+          <button type="button" onClick={onClose} aria-label="Fermer" className="grid size-10 place-items-center rounded-full text-ink-3 hover:bg-white/55 hover:text-ink">
             <IconClose className="size-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-3">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Nom du workflow</label>
+            <label htmlFor="workflow-name" className="mb-1.5 block text-xs font-medium text-ink-3">Nom du workflow</label>
             <input
+              id="workflow-name"
               name="name"
               required
               placeholder="Ex : Relance après devis"
@@ -319,8 +331,9 @@ function NewWorkflowModal({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Déclencheur</label>
+            <label htmlFor="workflow-trigger" className="mb-1.5 block text-xs font-medium text-ink-3">Déclencheur</label>
             <select
+              id="workflow-trigger"
               name="trigger"
               defaultValue={workflowTriggerOptions[0]?.value}
               className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink focus:border-line-strong focus:outline-none"
@@ -334,8 +347,9 @@ function NewWorkflowModal({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Modèle</label>
+            <label htmlFor="workflow-template" className="mb-1.5 block text-xs font-medium text-ink-3">Modèle</label>
             <select
+              id="workflow-template"
               name="templateId"
               defaultValue={templates[0]?.id}
               className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink focus:border-line-strong focus:outline-none"

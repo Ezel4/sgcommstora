@@ -4,10 +4,10 @@ type CardVariant = "default" | "elevated" | "flat";
 
 const variantClasses: Record<CardVariant, string> = {
   default:
-    "bg-cream/70 border border-stroke shadow-[var(--shadow-soft)] hover:border-forest/20 hover:shadow-[var(--shadow-card-hover)]",
+    "border border-line bg-surface shadow-[var(--elevation-1)]",
   elevated:
-    "bg-cream-elevated border border-stroke shadow-[var(--shadow-organic)]",
-  flat: "bg-forest-soft border border-stroke",
+    "border border-line bg-elevated shadow-[var(--elevation-2)]",
+  flat: "border border-transparent bg-surface-2",
 };
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -24,9 +24,10 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-2xl transition-all duration-300 ease-out",
+        "rounded-[23px] transition-[border-color,box-shadow,transform] duration-300 ease-out motion-reduce:transition-none",
         variantClasses[variant],
-        interactive && "cursor-pointer hover:-translate-y-0.5",
+        interactive &&
+          "cursor-pointer hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[var(--elevation-2)] motion-reduce:transform-none",
         className,
       )}
       {...props}
@@ -38,7 +39,7 @@ export function CardHeader({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("p-6 pb-0", className)} {...props} />;
+  return <div className={cn("p-5 pb-0 sm:p-6 sm:pb-0", className)} {...props} />;
 }
 
 export function CardTitle({
@@ -48,7 +49,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "text-lg font-bold tracking-tight text-forest",
+        "text-lg font-medium tracking-tight text-ink",
         className,
       )}
       {...props}
@@ -62,7 +63,7 @@ export function CardDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("mt-1 text-sm font-light text-forest/60", className)}
+      className={cn("mt-1.5 text-sm leading-relaxed text-ink-2", className)}
       {...props}
     />
   );
@@ -72,7 +73,7 @@ export function CardContent({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("p-6", className)} {...props} />;
+  return <div className={cn("p-5 sm:p-6", className)} {...props} />;
 }
 
 export function CardFooter({
@@ -82,7 +83,7 @@ export function CardFooter({
   return (
     <div
       className={cn(
-        "flex items-center gap-3 p-6 pt-0",
+        "flex flex-wrap items-center gap-3 p-5 pt-0 sm:p-6 sm:pt-0",
         className,
       )}
       {...props}

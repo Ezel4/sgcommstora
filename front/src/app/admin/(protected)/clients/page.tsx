@@ -9,7 +9,7 @@ export default async function AdminClientsPage() {
       contacts={contacts}
       notesByContact={notesByContact}
       statusFilter="client"
-      heading="Clients actifs Sigmood."
+      heading="Clients actifs Sigmood IA."
     />
   );
 }

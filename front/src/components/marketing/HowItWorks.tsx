@@ -4,7 +4,7 @@ const steps = [
   {
     n: "01",
     title: "Décrivez votre idée",
-    body: "Un message suffit : niche, style, cible. Stora comprend votre intention et propose une direction de marque.",
+    body: "Un message suffit : niche, style, cible. Sigmood IA comprend votre intention et propose une direction de marque.",
   },
   {
     n: "02",
@@ -29,10 +29,10 @@ export function HowItWorks() {
       <div className="shell">
         <AnimateIn className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-light tracking-tight sm:text-[2.6rem] sm:leading-[1.08]">
-            De l'idée à la première vente, en quatre temps.
+            De l&apos;idée à la première vente, en quatre temps.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-ink-2">
-            Aucune compétence technique. Vous parlez, Stora exécute et vous gardez le
+            Aucune compétence technique. Vous parlez, Sigmood IA exécute et vous gardez le
             contrôle à chaque étape.
           </p>
         </AnimateIn>

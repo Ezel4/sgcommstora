@@ -15,7 +15,7 @@ export function LandingFinalCta({ ctaHref }: { ctaHref: string }) {
               <h2 className="mx-auto max-w-xl text-3xl font-light tracking-tight sm:text-5xl sm:leading-[1.06]">
                 <span className="text-dusk">Votre boutique peut être</span>
                 <br />
-                <span className="text-ink-2">en ligne aujourd'hui.</span>
+                <span className="text-ink-2">en ligne aujourd&apos;hui.</span>
               </h2>
               <p className="mx-auto mt-5 max-w-md text-ink-2">
                 Gratuit pour commencer, sans carte bancaire. Aucune compétence technique

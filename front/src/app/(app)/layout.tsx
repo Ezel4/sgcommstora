@@ -2,18 +2,22 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseConfig, isDevelopmentDemoMode } from "@/lib/supabase/config";
 
 export const metadata: Metadata = {
-  title: "Dashboard — Stora AI",
+  title: "Dashboard — Sigmood IA",
 };
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const hasSupabaseConfig =
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
-  if (!hasSupabaseConfig) {
-    return <DashboardShell email="demo@stora.ai">{children}</DashboardShell>;
+  if (!hasSupabaseConfig()) {
+    if (isDevelopmentDemoMode()) {
+      return (
+        <DashboardShell email="demo@stora.ai" demoMode>
+          {children}
+        </DashboardShell>
+      );
+    }
+    redirect("/login?error=configuration");
   }
 
   const supabase = await createClient();
@@ -25,5 +29,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect("/login");
   }
 
-  return <DashboardShell email={user.email ?? ""}>{children}</DashboardShell>;
+  // Les vues métier utilisent encore des jeux de données locaux. Le bandeau reste
+  // donc visible même lorsque l'authentification Supabase est configurée.
+  return (
+    <DashboardShell email={user.email ?? ""} demoMode>
+      {children}
+    </DashboardShell>
+  );
 }

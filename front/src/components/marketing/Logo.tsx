@@ -1,8 +1,12 @@
+import { useId } from "react";
+
 export function LogoMark({ className = "size-7" }: { className?: string }) {
+  const gradientId = useId().replaceAll(":", "");
+
   return (
     <svg viewBox="0 0 40 40" className={className} aria-hidden>
       <defs>
-        <linearGradient id="storaMark" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#82a99e" />
           <stop offset="0.55" stopColor="#1fc5be" />
           <stop offset="1" stopColor="#2498c8" />
@@ -15,7 +19,7 @@ export function LogoMark({ className = "size-7" }: { className?: string }) {
         height="25.5"
         rx="9"
         transform="rotate(45 20 2)"
-        fill="url(#storaMark)"
+        fill={`url(#${gradientId})`}
       />
       <rect
         x="20"
@@ -31,12 +35,18 @@ export function LogoMark({ className = "size-7" }: { className?: string }) {
   );
 }
 
-export function Logo() {
+export function Logo({
+  brandName = "Sigmood IA",
+  compactOnMobile = false,
+}: {
+  brandName?: string;
+  compactOnMobile?: boolean;
+}) {
   return (
-    <a href="#top" className="flex items-center gap-2.5">
+    <a href="#top" aria-label={`Retour à l’accueil de ${brandName}`} className="flex items-center gap-2.5 rounded-full">
       <LogoMark />
-      <span className="text-[1.05rem] font-medium tracking-tight text-ink">
-        Stora
+      <span className={`text-[1.05rem] font-medium tracking-tight text-ink ${compactOnMobile ? "hidden sm:inline" : "max-[340px]:hidden"}`}>
+        {brandName}
       </span>
     </a>
   );

@@ -29,9 +29,9 @@ export function Overview({
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
         <p className="text-sm text-ink-3">CRM interne</p>
-        <h2 className="text-2xl font-light tracking-tight text-ink">
-          Tes leads et clients Sigmood, au même endroit.
-        </h2>
+        <h1 className="text-2xl font-light tracking-tight text-ink">
+          Tes leads et clients Sigmood IA, au même endroit.
+        </h1>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -68,7 +68,7 @@ export function Overview({
           bodyClassName="p-0"
         >
           {recentContacts.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-ink-3">Aucun contact pour l'instant.</p>
+            <p className="px-5 py-10 text-center text-sm text-ink-3">Aucun contact pour l&apos;instant.</p>
           ) : (
             <div className="divide-y divide-line">
               {recentContacts.map((c) => {
@@ -89,7 +89,7 @@ export function Overview({
 
         <Panel title="Notes récentes" bodyClassName="p-0">
           {recentNotes.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-ink-3">Aucune note pour l'instant.</p>
+            <p className="px-5 py-10 text-center text-sm text-ink-3">Aucune note pour l&apos;instant.</p>
           ) : (
             <div className="divide-y divide-line">
               {recentNotes.map((n) => (

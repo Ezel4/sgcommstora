@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const items = [
   { q: "Faut-il une carte bancaire pour commencer ?", a: "Non. Le plan Découverte est gratuit et ne demande aucune carte bancaire." },
-  { q: "Combien de temps pour avoir ma boutique ?", a: "Quelques minutes. Stora génère le design, la structure et une première collection, que vous ajustez ensuite par simple message." },
+  { q: "Combien de temps pour avoir ma boutique ?", a: "Environ 12 minutes. Sigmood IA génère le design, la structure et une première collection, que vous ajustez ensuite par simple message." },
   { q: "Faut-il savoir coder ?", a: "Non, aucune compétence technique n'est requise. Vous décrivez votre projet, l'IA construit la boutique." },
   { q: "Puis-je annuler à tout moment ?", a: "Oui, sans engagement ni condition. Vous gardez vos données et pouvez exporter votre catalogue." },
 ];
@@ -19,16 +19,22 @@ export function LandingFaqSimple() {
     <section className="relative py-20 sm:py-28">
       <div className="shell mx-auto max-w-2xl">
         <h2 className="text-center text-2xl font-light tracking-tight sm:text-3xl">
-          Les questions qu'on nous pose le plus.
+          Les questions qu&apos;on nous pose le plus.
         </h2>
 
         <div className="mt-10 flex flex-col gap-3">
           {items.map((item, i) => {
             const isOpen = i === open;
+            const triggerId = `landing-faq-trigger-${i}`;
+            const panelId = `landing-faq-panel-${i}`;
             return (
               <div key={item.q} className="card-dark overflow-hidden">
                 <button
+                  id={triggerId}
+                  type="button"
                   onClick={() => setOpen(isOpen ? -1 : i)}
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
                   className="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left"
                 >
                   <span className="text-[1.02rem] text-ink">{item.q}</span>
@@ -40,7 +46,14 @@ export function LandingFaqSimple() {
                     </svg>
                   </span>
                 </button>
-                <div className="grid transition-all duration-300 ease-out" style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}>
+                <div
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={triggerId}
+                  aria-hidden={!isOpen}
+                  className="grid transition-all duration-300 ease-out"
+                  style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+                >
                   <div className="overflow-hidden">
                     <p className="px-6 pb-6 text-[0.95rem] leading-relaxed text-ink-2">{item.a}</p>
                   </div>

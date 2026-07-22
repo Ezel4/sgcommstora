@@ -1,9 +1,15 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LogoMark } from "@/components/marketing/Logo";
 import { createClient } from "@/lib/supabase/client";
+import {
+  hasSupabaseConfig,
+  isDevelopmentDemoMode,
+  SUPABASE_CONFIGURATION_MESSAGE,
+} from "@/lib/supabase/config";
 
 function GoogleIcon() {
   return (
@@ -29,7 +35,7 @@ function MicrosoftIcon() {
 
 export default function LoginPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<div className="grid min-h-screen place-items-center bg-base text-sm text-ink-2">Chargement…</div>}>
       <LoginForm />
     </Suspense>
   );
@@ -46,6 +52,15 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const supabaseConfigured = hasSupabaseConfig();
+  const demoMode = isDevelopmentDemoMode();
+  const queryError = searchParams.get("error");
+  const queryErrorMessage =
+    queryError === "configuration"
+      ? SUPABASE_CONFIGURATION_MESSAGE
+      : queryError === "oauth"
+        ? "La connexion avec le fournisseur externe a échoué. Réessaie."
+        : null;
 
   // Origine de l'inscription (ex: "lancement" pour la landing page). Récupérée depuis
   // l'URL puis conservée en cookie pour survivre à la redirection OAuth vers /auth/callback,
@@ -69,12 +84,20 @@ function LoginForm() {
 
   async function handleOAuth(provider: "google" | "azure") {
     setError(null);
+    if (!supabaseConfigured) {
+      setError(SUPABASE_CONFIGURATION_MESSAGE);
+      return;
+    }
+    setLoading(true);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
-    if (error) setError(error.message);
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -82,6 +105,12 @@ function LoginForm() {
     setLoading(true);
     setError(null);
     setInfo(null);
+
+    if (!supabaseConfigured) {
+      setError(SUPABASE_CONFIGURATION_MESSAGE);
+      setLoading(false);
+      return;
+    }
 
     const supabase = createClient();
 
@@ -118,30 +147,43 @@ function LoginForm() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center bg-base px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 sm:p-7">
-        <div className="flex items-center gap-2.5">
+    <div className="grid min-h-screen place-items-center bg-base px-4 py-8 sm:py-12">
+      <div className="w-full max-w-sm rounded-3xl border border-line bg-elevated p-6 shadow-[var(--elevation-2)] sm:p-8">
+        <Link href="/" aria-label="Retour à l’accueil de Sigmood IA" className="inline-flex items-center gap-2.5 rounded-full">
           <LogoMark className="size-7" />
-          <span className="text-[1.05rem] font-medium tracking-tight text-ink">Stora AI</span>
-        </div>
+          <span className="text-[1.05rem] font-medium tracking-tight text-ink">Sigmood IA</span>
+        </Link>
 
-        <h1 className="mt-6 text-xl font-light tracking-tight text-ink">
+        <h1 className="mt-7 text-2xl font-normal tracking-tight text-ink">
           {mode === "signin" ? "Connexion" : "Créer ton compte"}
         </h1>
-        <p className="mt-1 text-sm text-ink-3">Pilote ta boutique générée par l'IA.</p>
+        <p className="mt-1 text-sm text-ink-3">Pilote ta boutique générée par l&apos;IA.</p>
 
-        <div className="mt-6 space-y-2.5">
+        {!supabaseConfigured && (
+          <div role="alert" className="mt-5 rounded-2xl border border-danger/25 bg-danger-soft p-4 text-sm text-danger">
+            <p>{SUPABASE_CONFIGURATION_MESSAGE}</p>
+            {demoMode && (
+              <Link href="/dashboard" className="mt-3 inline-flex font-semibold underline underline-offset-4">
+                Explorer le dashboard de démonstration
+              </Link>
+            )}
+          </div>
+        )}
+
+        <div className="mt-7 space-y-2.5">
           <button
             type="button"
+            disabled={!supabaseConfigured || loading}
             onClick={() => handleOAuth("google")}
-            className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink transition hover:bg-white/[0.06]"
+            className="flex min-h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-white/35 px-3.5 py-2.5 text-sm text-ink transition hover:bg-white/60 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white/35"
           >
             <GoogleIcon /> Continuer avec Google
           </button>
           <button
             type="button"
+            disabled={!supabaseConfigured || loading}
             onClick={() => handleOAuth("azure")}
-            className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink transition hover:bg-white/[0.06]"
+            className="flex min-h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-white/35 px-3.5 py-2.5 text-sm text-ink transition hover:bg-white/60 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white/35"
           >
             <MicrosoftIcon /> Continuer avec Microsoft
           </button>
@@ -155,45 +197,52 @@ function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-3.5">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Email</label>
+            <label htmlFor="login-email" className="mb-1.5 block text-[0.8125rem] font-medium text-ink-2">Email</label>
             <input
+              id="login-email"
               type="email"
+              autoComplete="email"
+              disabled={!supabaseConfigured || loading}
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-4 focus:border-line-strong focus:outline-none"
+              className="min-h-11 w-full rounded-xl border border-line bg-white/35 px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-4 focus:border-line-strong focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="toi@entreprise.com"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Mot de passe</label>
+            <label htmlFor="login-password" className="mb-1.5 block text-[0.8125rem] font-medium text-ink-2">Mot de passe</label>
             <input
+              id="login-password"
               type="password"
+              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              disabled={!supabaseConfigured || loading}
               required
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-4 focus:border-line-strong focus:outline-none"
+              className="min-h-11 w-full rounded-xl border border-line bg-white/35 px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-4 focus:border-line-strong focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="••••••••"
             />
           </div>
 
-          {error && <p className="text-sm text-rose">{error}</p>}
-          {info && <p className="text-sm text-accent">{info}</p>}
+          {(error ?? queryErrorMessage) && <p role="alert" className="text-sm text-danger">{error ?? queryErrorMessage}</p>}
+          {info && <p role="status" className="text-sm text-accent-ink">{info}</p>}
 
-          <button type="submit" disabled={loading} className="btn btn-light w-full !py-2.5 text-sm">
+          <button type="submit" disabled={loading || !supabaseConfigured} aria-busy={loading} className="btn btn-light w-full !py-2.5 text-sm">
             {loading ? "Chargement…" : mode === "signin" ? "Se connecter" : "Créer le compte"}
           </button>
         </form>
 
         <button
           type="button"
+          disabled={!supabaseConfigured || loading}
           onClick={() => {
             setMode(mode === "signin" ? "signup" : "signin");
             setError(null);
             setInfo(null);
           }}
-          className="mt-4 w-full text-center text-xs text-ink-3 transition hover:text-ink"
+          className="mt-4 flex min-h-11 w-full items-center justify-center rounded-full px-3 text-center text-[0.8125rem] text-ink-3 transition hover:bg-white/45 hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
         >
           {mode === "signin" ? "Pas encore de compte ? En créer un" : "Déjà un compte ? Se connecter"}
         </button>

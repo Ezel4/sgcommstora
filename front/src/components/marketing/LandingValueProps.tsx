@@ -7,7 +7,7 @@ const without = [
   "Un développeur pour brancher paiement et hébergement",
 ];
 
-const withStora = [
+const withSigmood = [
   "Boutique complète générée en quelques minutes",
   "Visuels produit photoréalistes générés par l'IA",
   "Titres et descriptions optimisés SEO, écrits pour vous",
@@ -40,13 +40,13 @@ export function LandingValueProps() {
       <div className="shell">
         <AnimateIn className="mx-auto max-w-xl text-center">
           <h2 className="text-3xl font-light tracking-tight sm:text-[2.4rem] sm:leading-[1.1]">
-            Ce qui change quand l'IA construit votre boutique.
+            Ce qui change quand l&apos;IA construit votre boutique.
           </h2>
         </AnimateIn>
 
         <div data-stagger className="mt-12 grid gap-5 md:grid-cols-2">
           <article className="card-dark p-7 sm:p-8">
-            <span className="text-xs font-medium uppercase tracking-[0.16em] text-ink-3">Sans Stora</span>
+            <span className="text-xs font-medium uppercase tracking-[0.16em] text-ink-3">Sans Sigmood IA</span>
             <ul className="mt-6 flex flex-col gap-4">
               {without.map((item) => (
                 <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-ink-3">
@@ -57,9 +57,9 @@ export function LandingValueProps() {
           </article>
 
           <article className="card-dark p-7 ring-1 ring-[rgba(31,197,190,0.38)] sm:p-8">
-            <span className="text-xs font-medium uppercase tracking-[0.16em] text-accent">Avec Stora</span>
+            <span className="text-xs font-medium uppercase tracking-[0.16em] text-accent-ink">Avec Sigmood IA</span>
             <ul className="mt-6 flex flex-col gap-4">
-              {withStora.map((item) => (
+              {withSigmood.map((item) => (
                 <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-ink">
                   <Check /> {item}
                 </li>

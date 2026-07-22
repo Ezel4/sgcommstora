@@ -1,38 +1,84 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { IconBell, IconMenu, IconSearch, IconSettings, IconSparkles } from "./icons";
+import type { Ref } from "react";
+import { usePathname } from "next/navigation";
+import { activeStore } from "@/data/mock-commerce";
+import { AccountMenu } from "./AccountMenu";
+import { IconExternal, IconMenu } from "./icons";
 
-export function Topbar({ onMenu }: { onMenu: () => void }) {
-  const router = useRouter();
+const ROUTE_CONTEXT = [
+  { href: "/dashboard/statistiques", label: "Statistiques" },
+  { href: "/dashboard/boutiques", label: "Boutiques" },
+  { href: "/dashboard/produits", label: "Produits" },
+  { href: "/dashboard/commandes", label: "Commandes" },
+  { href: "/dashboard/clients", label: "Clients" },
+  { href: "/dashboard/assistant", label: "Assistant IA" },
+  { href: "/dashboard/images", label: "Images IA" },
+  { href: "/dashboard/parametres", label: "Paramètres" },
+] as const;
+
+function getRouteLabel(pathname: string) {
+  if (pathname === "/dashboard") return "Vue d’ensemble";
+  return ROUTE_CONTEXT.find((item) => pathname.startsWith(item.href))?.label ?? "Dashboard";
+}
+
+export function Topbar({
+  onMenu,
+  menuOpen = false,
+  menuId = "dashboard-navigation-drawer",
+  menuButtonRef,
+  email,
+}: {
+  onMenu: () => void;
+  menuOpen?: boolean;
+  menuId?: string;
+  menuButtonRef?: Ref<HTMLButtonElement>;
+  email: string;
+}) {
+  const pathname = usePathname();
+  const routeLabel = getRouteLabel(pathname);
+  const canViewStore =
+    process.env.NODE_ENV === "development" || activeStore.status === "published";
+
   return (
-    <header className="relative z-30 h-16 bg-base">
-      <div className="grid h-full grid-cols-[1fr_auto] items-center gap-3 px-3 sm:grid-cols-[230px_1fr_180px] sm:px-5">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <button type="button" onClick={onMenu} aria-label="Ouvrir le menu" className="grid size-9 place-items-center rounded-full bg-surface text-ink-2 lg:hidden">
-            <IconMenu className="size-4" />
-          </button>
-          <strong className="text-sm font-semibold text-ink">Stora</strong>
-          <span className="hidden text-sm text-ink-3 sm:inline">Commerce Hub</span>
+    <header className="sticky top-0 z-30 h-16 bg-base/95 backdrop-blur-xl">
+      <div className="grid h-full grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:px-5 lg:grid-cols-[1fr_auto] lg:px-[18px]">
+        <button
+          ref={menuButtonRef}
+          type="button"
+          onClick={onMenu}
+          aria-label="Ouvrir le menu"
+          aria-expanded={menuOpen}
+          aria-controls={menuId}
+          className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 transition hover:bg-surface hover:text-ink lg:hidden"
+        >
+          <IconMenu className="size-5" />
+        </button>
+
+        <div className="flex min-w-0 items-center gap-4 text-xs text-ink-2">
+          <strong className="truncate text-[13px] font-semibold text-ink">Sigmood</strong>
+          <span className="hidden truncate sm:inline">Commerce Hub</span>
+          <span className="truncate text-ink-4 lg:hidden">· {routeLabel}</span>
         </div>
 
-        <div className="hidden justify-self-center rounded-full bg-ink p-[3px] text-[11px] lg:flex">
-          <Link href="/dashboard/boutiques" className="flex h-[34px] items-center gap-2 rounded-full bg-white px-4 font-medium text-ink">
-            <IconSparkles className="size-3.5" /> Créer
-          </Link>
-          <button type="button" onClick={() => router.refresh()} className="flex h-[34px] items-center gap-2 border-r border-white/10 px-4 text-white/75 hover:text-white">
-            ↻ Actualiser
-          </button>
-          <Link href="/dashboard/produits" className="flex h-[34px] items-center border-r border-white/10 px-4 text-white/75 hover:text-white">Produits</Link>
-          <Link href="/dashboard/commandes" className="flex h-[34px] items-center border-r border-white/10 px-4 text-white/75 hover:text-white">Commandes</Link>
-          <Link href="/dashboard/assistant" className="flex h-[34px] items-center px-4 text-white/75 hover:text-white">Assistant IA</Link>
-        </div>
-
-        <div className="flex justify-end gap-2">
-          <button type="button" aria-label="Rechercher" className="grid size-9 place-items-center rounded-full bg-surface text-ink-3 hover:text-ink"><IconSearch className="size-4" /></button>
-          <button type="button" aria-label="Notifications" className="relative hidden size-9 place-items-center rounded-full bg-surface text-ink-3 hover:text-ink sm:grid"><IconBell className="size-4" /><span className="absolute right-2 top-2 size-1.5 rounded-full bg-accent" /></button>
-          <Link href="/dashboard/parametres" aria-label="Paramètres" className="hidden size-9 place-items-center rounded-full bg-surface text-ink-3 hover:text-ink sm:grid"><IconSettings className="size-4" /></Link>
+        <div className="ml-auto flex shrink-0 items-center justify-end gap-2">
+          {canViewStore && (
+            <a
+              href={`/boutique/${activeStore.slug}`}
+              target="_blank"
+              rel="noreferrer"
+              className="grid size-9 place-items-center rounded-full bg-surface-2 text-ink-2 transition hover:bg-surface hover:text-ink"
+            >
+              <IconExternal className="size-4" />
+              <span className="sr-only">Ouvrir l’aperçu de la boutique</span>
+            </a>
+          )}
+          <AccountMenu
+            email={email}
+            storeName={activeStore.name}
+            avatarSrc="/avatar-sigmood.png"
+            needsAttention={activeStore.status === "needs-review"}
+          />
         </div>
       </div>
     </header>

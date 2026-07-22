@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { createAppointment, deleteAppointment } from "@/app/admin/actions";
 import { Panel } from "@/components/dashboard/Panel";
 import { IconClose, IconPlus } from "@/components/dashboard/icons";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Appointment, Contact } from "@/types/crm";
 
 const WEEKDAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -19,6 +20,24 @@ function mondayIndex(d: Date) {
   return (d.getUTCDay() + 6) % 7; // 0 = lundi
 }
 
+function formatFullDate(d: Date) {
+  return d.toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "UTC",
+  });
+}
+
+function formatCompactDate(d: Date) {
+  return d.toLocaleDateString("fr-FR", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
+}
+
 export function PlanningCalendar({
   appointments,
   contacts,
@@ -29,6 +48,8 @@ export function PlanningCalendar({
   const [showModal, setShowModal] = useState(false);
   const [prefillDate, setPrefillDate] = useState<string | undefined>(undefined);
   const [isPending, startTransition] = useTransition();
+  const [appointmentToDelete, setAppointmentToDelete] = useState<Appointment | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const todayKey = toDateKey(new Date());
 
@@ -63,7 +84,7 @@ export function PlanningCalendar({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
           <p className="text-sm text-ink-3">CRM interne</p>
-          <h2 className="text-2xl font-light tracking-tight text-ink">Planning commercial — 30 prochains jours.</h2>
+          <h1 className="text-xl font-normal tracking-tight text-ink sm:text-2xl">Planning commercial — 30 prochains jours.</h1>
         </div>
         <button
           type="button"
@@ -71,60 +92,101 @@ export function PlanningCalendar({
             setPrefillDate(undefined);
             setShowModal(true);
           }}
-          className="btn btn-light !px-3.5 !py-1.5 text-xs"
+          className="btn btn-light w-full !px-4 !py-2 text-sm sm:w-auto"
         >
           <IconPlus className="size-4" /> Nouveau rendez-vous
         </button>
       </div>
 
+      {actionError && (
+        <p role="alert" className="rounded-2xl border border-danger/25 bg-danger-soft px-4 py-3 text-sm text-danger">
+          {actionError}
+        </p>
+      )}
+
       <Panel bodyClassName="p-3 sm:p-5">
-        <div className="grid grid-cols-7 gap-1.5 text-center text-[0.65rem] font-medium uppercase tracking-wide text-ink-4 sm:gap-2">
-          {WEEKDAYS.map((w) => (
-            <span key={w} className="py-1">{w}</span>
-          ))}
-        </div>
-        <div className="mt-1.5 grid grid-cols-7 gap-1.5 sm:gap-2">
-          {Array.from({ length: leadingBlanks }).map((_, i) => (
-            <div key={`lead-${i}`} />
-          ))}
+        <div className="grid grid-cols-2 gap-2 sm:hidden">
           {days.map((d) => {
             const key = toDateKey(d);
             const dayAppointments = byDate.get(key) ?? [];
             const isToday = key === todayKey;
+            const dateLabel = formatFullDate(d);
             return (
               <button
                 key={key}
                 type="button"
+                aria-label={`Planifier un rendez-vous le ${dateLabel}`}
+                aria-current={isToday ? "date" : undefined}
                 onClick={() => {
                   setPrefillDate(key);
                   setShowModal(true);
                 }}
-                className={`flex min-h-[64px] flex-col items-start gap-1 rounded-xl border p-1.5 text-left transition hover:bg-white/[0.04] sm:min-h-[84px] sm:p-2 ${
-                  isToday ? "border-line-strong bg-white/[0.03]" : "border-line"
+                className={`flex min-h-20 flex-col items-start justify-between rounded-2xl border p-3 text-left transition hover:bg-white/55 ${
+                  isToday ? "border-accent/40 bg-accent-soft" : "border-line bg-white/25"
                 }`}
               >
-                <span className={`text-xs ${isToday ? "font-medium text-ink" : "text-ink-3"}`}>
-                  {d.getUTCDate()}
+                <span className="text-sm font-medium capitalize text-ink">{formatCompactDate(d)}</span>
+                <span className="text-xs text-ink-3">
+                  {dayAppointments.length === 0
+                    ? "Aucun rendez-vous"
+                    : `${dayAppointments.length} rendez-vous`}
                 </span>
-                <div className="flex w-full flex-col gap-0.5">
-                  {dayAppointments.slice(0, 2).map((a) => (
-                    <span
-                      key={a.id}
-                      className="truncate rounded-md bg-accent-soft px-1.5 py-0.5 text-[0.62rem] font-medium text-accent"
-                    >
-                      {a.contactName}
-                    </span>
-                  ))}
-                  {dayAppointments.length > 2 && (
-                    <span className="text-[0.6rem] text-ink-4">+{dayAppointments.length - 2}</span>
-                  )}
-                </div>
               </button>
             );
           })}
-          {Array.from({ length: trailingBlanks }).map((_, i) => (
-            <div key={`trail-${i}`} />
-          ))}
+        </div>
+
+        <div className="hidden sm:block">
+          <div className="grid grid-cols-7 gap-2 text-center text-xs font-medium uppercase tracking-wide text-ink-4">
+            {WEEKDAYS.map((w) => (
+              <span key={w} className="py-1">{w}</span>
+            ))}
+          </div>
+          <div className="mt-1.5 grid grid-cols-7 gap-2">
+            {Array.from({ length: leadingBlanks }).map((_, i) => (
+              <div key={`lead-${i}`} />
+            ))}
+            {days.map((d) => {
+              const key = toDateKey(d);
+              const dayAppointments = byDate.get(key) ?? [];
+              const isToday = key === todayKey;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-label={`Planifier un rendez-vous le ${formatFullDate(d)}`}
+                  aria-current={isToday ? "date" : undefined}
+                  onClick={() => {
+                    setPrefillDate(key);
+                    setShowModal(true);
+                  }}
+                  className={`flex min-h-[84px] flex-col items-start gap-1 rounded-xl border p-2 text-left transition hover:bg-white/55 ${
+                    isToday ? "border-accent/40 bg-accent-soft" : "border-line"
+                  }`}
+                >
+                  <span className={`text-xs ${isToday ? "font-medium text-ink" : "text-ink-3"}`}>
+                    {d.getUTCDate()}
+                  </span>
+                  <div className="flex w-full flex-col gap-0.5">
+                    {dayAppointments.slice(0, 2).map((a) => (
+                      <span
+                        key={a.id}
+                        className="truncate rounded-md bg-accent-soft px-1.5 py-0.5 text-xs font-medium text-accent-ink"
+                      >
+                        {a.contactName}
+                      </span>
+                    ))}
+                    {dayAppointments.length > 2 && (
+                      <span className="text-xs text-ink-4">+{dayAppointments.length - 2}</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+            {Array.from({ length: trailingBlanks }).map((_, i) => (
+              <div key={`trail-${i}`} />
+            ))}
+          </div>
         </div>
       </Panel>
 
@@ -149,9 +211,9 @@ export function PlanningCalendar({
                   <button
                     type="button"
                     disabled={isPending}
-                    onClick={() => startTransition(() => deleteAppointment(a.id))}
-                    aria-label="Supprimer"
-                    className="text-ink-3 hover:text-rose"
+                    onClick={() => setAppointmentToDelete(a)}
+                    aria-label={`Supprimer le rendez-vous ${a.title}`}
+                    className="grid size-11 place-items-center rounded-full text-ink-3 hover:bg-danger-soft hover:text-danger"
                   >
                     <IconClose className="size-4" />
                   </button>
@@ -169,6 +231,24 @@ export function PlanningCalendar({
           onClose={() => setShowModal(false)}
         />
       )}
+
+      {appointmentToDelete && (
+        <ConfirmDialog
+          title="Supprimer ce rendez-vous ?"
+          description={`Le rendez-vous « ${appointmentToDelete.title} » avec ${appointmentToDelete.contactName} sera définitivement supprimé.`}
+          confirmLabel="Supprimer le rendez-vous"
+          pending={isPending}
+          onCancel={() => setAppointmentToDelete(null)}
+          onConfirm={() => {
+            setActionError(null);
+            startTransition(async () => {
+              const result = await deleteAppointment(appointmentToDelete.id);
+              if (result.ok) setAppointmentToDelete(null);
+              else setActionError(result.error);
+            });
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -183,30 +263,34 @@ function NewAppointmentModal({
   onClose: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    setError(null);
     startTransition(async () => {
-      await createAppointment(formData);
-      onClose();
+      const result = await createAppointment(formData);
+      if (result.ok) onClose();
+      else setError(result.error);
     });
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 px-4 py-6 backdrop-blur-sm">
+      <div role="dialog" aria-modal="true" aria-labelledby="new-appointment-title" className="max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-line bg-surface p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-ink">Nouveau rendez-vous</h3>
-          <button type="button" onClick={onClose} aria-label="Fermer" className="text-ink-3 hover:text-ink">
+          <h3 id="new-appointment-title" className="text-lg font-medium text-ink">Nouveau rendez-vous</h3>
+          <button type="button" onClick={onClose} aria-label="Fermer" className="grid size-10 place-items-center rounded-full text-ink-3 hover:bg-white/55 hover:text-ink">
             <IconClose className="size-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-3">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Contact</label>
+            <label htmlFor="appointment-contact" className="mb-1.5 block text-xs font-medium text-ink-3">Contact</label>
             <select
+              id="appointment-contact"
               name="contact_id"
               required
               className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink focus:border-line-strong focus:outline-none"
@@ -220,8 +304,9 @@ function NewAppointmentModal({
             </select>
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Objet</label>
+            <label htmlFor="appointment-title" className="mb-1.5 block text-xs font-medium text-ink-3">Objet</label>
             <input
+              id="appointment-title"
               name="title"
               required
               placeholder="Appel de qualification…"
@@ -230,8 +315,9 @@ function NewAppointmentModal({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-ink-3">Date</label>
+              <label htmlFor="appointment-date" className="mb-1.5 block text-xs font-medium text-ink-3">Date</label>
               <input
+                id="appointment-date"
                 name="date"
                 type="date"
                 required
@@ -240,8 +326,9 @@ function NewAppointmentModal({
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-ink-3">Heure</label>
+              <label htmlFor="appointment-time" className="mb-1.5 block text-xs font-medium text-ink-3">Heure</label>
               <input
+                id="appointment-time"
                 name="time"
                 type="time"
                 defaultValue="09:00"
@@ -250,15 +337,18 @@ function NewAppointmentModal({
             </div>
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-ink-3">Note (optionnel)</label>
+            <label htmlFor="appointment-note" className="mb-1.5 block text-xs font-medium text-ink-3">Note (optionnel)</label>
             <textarea
+              id="appointment-note"
               name="note"
               rows={2}
               className="w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-4 focus:border-line-strong focus:outline-none"
             />
           </div>
 
-          <button type="submit" disabled={isPending} className="btn btn-light w-full !py-2.5 text-sm">
+          {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+
+          <button type="submit" disabled={isPending} aria-busy={isPending} className="btn btn-light w-full !py-2.5 text-sm">
             {isPending ? "Enregistrement…" : "Planifier"}
           </button>
         </form>

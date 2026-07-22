@@ -1,8 +1,13 @@
 import { redirect } from "next/navigation";
 import { OnboardingForm } from "@/components/onboarding/OnboardingForm";
 import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseConfig, isDevelopmentDemoMode } from "@/lib/supabase/config";
 
 export default async function OnboardingPage() {
+  if (!hasSupabaseConfig()) {
+    redirect(isDevelopmentDemoMode() ? "/dashboard" : "/login?error=configuration");
+  }
+
   const supabase = await createClient();
 
   const {

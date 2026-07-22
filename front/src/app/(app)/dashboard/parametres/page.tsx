@@ -1,12 +1,17 @@
-import { ComingSoon } from "@/components/dashboard/ComingSoon";
-import { IconSettings } from "@/components/dashboard/icons";
+import { Suspense } from "react";
+import { SettingsCenter } from "@/components/settings/SettingsCenter";
 
 export default function Page() {
   return (
-    <ComingSoon
-      Icon={IconSettings}
-      title="Paramètres"
-      description="Gérez votre compte, votre abonnement et vos clés d'intégration (paiement, IA, stockage). Cette section arrive bientôt."
-    />
+    <Suspense
+      fallback={
+        <div
+          className="h-72 animate-pulse rounded-[28px] bg-surface-2 motion-reduce:animate-none"
+          aria-label="Chargement des paramètres"
+        />
+      }
+    >
+      <SettingsCenter />
+    </Suspense>
   );
 }

@@ -11,6 +11,8 @@ const TITLES: Record<string, string> = {
   "/admin/qualifies": "Qualifiés",
   "/admin/clients": "Clients",
   "/admin/perdus": "Perdus",
+  "/admin/planning": "Planning",
+  "/admin/mail": "Mail",
 };
 
 export function Topbar({ onMenu }: { onMenu: () => void }) {
@@ -24,12 +26,12 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           type="button"
           onClick={onMenu}
           aria-label="Ouvrir le menu"
-          className="grid size-9 place-items-center rounded-lg text-ink-2 transition hover:bg-white/[0.05] hover:text-ink lg:hidden"
+          className="grid size-11 place-items-center rounded-full text-ink-2 transition hover:bg-white/60 hover:text-ink lg:hidden"
         >
           <IconMenu className="size-5" />
         </button>
 
-        <h1 className="text-lg font-medium tracking-tight text-ink">{title}</h1>
+        <p className="text-lg font-medium tracking-tight text-ink">{title}</p>
 
         <span className="pill ml-auto">CRM interne</span>
       </div>

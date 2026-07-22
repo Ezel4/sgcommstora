@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { requireAdminPage } from "@/lib/supabase/auth";
 import type { Tables } from "@/lib/supabase/database.types";
 import type { Appointment, Contact, ContactNote, ContactStatus } from "@/types/crm";
 
@@ -31,15 +31,18 @@ export function mapNote(row: Tables<"crm_notes">): ContactNote {
 }
 
 export async function getCrmData() {
-  const supabase = await createClient();
+  const { supabase } = await requireAdminPage();
 
-  const [{ data: contactRows }, { data: noteRows }] = await Promise.all([
+  const [contactsResult, notesResult] = await Promise.all([
     supabase.from("crm_contacts").select("*").order("created_at", { ascending: false }),
     supabase.from("crm_notes").select("*").order("created_at", { ascending: false }),
   ]);
+  if (contactsResult.error || notesResult.error) {
+    throw new Error("Impossible de charger les données CRM.");
+  }
 
-  const contacts = (contactRows ?? []).map(mapContact);
-  const notes = (noteRows ?? []).map(mapNote);
+  const contacts = (contactsResult.data ?? []).map(mapContact);
+  const notes = (notesResult.data ?? []).map(mapNote);
 
   const notesByContact = notes.reduce<Record<string, ContactNote[]>>((acc, note) => {
     (acc[note.contactId] ??= []).push(note);
@@ -50,12 +53,15 @@ export async function getCrmData() {
 }
 
 export async function getAppointments(): Promise<Appointment[]> {
-  const supabase = await createClient();
+  const { supabase } = await requireAdminPage();
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("crm_appointments")
     .select("*, crm_contacts(name)")
     .order("scheduled_at", { ascending: true });
+  if (error) {
+    throw new Error("Impossible de charger le planning.");
+  }
 
   return (data ?? []).map((row) => ({
     id: row.id,

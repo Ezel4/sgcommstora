@@ -208,8 +208,8 @@ export default function Orbit3D() {
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") {
-      setActive(true);
-      return;
+      const frame = window.requestAnimationFrame(() => setActive(true));
+      return () => window.cancelAnimationFrame(frame);
     }
     const io = new IntersectionObserver(
       ([entry]) => setActive(entry.isIntersecting),

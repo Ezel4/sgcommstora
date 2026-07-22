@@ -25,8 +25,8 @@ export function Integrations() {
           </AnimateIn>
           <AnimateIn direction="right">
             <p className="text-ink-2 md:pb-2">
-              Paiements, génération de texte et d'images, stockage, authentification :
-              Stora s'appuie sur les meilleurs services et orchestre tout pour vous, sans
+              Paiements, génération de texte et d&apos;images, stockage, authentification :
+              Sigmood IA s&apos;appuie sur les meilleurs services et orchestre tout pour vous, sans
               configuration technique.
             </p>
           </AnimateIn>

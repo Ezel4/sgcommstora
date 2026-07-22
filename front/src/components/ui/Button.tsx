@@ -6,15 +6,17 @@ type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-forest text-cream border border-forest hover:bg-forest-700 shadow-[0_8px_30px_rgba(37,87,42,0.18)]",
+    "border border-ink bg-ink text-pill-ink shadow-[var(--elevation-2)] hover:bg-ink/90 hover:shadow-[var(--elevation-3)]",
   secondary:
-    "bg-cream/70 text-forest border border-stroke-strong hover:bg-forest-soft",
-  ghost: "bg-transparent text-forest hover:bg-forest-soft",
-  danger: "bg-danger text-cream border border-danger hover:opacity-90",
+    "border border-line-strong bg-elevated text-ink shadow-[var(--elevation-1)] hover:border-ink/20 hover:bg-surface-2",
+  ghost:
+    "border border-transparent bg-transparent text-ink-2 hover:border-line hover:bg-surface hover:text-ink",
+  danger:
+    "border border-danger bg-danger text-white shadow-[var(--elevation-1)] hover:opacity-90",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-9 px-4 text-[0.8125rem] gap-1.5",
+  sm: "h-10 px-4 text-[0.8125rem] gap-1.5",
   md: "h-11 px-5 text-sm gap-2",
   lg: "h-12 px-7 text-base gap-2.5",
 };
@@ -71,12 +73,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || isLoading}
+        aria-busy={isLoading || undefined}
         className={cn(
-          "inline-flex items-center justify-center rounded-full font-bold tracking-tight",
-          "transition-all duration-200 ease-out",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus",
+          "inline-flex shrink-0 items-center justify-center rounded-full font-medium tracking-tight",
+          "transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out motion-reduce:transition-none",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-ink",
           "disabled:cursor-not-allowed disabled:opacity-50",
-          "active:translate-y-px hover:-translate-y-px",
+          "enabled:active:translate-y-px enabled:hover:-translate-y-px motion-reduce:transform-none",
           variantClasses[variant],
           sizeClasses[size],
           fullWidth && "w-full",

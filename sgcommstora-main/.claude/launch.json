@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "stora-front",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd front && npm run dev -- -p 8080"],
+      "port": 8080
+    }
+  ]
+}

@@ -1,53 +1,81 @@
-# DESIGN_SYSTEM.md — Stora AI
+# Design system — Sigmood IA
 
-Référence canonique de la charte « Sigmood mineral interface ». Les tokens sont déclarés dans `src/app/globals.css` via Tailwind v4.
+Référence UI du produit. Les tokens Tailwind v4 sont déclarés dans `src/app/globals.css` et les primitives réutilisables dans `src/components/ui`.
 
-## Direction visuelle
+## Direction
 
-Interface claire, minérale et calme : fond gris mat, cartes légèrement plus claires, texte noir, formes généreusement arrondies et accent aqua–cyan utilisé avec parcimonie. L’interface reste plate et précise, avec des ombres très douces.
+Sigmood IA adopte une interface lumineuse, éditoriale et chaleureuse : fond ivoire, surfaces blanches légèrement translucides, texte presque noir, rayons généreux et ombres très douces. Le turquoise, le bleu et le vert sauge structurent les actions et les zones de marque sans envahir l’interface.
 
-## Couleurs
+Le produit privilégie la clarté et l’action : une seule action principale par zone, des pages respirantes, des informations secondaires réellement secondaires et aucun effet décoratif qui ralentit l’usage.
 
-| Rôle | Token | Valeur |
-|---|---|---|
-| Fond | `base` | `#dedede` |
-| Panneau | `surface` | `#ececec` |
-| Surface secondaire | `surface-2` | `#e7e7e7` |
-| Carte élevée | `elevated` | `#f2f2f2` |
-| Texte | `ink` | `#111111` |
-| Texte secondaire | `ink-2` | noir à 66 % |
-| Texte discret | `ink-3` | noir à 48 % |
-| Bordure | `line` | noir à 8 % |
-| Accent principal | `accent` | `#1fc5be` |
-| Accent doux | `accent-soft` | aqua à 13 % |
-| Aqua minéral | `clay` | `#82a99e` |
-| Cyan | `amber` | `#2498c8` |
+## Tokens principaux
 
-Les dégradés de marque suivent toujours l’ordre `#82a99e → #1fc5be → #2498c8`. Le noir plein est réservé aux CTA prioritaires et aux états actifs.
+| Rôle | Token | Valeur | Usage |
+|---|---|---|---|
+| Fond | `base` | `#F8F7F3` | Canevas global ivoire |
+| Fond secondaire | `surface-2` | `#F2EFE8` | Zones groupées et navigation |
+| Surface | `surface`, `elevated` | `#FFFFFF` | Cartes, menus et modales |
+| Surface atténuée | `cream-muted` | `#F3F3F1` | Contrôles et cartes secondaires |
+| Texte principal | `ink` | `#101010` | Titres, valeurs et actions |
+| Texte secondaire | `ink-2`, `ink-3` | `#6F6F6B` | Corps, métadonnées et aide |
+| Action noire | `pill`, `forest` | `#111111` / `#101010` | CTA prioritaires et états actifs |
+| Turquoise | `accent` | `#1FC5BE` | Sélection et signature de marque |
+| Turquoise clair | `rose`, `amber` | `#8EDDD8` | Halos et surfaces illustrées |
+| Bleu turquoise | `plum` | `#2498C8` | Graphiques et dégradés |
+| Vert sauge | `sage`, `clay` | `#82A99E` | Graphiques et dégradés |
+| Surface turquoise | `accent-soft` | `#DDF3F4` | États informatifs et focus doux |
+| Bordure | `line` | `rgba(20,20,20,0.08)` | Séparations et contours |
+| Succès | `success`, `success-soft` | Sémantique | États positifs |
+| Attention | `warning`, `warning-soft` | Sémantique | Stocks et étapes à traiter |
+| Danger | `danger`, `danger-soft` | Sémantique | Erreurs et actions destructives |
+
+Les couleurs codées en dur sont réservées aux illustrations ou gradients de marque. Les informations métier utilisent toujours les tokens sémantiques.
+
+Le dégradé de marque canonique est :
+
+```css
+linear-gradient(135deg, #82A99E 0%, #1FC5BE 55%, #2498C8 100%)
+```
 
 ## Typographie
 
-- Titres : Manrope 400/500, interlettrage serré (`-0.045em`).
-- Interface et corps : Plus Jakarta Sans 400/500/600.
-- Titres courts, directs, avec une hiérarchie fondée sur la taille plutôt que sur le gras.
+- Titres : Urbanist, puis Manrope en repli ; graisse 400–600.
+- Interface et corps : Plus Jakarta Sans ; graisse 400–600.
+- Corps standard : 14–16 px avec interligne confortable.
+- Métadonnées : 12 px minimum, jamais pour une information essentielle.
+- Titres de page : `clamp(2rem, 4vw, 3rem)` via `PageHeader`.
 
-## Formes et composants
+## Espacement et formes
 
-- Boutons et badges : rayon complet (`rounded-full`).
-- Cartes principales : 23 px environ.
-- Champs et éléments de navigation : 12 à 16 px.
-- Cartes : `surface` ou `elevated`, bordure `line`, ombre discrète.
-- Barre de navigation : surface translucide grise avec flou léger.
-- États actifs : fond noir + texte blanc, ou accent aqua pour un indicateur fin.
+- Grille d’espacement basée sur 4 px.
+- Contrôles interactifs : 44 px minimum, 40 px seulement dans une zone très dense sur desktop.
+- Champs : rayon 14–16 px.
+- Cartes : rayon 20–24 px.
+- Modales et panneaux majeurs : rayon 24–28 px.
+- Largeur de contenu dashboard : 1 600 px maximum, avec 20–32 px de marge selon le viewport.
 
-## Usage de l’accent
+## Composants
 
-L’accent aqua–cyan sert aux graphiques, marqueurs, états sélectionnés, illustrations et zones de mise en avant. Il ne remplace pas le noir pour le texte courant et ne doit pas colorer de grandes portions de l’interface hors dégradé décoratif.
+- `PageHeader` est la structure canonique d’une page : contexte, titre, description, actions.
+- `Button` porte la hiérarchie primary / secondary / ghost / danger.
+- `Card` et les panneaux dashboard utilisent les mêmes surfaces, bordures et élévations.
+- `Badge` / `StatusPill` emploient uniquement les tons sémantiques.
+- `Input` / `Textarea` associent label, aide et erreur au champ.
+- `EmptyState` explique la situation et propose une prochaine étape quand elle existe.
+- Les loaders utilisent `Skeleton` et respectent `prefers-reduced-motion`.
 
-## Règles
+## Accessibilité et mouvement
 
-1. Réutiliser les tokens et les composants de `src/components/ui`.
-2. Éviter toute nouvelle couleur codée en dur hors palette sémantique.
-3. Conserver des contrastes WCAG AA et des focus visibles aqua.
-4. Garder les animations lentes, courtes et non intrusives.
-5. Prévoir `prefers-reduced-motion` pour tout mouvement continu.
+1. Contraste WCAG AA pour le texte et les contrôles.
+2. Focus visible turquoise foncé sur tous les éléments interactifs.
+3. Labels explicites et cibles tactiles d’au moins 44 px.
+4. Aucun état transmis uniquement par la couleur.
+5. Dialogues et drawers : focus initial, Échap, restauration du focus et verrouillage du scroll.
+6. Animations de 160 à 300 ms, avec désactivation via `prefers-reduced-motion`.
+
+## Responsive
+
+- Mobile : une colonne, actions prioritaires visibles, contenus métier en cartes structurées.
+- Tablette : grilles 2 colonnes, navigation en drawer.
+- Desktop : sidebar avec libellés et contenu jusqu’à 1 600 px.
+- Aucun défilement horizontal de page ; les informations secondaires peuvent être masquées, jamais l’action principale.
