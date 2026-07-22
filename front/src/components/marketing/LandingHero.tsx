@@ -31,13 +31,13 @@ export function LandingHero({ ctaHref }: { ctaHref: string }) {
           </span>
 
           <h1 className="animate-fade-up delay-200 mt-6 text-[clamp(1.9rem,4.4vw,3.2rem)] font-light leading-[1.1] tracking-tight">
-            <span className="text-dusk">De l'idée à la boutique en ligne,</span>
+            <span className="text-dusk">De l&apos;idée à la boutique en ligne,</span>
             <br />
             <span className="text-ink-2">sans agence ni code.</span>
           </h1>
 
           <p className="animate-fade-up delay-300 mt-6 max-w-lg text-[1rem] leading-relaxed text-ink-2 sm:text-lg">
-            Un message suffit. Stora écrit vos fiches produits, génère vos visuels et
+            Un message suffit. Sigmood IA écrit vos fiches produits, génère vos visuels et
             branche paiement, domaine et stockage à votre place.
           </p>
 
@@ -51,7 +51,7 @@ export function LandingHero({ ctaHref }: { ctaHref: string }) {
               <TrustCheck /> Gratuit pour commencer, sans carte bancaire
             </span>
             <span className="flex items-center gap-1.5">
-              <TrustCheck /> Boutique en ligne en 2 minutes
+              <TrustCheck /> Boutique en ligne en 12 minutes
             </span>
           </div>
         </div>

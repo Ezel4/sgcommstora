@@ -40,22 +40,23 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-2xl border border-dashed border-stroke-strong",
-        "bg-cream/40 px-6 py-14 text-center",
+        "relative flex flex-col items-center justify-center overflow-hidden rounded-[24px] border border-dashed border-stroke-strong",
+        "bg-gradient-to-br from-white/70 via-cream/70 to-accent-soft/50 px-6 py-14 text-center sm:py-16",
         className,
       )}
       {...props}
     >
-      <div className="mb-5 flex size-16 items-center justify-center rounded-full bg-forest-soft text-forest">
+      <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 size-44 rounded-full bg-amber/10 blur-3xl" />
+      <div className="relative mb-5 flex size-16 items-center justify-center rounded-[20px] border border-line bg-white/80 text-accent-ink shadow-[var(--shadow-soft)]">
         {icon ?? <DefaultIllustration />}
       </div>
-      <h3 className="text-base font-bold tracking-tight text-forest">{title}</h3>
+      <h3 className="relative text-lg font-semibold tracking-tight text-forest">{title}</h3>
       {description && (
-        <p className="mt-2 max-w-sm text-sm font-light leading-relaxed text-forest/55">
+        <p className="relative mt-2 max-w-md text-sm leading-6 text-forest/65">
           {description}
         </p>
       )}
-      {action && <div className="mt-6 flex items-center gap-3">{action}</div>}
+      {action && <div className="relative mt-6 flex flex-wrap items-center justify-center gap-3">{action}</div>}
     </div>
   );
 }

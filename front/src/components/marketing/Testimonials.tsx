@@ -24,7 +24,7 @@ const quotes: Quote[] = [
     name: "Yanis Berkane",
     role: "E-commerçant · Atelier Nord",
     initials: "YB",
-    tint: "from-[#1fc5be] to-[#2498c8]",
+    tint: "from-[#8eddd8] to-[#2498c8]",
   },
   {
     quote:
@@ -32,13 +32,13 @@ const quotes: Quote[] = [
     name: "Sofia Marchetti",
     role: "Directrice · Tre Studio",
     initials: "SM",
-    tint: "from-[#82a99e] to-[#1fc5be]",
+    tint: "from-[#82a99e] to-[#2498c8]",
   },
 ];
 
 function Quotes() {
   return (
-    <svg viewBox="0 0 40 40" className="size-8 text-rose" fill="currentColor" aria-hidden>
+    <svg viewBox="0 0 40 40" className="size-8 text-accent-ink" fill="currentColor" aria-hidden>
       <path d="M16 10c-5 0-9 4-9 9s4 8 8 8c1 0 2 0 2-1s-3-1-3-5 3-5 6-5V10zM34 10c-5 0-9 4-9 9s4 8 8 8c1 0 2 0 2-1s-3-1-3-5 3-5 6-5V10z" opacity="0.85" />
     </svg>
   );

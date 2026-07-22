@@ -13,6 +13,9 @@ export interface Store {
   generatedAt: string;
 }
 
+// Sous-ensemble sérialisable de Store passé aux composants du shell (client).
+export type StoreSummary = Pick<Store, "name" | "slug" | "status">;
+
 export interface Product {
   id: string;
   name: string;

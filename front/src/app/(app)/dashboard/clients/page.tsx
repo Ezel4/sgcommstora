@@ -1,6 +1,7 @@
 import { CustomersTable } from "@/components/dashboard/CustomersTable";
-import { customers } from "@/data/mock-commerce";
+import { getCustomers } from "@/lib/commerce";
 
-export default function Page() {
+export default async function Page() {
+  const { customers } = await getCustomers();
   return <CustomersTable customers={customers} />;
 }

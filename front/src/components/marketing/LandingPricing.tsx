@@ -29,7 +29,7 @@ export function LandingPricing({ ctaHref }: { ctaHref: string }) {
           </h2>
           <p className="mt-5 text-ink-2">
             Le plan Découverte suffit pour lancer une première boutique complète et tester
-            Stora sans sortir la carte bancaire.
+            Sigmood IA sans sortir la carte bancaire.
           </p>
         </AnimateIn>
 

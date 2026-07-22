@@ -28,7 +28,7 @@ export default function PubsSimulationPage() {
             Feed façon Instagram
           </h1>
           <p className="mt-1.5 text-sm text-ink-3">
-            Clique sur le CTA d'une pub pour tester le tracking jusqu'au CRM.
+            Clique sur le CTA d&apos;une pub pour tester le tracking jusqu&apos;au CRM.
           </p>
         </div>
 
@@ -61,7 +61,7 @@ export default function PubsSimulationPage() {
             caption={
               <>
                 <span className="font-medium text-ink">stora.ai</span> Décrivez votre idée,
-                l'IA construit votre boutique. Gratuit pour commencer, sans carte bancaire.
+                l&apos;IA construit votre boutique. Gratuit pour commencer, sans carte bancaire.
               </>
             }
             cta={

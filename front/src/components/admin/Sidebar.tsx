@@ -56,9 +56,9 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
       )}
     >
       {active && (
-        <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-rose" />
+        <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-accent" />
       )}
-      <item.Icon className={cn("size-[18px] shrink-0", active ? "text-rose" : "text-ink-4 group-hover:text-ink-2")} />
+      <item.Icon className={cn("size-[18px] shrink-0", active ? "text-accent-ink" : "text-ink-4 group-hover:text-ink-2")} />
       {item.label}
     </Link>
   );
@@ -70,14 +70,14 @@ export function Sidebar({ email, onNavigate }: { email: string; onNavigate?: () 
       <Link href="/admin" onClick={onNavigate} className="flex items-center gap-2.5 px-2 pt-1">
         <LogoMark className="size-7" />
         <span className="text-[1.05rem] font-medium tracking-tight text-ink">
-          Sigmood <span className="text-ink-3">· Admin</span>
+          Sigmood IA <span className="text-ink-3">· Admin</span>
         </span>
       </Link>
 
       <nav className="no-scrollbar flex-1 space-y-6 overflow-y-auto">
         {NAV.map((group) => (
           <div key={group.title}>
-            <p className="px-3 pb-2 text-[0.66rem] font-medium uppercase tracking-[0.16em] text-ink-4">
+            <p className="px-3 pb-2 text-xs font-medium uppercase tracking-[0.16em] text-ink-4">
               {group.title}
             </p>
             <div className="space-y-1">
@@ -109,7 +109,7 @@ export function Sidebar({ email, onNavigate }: { email: string; onNavigate?: () 
             <button
               type="submit"
               aria-label="Se déconnecter"
-              className="grid size-8 place-items-center rounded-lg text-ink-3 transition hover:bg-white/[0.05] hover:text-ink"
+              className="grid size-11 place-items-center rounded-full text-ink-3 transition hover:bg-white/60 hover:text-ink"
             >
               <IconLogout className="size-[18px]" />
             </button>

@@ -2,23 +2,28 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Stora AI · Votre boutique e-commerce, generee par l'IA",
+  title: "Sigmood IA — Créez votre boutique e-commerce avec l’IA",
   description:
-    "Decrivez votre projet, l'IA construit votre boutique : design, produits, visuels et textes. Gerez tout depuis un seul tableau de bord. Stora AI, c'est Shopify pilote par l'IA.",
+    "Décrivez votre projet : Sigmood IA génère le design, le catalogue, les visuels et les textes de votre boutique e-commerce, puis vous aide à la piloter.",
   keywords: [
     "e-commerce",
     "IA",
     "boutique en ligne",
-    "Stora AI",
-    "generateur de boutique IA",
+    "Sigmood IA",
+    "générateur de boutique IA",
     "alternative Shopify",
   ],
   openGraph: {
-    title: "Stora AI · Votre boutique e-commerce, generee par l'IA",
+    title: "Sigmood IA — Créez votre boutique e-commerce avec l’IA",
     description:
-      "Decrivez votre projet, l'IA construit votre boutique complete en quelques minutes.",
+      "Décrivez votre projet et obtenez une boutique complète, cohérente et prête à personnaliser en quelques minutes.",
     type: "website",
     locale: "fr_FR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sigmood IA — Votre boutique e-commerce, générée par l’IA",
+    description: "Design, catalogue, visuels et textes réunis dans une seule interface.",
   },
 };
 

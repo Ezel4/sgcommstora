@@ -13,18 +13,18 @@ export function ChatPreview() {
     <div className="card-dark glass-liquid mx-auto w-full max-w-3xl overflow-hidden p-2.5">
       <div className="rounded-[20px] border border-line bg-base/55 p-6 sm:p-9">
         <div className="flex items-center justify-between">
-          <span className="size-7 rounded-lg bg-gradient-to-br from-[#82a99e] via-[#1fc5be] to-[#2498c8]" />
-          <button className="flex size-8 items-center justify-center rounded-full border border-line text-ink-2" aria-label="Menu">
+          <span className="brand-gradient size-7 rounded-lg" />
+          <span className="flex size-8 items-center justify-center rounded-full border border-line text-ink-2" aria-hidden>
             <ToolGlyph d="M4 7h16M4 12h16M4 17h16" />
-          </button>
+          </span>
         </div>
 
         <div className="mt-10 text-center">
           <h3 className="text-2xl font-light tracking-tight text-ink sm:text-3xl">
             Bonjour, prêt à vendre ?
           </h3>
-          <p className="mt-2 text-sm text-accent sm:text-[1rem]">
-            Décrivez votre boutique, Stora s'occupe du reste.
+          <p className="mt-2 text-sm text-accent-ink sm:text-[1rem]">
+            Décrivez votre boutique, Sigmood IA s&apos;occupe du reste.
           </p>
         </div>
 
@@ -39,9 +39,9 @@ export function ChatPreview() {
               <ToolGlyph d="M4 7h16M7 12h10M10 17h4" />
               <ToolGlyph d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z" />
             </div>
-            <button className="flex size-9 items-center justify-center rounded-full bg-pill text-pill-ink" aria-label="Envoyer">
+            <span className="flex size-9 items-center justify-center rounded-full bg-pill text-pill-ink" aria-hidden>
               <ToolGlyph d="M12 19V5M5 12l7-7 7 7" />
-            </button>
+            </span>
           </div>
         </div>
 

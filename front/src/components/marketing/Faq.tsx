@@ -10,8 +10,8 @@ const categories: Category[] = [
     id: "general",
     label: "Général",
     items: [
-      { q: "Faut-il savoir coder pour utiliser Stora ?", a: "Non. Vous décrivez votre projet en langage naturel et l'IA construit la boutique. Aucune compétence technique n'est requise." },
-      { q: "Combien de temps pour créer une boutique ?", a: "Quelques minutes. Stora génère le design, la structure et une première collection de produits, que vous ajustez ensuite par simple message." },
+      { q: "Faut-il savoir coder pour utiliser Sigmood IA ?", a: "Non. Vous décrivez votre projet en langage naturel et l'IA construit la boutique. Aucune compétence technique n'est requise." },
+      { q: "Combien de temps pour créer une boutique ?", a: "Quelques minutes. Sigmood IA génère le design, la structure et une première collection de produits, que vous ajustez ensuite par simple message." },
       { q: "Puis-je gérer plusieurs boutiques ?", a: "Oui, selon votre plan. Vous pilotez toutes vos boutiques depuis un tableau de bord unifié." },
     ],
   },
@@ -19,7 +19,7 @@ const categories: Category[] = [
     id: "ia",
     label: "IA & capacités",
     items: [
-      { q: "Comment sont générés les visuels produit ?", a: "Stora s'appuie sur des modèles de génération d'images pour créer des visuels photoréalistes et les mettre en scène, sans shooting." },
+      { q: "Comment sont générés les visuels produit ?", a: "Sigmood IA s'appuie sur des modèles de génération d'images pour créer des visuels photoréalistes et les mettre en scène, sans shooting." },
       { q: "Les textes sont-ils optimisés pour le SEO ?", a: "Oui. Titres, descriptions et balises méta sont rédigés pour le référencement et adaptés au ton de votre marque." },
       { q: "Puis-je modifier ce que l'IA propose ?", a: "Toujours. Vous gardez le contrôle : chaque élément se modifie par prompt ou manuellement." },
     ],
@@ -28,8 +28,8 @@ const categories: Category[] = [
     id: "securite",
     label: "Intégrations & sécurité",
     items: [
-      { q: "Quels services Stora connecte-t-il ?", a: "Paiements, génération de texte et d'images, stockage et authentification sont intégrés et orchestrés automatiquement." },
-      { q: "Les paiements sont-ils sécurisés ?", a: "Oui. Les paiements passent par un prestataire certifié ; Stora ne stocke jamais les données de carte." },
+      { q: "Quels services Sigmood IA connecte-t-il ?", a: "Paiements, génération de texte et d'images, stockage et authentification sont intégrés et orchestrés automatiquement." },
+      { q: "Les paiements sont-ils sécurisés ?", a: "Oui. Les paiements passent par un prestataire certifié ; Sigmood IA ne stocke jamais les données de carte." },
       { q: "À qui appartiennent mes données et ma boutique ?", a: "Elles vous appartiennent. Vous pouvez exporter votre catalogue et brancher un domaine personnalisé." },
     ],
   },
@@ -49,7 +49,7 @@ export function Faq() {
             Les réponses aux questions les plus fréquentes.
           </h2>
           <p className="mt-5 text-ink-2">
-            Comment Stora fonctionne, ce qu'il connecte et ce que vous pouvez attendre au
+            Comment Sigmood IA fonctionne, ce qu&apos;il connecte et ce que vous pouvez attendre au
             quotidien.
           </p>
         </div>

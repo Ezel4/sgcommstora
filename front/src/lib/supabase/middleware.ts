@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { hasSupabaseConfig } from "@/lib/supabase/config";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -9,7 +10,7 @@ export async function updateSession(request: NextRequest) {
 
   // Permet de prévisualiser les routes publiques en local sans configuration
   // Supabase. En production, les deux variables restent nécessaires à l'auth.
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!hasSupabaseConfig() || !supabaseUrl || !supabaseAnonKey) {
     return response;
   }
 

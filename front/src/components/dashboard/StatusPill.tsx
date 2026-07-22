@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 export type Tone = "positive" | "info" | "warning" | "danger" | "neutral";
 
 const toneClasses: Record<Tone, string> = {
-  positive: "text-sage border-[rgba(118,145,111,0.32)] bg-[rgba(118,145,111,0.12)]",
-  info: "text-accent border-[rgba(84,184,168,0.32)] bg-accent-soft",
-  warning: "text-amber border-[rgba(208,160,107,0.32)] bg-[rgba(208,160,107,0.12)]",
+  positive: "border-success/25 bg-success-soft text-success",
+  info: "border-accent/25 bg-accent-soft text-accent-ink",
+  warning: "border-warning/25 bg-warning-soft text-warning",
   danger: "text-danger border-danger/25 bg-danger-soft",
-  neutral: "text-ink-3 border-line bg-white/[0.04]",
+  neutral: "border-line bg-white/55 text-ink-3",
 };
 
 export function StatusPill({
@@ -22,12 +22,12 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[0.7rem] font-medium tracking-tight",
+        "inline-flex min-h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold tracking-tight",
         toneClasses[tone],
         className,
       )}
     >
-      <span className="size-1.5 rounded-full bg-current" />
+      <span className="size-1.5 rounded-full bg-current" aria-hidden />
       {children}
     </span>
   );

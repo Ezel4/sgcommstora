@@ -5,7 +5,7 @@ export const emailTemplates: EmailTemplate[] = [
     id: "tpl_welcome",
     name: "Bienvenue nouveau lead",
     subject: "Bienvenue chez Sigmood !",
-    bodyPreview: "Merci pour votre intérêt pour Stora AI. Voici comment démarrer votre boutique en quelques minutes…",
+    bodyPreview: "Merci pour votre intérêt pour Sigmood IA. Voici comment démarrer votre boutique en quelques minutes…",
   },
   {
     id: "tpl_followup",

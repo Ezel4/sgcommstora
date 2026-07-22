@@ -23,7 +23,7 @@ export function Footer() {
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-3">
-              La plateforme qui crée et gère votre boutique e-commerce avec l'IA, de A à Z.
+              La plateforme qui crée et gère votre boutique e-commerce avec l&apos;IA, de A à Z.
             </p>
           </div>
 
@@ -46,8 +46,8 @@ export function Footer() {
         <div className="hairline my-10" />
 
         <div className="flex flex-col items-center justify-between gap-4 text-sm text-ink-3 sm:flex-row">
-          <span>© {new Date().getFullYear()} Stora AI. Tous droits réservés.</span>
-          <span>Conçu en France · Propulsé par l'IA générative</span>
+          <span>© {new Date().getFullYear()} Sigmood IA. Tous droits réservés.</span>
+          <span>Conçu en France · Propulsé par l&apos;IA générative</span>
         </div>
       </div>
     </footer>

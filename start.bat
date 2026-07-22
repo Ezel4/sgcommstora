@@ -1,6 +1,6 @@
 @echo off
 REM ============================================================
-REM  Stora AI - serveur de dev
+REM  Sigmood IA - serveur de dev
 REM  Ouvre ensuite : http://localhost:8080
 REM
 REM  IMPORTANT : ce projet doit etre place HORS de OneDrive
@@ -18,7 +18,7 @@ if not exist "node_modules\next" (
 
 echo.
 echo ============================================================
-echo   Stora AI  -  http://localhost:8080
+echo   Sigmood IA  -  http://localhost:8080
 echo   Laisse cette fenetre ouverte. Ctrl+C pour arreter.
 echo ============================================================
 echo.

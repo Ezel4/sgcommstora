@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
@@ -13,11 +12,15 @@ export function AdminShell({
   email: string;
 }) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
 
   return (
     <div className="min-h-screen bg-base">
@@ -33,7 +36,7 @@ export function AdminShell({
             onClick={() => setOpen(false)}
             className="absolute inset-0 animate-fade-in bg-black/60 backdrop-blur-sm"
           />
-          <aside className="absolute inset-y-0 left-0 w-72 max-w-[84%] animate-fade-in border-r border-line bg-surface">
+          <aside aria-label="Navigation du CRM" className="absolute inset-y-0 left-0 w-72 max-w-[84%] animate-fade-in border-r border-line bg-surface">
             <Sidebar email={email} onNavigate={() => setOpen(false)} />
           </aside>
         </div>

@@ -28,11 +28,18 @@ export default async function LandingPage({
   const SIGNUP_HREF = `/login?mode=signup&source=${encodeURIComponent(source)}`;
 
   return (
-    <main className="grain relative min-h-screen bg-base">
+    <div className="grain relative min-h-screen bg-base">
+      <a
+        href="#contenu-principal"
+        className="sr-only left-4 top-4 z-[60] rounded-full bg-ink px-4 py-3 text-sm font-medium text-white focus:fixed focus:not-sr-only"
+      >
+        Aller au contenu
+      </a>
       <GlassFilters />
       <SmoothScroll />
 
       <LandingNavbar signupHref={SIGNUP_HREF} />
+      <main id="contenu-principal">
       <LandingHero ctaHref={SIGNUP_HREF} />
       <LandingValueProps />
       <LandingSteps />
@@ -40,7 +47,8 @@ export default async function LandingPage({
       <LandingPricing ctaHref={SIGNUP_HREF} />
       <LandingFaqSimple />
       <LandingFinalCta ctaHref={SIGNUP_HREF} />
+      </main>
       <LandingFooter />
-    </main>
+    </div>
   );
 }

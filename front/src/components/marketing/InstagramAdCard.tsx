@@ -51,14 +51,14 @@ export function InstagramAdCard({
   return (
     <article className="card-dark mx-auto w-full max-w-sm overflow-hidden">
       <div className="flex items-center gap-2.5 px-4 py-3">
-        <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-[#82a99e] via-[#1fc5be] to-[#2498c8]">
+        <span className="brand-gradient flex size-8 items-center justify-center rounded-full">
           <LogoMark className="size-4" />
         </span>
         <div className="leading-tight">
           <p className="text-sm font-medium text-ink">stora.ai</p>
           <p className="text-[0.7rem] text-ink-3">Sponsorisé</p>
         </div>
-        <span className="ml-auto rounded-full border border-line-strong bg-white/[0.06] px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-wide text-accent">
+        <span className="ml-auto rounded-full border border-line-strong bg-white/[0.06] px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-wide text-accent-ink">
           {label}
         </span>
       </div>
@@ -98,7 +98,7 @@ export function InstagramAdCard({
             <IconBookmark />
           </span>
         </div>
-        <p className="mt-2.5 text-sm font-medium text-ink">{likes} j'aime</p>
+        <p className="mt-2.5 text-sm font-medium text-ink">{likes} j&apos;aime</p>
         <p className="mt-1 text-sm leading-relaxed text-ink-2">{caption}</p>
       </div>
     </article>

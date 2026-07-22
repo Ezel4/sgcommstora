@@ -77,7 +77,7 @@ const features = [
   {
     icon: <IsoLayers />,
     title: "Création par prompt",
-    body: "Décrivez votre niche, votre style et votre cible. Stora génère nom, branding, palette et structure complète de la boutique.",
+    body: "Décrivez votre niche, votre style et votre cible. Sigmood IA génère nom, branding, palette et structure complète de la boutique.",
   },
   {
     icon: <IsoKey />,
@@ -124,8 +124,8 @@ export function Features() {
             Une seule IA pour concevoir, remplir et lancer votre boutique.
           </h2>
           <p className="mt-5 max-w-xl text-ink-2">
-            Stora réunit le design, le catalogue et les visuels dans une interface unique,
-            de l'idée à la première vente.
+            Sigmood IA réunit le design, le catalogue et les visuels dans une interface unique,
+            de l&apos;idée à la première vente.
           </p>
         </AnimateIn>
       </div>

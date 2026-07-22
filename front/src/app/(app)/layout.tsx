@@ -1,19 +1,29 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import { getActiveStore } from "@/lib/commerce";
 import { createClient } from "@/lib/supabase/server";
+import { hasSupabaseConfig, isDevelopmentDemoMode } from "@/lib/supabase/config";
 
 export const metadata: Metadata = {
-  title: "Dashboard — Stora AI",
+  title: "Dashboard — Sigmood IA",
 };
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const hasSupabaseConfig =
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
-  if (!hasSupabaseConfig) {
-    return <DashboardShell email="demo@stora.ai">{children}</DashboardShell>;
+  if (!hasSupabaseConfig()) {
+    if (isDevelopmentDemoMode()) {
+      const { store, isDemo } = await getActiveStore();
+      return (
+        <DashboardShell
+          email="demo@stora.ai"
+          store={{ name: store.name, slug: store.slug, status: store.status }}
+          demoMode={isDemo}
+        >
+          {children}
+        </DashboardShell>
+      );
+    }
+    redirect("/login?error=configuration");
   }
 
   const supabase = await createClient();
@@ -25,5 +35,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect("/login");
   }
 
-  return <DashboardShell email={user.email ?? ""}>{children}</DashboardShell>;
+  // Données réelles si l'utilisateur possède une boutique, sinon jeu de démo :
+  // le bandeau « mode démonstration » ne s'affiche que dans ce dernier cas.
+  const { store, isDemo } = await getActiveStore();
+  return (
+    <DashboardShell
+      email={user.email ?? ""}
+      store={{ name: store.name, slug: store.slug, status: store.status }}
+      demoMode={isDemo}
+    >
+      {children}
+    </DashboardShell>
+  );
 }

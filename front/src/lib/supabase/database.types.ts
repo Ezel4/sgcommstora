@@ -321,6 +321,70 @@ export type Database = {
           },
         ]
       }
+      store_drafts: {
+        Row: {
+          document: Json
+          store_id: string
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          document: Json
+          store_id: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          document?: Json
+          store_id?: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_drafts_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_publications: {
+        Row: {
+          document: Json
+          published_at: string
+          published_by: string | null
+          store_id: string
+          version: number
+        }
+        Insert: {
+          document: Json
+          published_at?: string
+          published_by?: string | null
+          store_id: string
+          version?: number
+        }
+        Update: {
+          document?: Json
+          published_at?: string
+          published_by?: string | null
+          store_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_publications_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           audience: string | null
@@ -390,6 +454,7 @@ export type Database = {
           p_name: string
           p_phone: string
           p_source: string
+          p_ip_hash?: string
         }
         Returns: undefined
       }

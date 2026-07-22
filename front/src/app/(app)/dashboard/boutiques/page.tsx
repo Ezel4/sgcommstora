@@ -1,71 +1,117 @@
+import Link from "next/link";
 import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { IconExternal } from "@/components/dashboard/icons";
-import { activeStore } from "@/data/mock-commerce";
+import { PageHeader } from "@/components/ui";
+import { getCommerceOverview } from "@/lib/commerce";
 import { storeStatus } from "@/lib/commerce-status";
 import { formatPercent } from "@/lib/format";
 
-export default function Page() {
-  const ss = storeStatus[activeStore.status];
+export default async function Page() {
+  const { store: activeStore, products } = await getCommerceOverview();
+  const status = storeStatus[activeStore.status];
+  const canViewStore = process.env.NODE_ENV === "development" || activeStore.status === "published";
   const generatedDate = new Date(activeStore.generatedAt).toLocaleDateString("fr-FR", {
     dateStyle: "long",
   });
+  const activeProducts = products.filter((product) => product.status !== "draft").length;
+
+  const statusMessage = {
+    published: "Votre boutique est publiée et accessible depuis son adresse publique.",
+    "needs-review": "Votre boutique a été générée. Son contenu doit encore être vérifié avant publication.",
+    draft: "Votre boutique est encore en préparation et n’est pas accessible publiquement.",
+  }[activeStore.status];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-1">
-        <p className="text-sm text-ink-3">Boutiques</p>
-        <h2 className="text-2xl font-light tracking-tight text-ink">Ta boutique générée par l'IA.</h2>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Boutique"
+        title="Votre boutique"
+        description="Vérifiez son positionnement, son statut et les informations déjà configurées."
+        aside={<StatusPill tone={status.tone}>{status.label}</StatusPill>}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {canViewStore && (
+              <a
+                href={`/boutique/${activeStore.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-ghost min-h-11 text-sm"
+              >
+                <IconExternal className="size-4" /> Voir l’aperçu
+              </a>
+            )}
+            <Link href="/editeur" className="btn btn-light min-h-11 text-sm">
+              Modifier la boutique
+            </Link>
+          </div>
+        }
+      />
 
-      <div className="card-dark relative overflow-hidden p-5 sm:p-6">
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-4">
-            <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#82a99e] via-[#1fc5be] to-[#2498c8] text-lg font-semibold text-white">
+      <section aria-labelledby="store-name" className="overflow-hidden rounded-[22px] bg-surface-2">
+        <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.55fr)] lg:items-center">
+          <div className="flex min-w-0 items-start gap-4 sm:gap-5">
+            <span aria-hidden className="brand-gradient grid size-14 shrink-0 place-items-center rounded-2xl text-xl font-semibold text-ink sm:size-16">
               {activeStore.name.slice(0, 1)}
             </span>
-            <div>
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h3 className="text-lg font-medium text-ink">{activeStore.name}</h3>
-                <StatusPill tone={ss.tone}>{ss.label}</StatusPill>
+                <h2 id="store-name" className="font-[Urbanist] text-3xl font-light tracking-[-.045em] text-ink">{activeStore.name}</h2>
+                <StatusPill tone={status.tone}>{status.label}</StatusPill>
               </div>
-              <p className="mt-1 max-w-md text-sm text-ink-2">{activeStore.niche}</p>
-              <p className="mt-0.5 text-xs text-ink-3">{activeStore.subdomain}</p>
+              <p className="mt-2 text-sm leading-6 text-ink-2">{activeStore.niche}</p>
+              <p className="mt-1 truncate text-xs text-ink-3">{activeStore.subdomain}</p>
             </div>
           </div>
-          <a
-            href={`/boutique/${activeStore.slug}`}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-ghost shrink-0 text-sm"
-          >
-            <IconExternal className="size-4" /> Voir la boutique
-          </a>
+
+          <div className="rounded-2xl bg-white/50 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-ink">Statut actuel</p>
+            <p className="mt-2 text-sm leading-6 text-ink-2">{statusMessage}</p>
+            {!canViewStore && (
+              <p className="mt-3 border-t border-line pt-3 text-xs leading-5 text-ink-3">
+                La publication n’est pas encore disponible depuis cet écran.
+              </p>
+            )}
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Panel title="Audience cible">
-          <p className="text-sm leading-relaxed text-ink-2">{activeStore.audience}</p>
-        </Panel>
-        <Panel title="Style visuel">
-          <p className="text-sm leading-relaxed text-ink-2">{activeStore.visualStyle}</p>
-        </Panel>
-      </div>
+      <section aria-labelledby="positioning-title">
+        <div className="mb-4">
+          <h2 id="positioning-title" className="text-xl font-medium tracking-tight text-ink">Positionnement généré</h2>
+          <p className="mt-1 text-sm text-ink-3">Les fondations utilisées pour construire l’expérience de marque.</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Panel title="Audience cible" className="rounded-3xl" bodyClassName="p-6">
+            <p className="text-sm leading-6 text-ink-2">{activeStore.audience}</p>
+          </Panel>
+          <Panel title="Style visuel" className="rounded-3xl" bodyClassName="p-6">
+            <p className="text-sm leading-6 text-ink-2">{activeStore.visualStyle}</p>
+          </Panel>
+        </div>
+      </section>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        <Panel title="Taux de conversion" bodyClassName="p-5">
-          <p className="text-2xl font-light tracking-tight text-ink">
-            {formatPercent(activeStore.conversionRate)}
-          </p>
-        </Panel>
-        <Panel title="Sous-domaine" bodyClassName="p-5">
-          <p className="truncate text-sm text-ink-2">{activeStore.subdomain}</p>
-        </Panel>
-        <Panel title="Générée le" bodyClassName="p-5">
-          <p className="text-sm text-ink-2">{generatedDate}</p>
-        </Panel>
-      </div>
+      <section aria-labelledby="store-details-title">
+        <h2 id="store-details-title" className="mb-4 text-xl font-medium tracking-tight text-ink">Informations de la boutique</h2>
+        <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl bg-surface p-5">
+            <dt className="text-xs text-ink-3">Catalogue actif</dt>
+            <dd className="mt-2 text-2xl font-medium text-ink">{activeProducts} produit{activeProducts > 1 ? "s" : ""}</dd>
+          </div>
+          <div className="rounded-2xl bg-surface p-5">
+            <dt className="text-xs text-ink-3">Taux de conversion</dt>
+            <dd className="mt-2 text-2xl font-medium text-ink">{formatPercent(activeStore.conversionRate)}</dd>
+          </div>
+          <div className="rounded-2xl bg-surface p-5">
+            <dt className="text-xs text-ink-3">Sous-domaine</dt>
+            <dd className="mt-2 truncate text-sm font-medium text-ink">{activeStore.subdomain}</dd>
+          </div>
+          <div className="rounded-2xl bg-surface p-5">
+            <dt className="text-xs text-ink-3">Générée le</dt>
+            <dd className="mt-2 text-sm font-medium text-ink">{generatedDate}</dd>
+          </div>
+        </dl>
+      </section>
     </div>
   );
 }
