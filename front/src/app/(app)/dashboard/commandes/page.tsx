@@ -1,6 +1,7 @@
 import { OrdersTable } from "@/components/dashboard/OrdersTable";
-import { orders } from "@/data/mock-commerce";
+import { getOrders } from "@/lib/commerce";
 
-export default function Page() {
+export default async function Page() {
+  const { orders } = await getOrders();
   return <OrdersTable orders={orders} />;
 }

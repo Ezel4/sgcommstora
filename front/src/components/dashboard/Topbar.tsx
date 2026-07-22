@@ -2,7 +2,7 @@
 
 import type { Ref } from "react";
 import { usePathname } from "next/navigation";
-import { activeStore } from "@/data/mock-commerce";
+import type { StoreSummary } from "@/types/commerce";
 import { AccountMenu } from "./AccountMenu";
 import { IconExternal, IconMenu } from "./icons";
 
@@ -28,17 +28,19 @@ export function Topbar({
   menuId = "dashboard-navigation-drawer",
   menuButtonRef,
   email,
+  store,
 }: {
   onMenu: () => void;
   menuOpen?: boolean;
   menuId?: string;
   menuButtonRef?: Ref<HTMLButtonElement>;
   email: string;
+  store: StoreSummary;
 }) {
   const pathname = usePathname();
   const routeLabel = getRouteLabel(pathname);
   const canViewStore =
-    process.env.NODE_ENV === "development" || activeStore.status === "published";
+    process.env.NODE_ENV === "development" || store.status === "published";
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-base/95 backdrop-blur-xl">
@@ -64,7 +66,7 @@ export function Topbar({
         <div className="ml-auto flex shrink-0 items-center justify-end gap-2">
           {canViewStore && (
             <a
-              href={`/boutique/${activeStore.slug}`}
+              href={`/boutique/${store.slug}`}
               target="_blank"
               rel="noreferrer"
               className="grid size-9 place-items-center rounded-full bg-surface-2 text-ink-2 transition hover:bg-surface hover:text-ink"
@@ -75,9 +77,9 @@ export function Topbar({
           )}
           <AccountMenu
             email={email}
-            storeName={activeStore.name}
+            storeName={store.name}
             avatarSrc="/avatar-sigmood.png"
-            needsAttention={activeStore.status === "needs-review"}
+            needsAttention={store.status === "needs-review"}
           />
         </div>
       </div>

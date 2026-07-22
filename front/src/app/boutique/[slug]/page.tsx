@@ -20,7 +20,7 @@ const STOCK_BADGE: Record<Product["status"], { label: string; className: string 
 export default async function StorefrontPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const preview = process.env.NODE_ENV === "development";
-  const data = getStoreBySlug(slug, { preview });
+  const data = await getStoreBySlug(slug, { preview });
   if (!data) notFound();
   const { store, products } = data;
 

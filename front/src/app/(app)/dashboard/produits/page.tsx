@@ -1,6 +1,7 @@
 import { ProductsTable } from "@/components/dashboard/ProductsTable";
-import { products } from "@/data/mock-commerce";
+import { getProducts } from "@/lib/commerce";
 
-export default function Page() {
+export default async function Page() {
+  const { products } = await getProducts();
   return <ProductsTable products={products} />;
 }

@@ -2,11 +2,12 @@ import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { IconExternal } from "@/components/dashboard/icons";
 import { PageHeader } from "@/components/ui";
-import { activeStore, products } from "@/data/mock-commerce";
+import { getCommerceOverview } from "@/lib/commerce";
 import { storeStatus } from "@/lib/commerce-status";
 import { formatPercent } from "@/lib/format";
 
-export default function Page() {
+export default async function Page() {
+  const { store: activeStore, products } = await getCommerceOverview();
   const status = storeStatus[activeStore.status];
   const canViewStore = process.env.NODE_ENV === "development" || activeStore.status === "published";
   const generatedDate = new Date(activeStore.generatedAt).toLocaleDateString("fr-FR", {

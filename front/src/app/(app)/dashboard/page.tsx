@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { PageHeader } from "@/components/ui";
-import { activeStore, aiTasks, dashboardMetrics, orders, products } from "@/data/mock-commerce";
+import { getCommerceOverview } from "@/lib/commerce";
 import { orderStatus, storeStatus } from "@/lib/commerce-status";
 import { formatCurrency, formatPercent } from "@/lib/format";
 
@@ -11,7 +11,8 @@ const taskStatus = {
   draft: "Brouillon",
 } as const;
 
-export default function DashboardOverviewPage() {
+export default async function DashboardOverviewPage() {
+  const { store: activeStore, products, orders, aiTasks, metrics: dashboardMetrics } = await getCommerceOverview();
   const storeState = storeStatus[activeStore.status];
   const canViewStore = process.env.NODE_ENV === "development" || activeStore.status === "published";
   const activeProducts = products.filter((product) => product.status !== "draft");

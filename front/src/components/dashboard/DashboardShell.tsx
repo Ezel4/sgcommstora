@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { StoreSummary } from "@/types/commerce";
 import { DashboardAccountProvider } from "./DashboardAccountContext";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
@@ -18,10 +19,12 @@ const FOCUSABLE_SELECTOR = [
 export function DashboardShell({
   children,
   email,
+  store,
   demoMode = false,
 }: {
   children: React.ReactNode;
   email: string;
+  store: StoreSummary;
   demoMode?: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -116,7 +119,7 @@ export function DashboardShell({
         aria-label="Navigation du dashboard"
         className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-black/[0.05] bg-[#e6e6e6] lg:block"
       >
-        <Sidebar email={email} />
+        <Sidebar email={email} store={store} />
       </aside>
 
       {open && (
@@ -137,7 +140,7 @@ export function DashboardShell({
             tabIndex={-1}
             className="absolute inset-y-0 left-0 w-72 max-w-[calc(100%-1.5rem)] overflow-hidden border-r border-black/[0.05] bg-[#e6e6e6] outline-none"
           >
-            <Sidebar email={email} onNavigate={closeDrawer} onClose={closeDrawer} />
+            <Sidebar email={email} store={store} onNavigate={closeDrawer} onClose={closeDrawer} />
           </aside>
         </div>
       )}
@@ -153,6 +156,7 @@ export function DashboardShell({
           menuId={DRAWER_ID}
           menuButtonRef={menuButtonRef}
           email={email}
+          store={store}
         />
         {demoMode && (
           <div

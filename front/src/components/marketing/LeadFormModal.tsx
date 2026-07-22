@@ -11,8 +11,11 @@ export function LeadFormModal({ source, onClose }: { source: string; onClose: ()
   const [error, setError] = useState<string | null>(null);
   const titleId = useId();
   const firstFieldRef = useRef<HTMLInputElement>(null);
+  // Horodatage d'ouverture : sert au contrôle anti-bot côté serveur.
+  const openedAtRef = useRef<number>(0);
 
   useEffect(() => {
+    openedAtRef.current = Date.now();
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     firstFieldRef.current?.focus();
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -29,6 +32,7 @@ export function LeadFormModal({ source, onClose }: { source: string; onClose: ()
     e.preventDefault();
     setError(null);
     const formData = new FormData(e.currentTarget);
+    formData.set("form_ts", String(openedAtRef.current));
     startTransition(async () => {
       try {
         const result = await submitLeadForm(formData, source);
@@ -66,6 +70,17 @@ export function LeadFormModal({ source, onClose }: { source: string; onClose: ()
             </p>
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-3">
+              {/* Honeypot anti-bot : invisible et non focusable pour un humain. */}
+              <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                <label htmlFor="lead-company-website">Ne pas remplir</label>
+                <input
+                  id="lead-company-website"
+                  name="company_website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
               <div>
                 <label htmlFor="lead-name" className="mb-1.5 block text-xs font-medium text-ink-3">Nom</label>
                 <input

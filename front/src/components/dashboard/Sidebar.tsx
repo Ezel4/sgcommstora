@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/app/(app)/actions";
 import { LogoMark } from "@/components/marketing/Logo";
-import { activeStore } from "@/data/mock-commerce";
+import type { StoreSummary } from "@/types/commerce";
 import { cn } from "@/lib/utils";
 import {
   IconBox,
@@ -59,16 +59,18 @@ function isActivePath(pathname: string, href: string) {
 
 export function Sidebar({
   email,
+  store,
   onNavigate,
   onClose,
 }: {
   email: string;
+  store: StoreSummary;
   onNavigate?: () => void;
   onClose?: () => void;
 }) {
   const pathname = usePathname();
   const canViewStore =
-    process.env.NODE_ENV === "development" || activeStore.status === "published";
+    process.env.NODE_ENV === "development" || store.status === "published";
   const accountLabel = email.trim() || "Compte Sigmood";
   const initials = email.trim() ? email.slice(0, 2).toUpperCase() : "SI";
   return (
@@ -148,7 +150,7 @@ export function Sidebar({
           Paramètres
         </Link>
         {canViewStore && (
-          <a href={`/boutique/${activeStore.slug}`} target="_blank" rel="noreferrer" className="flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink-2 transition hover:bg-white/50 hover:text-ink">
+          <a href={`/boutique/${store.slug}`} target="_blank" rel="noreferrer" className="flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-medium text-ink-2 transition hover:bg-white/50 hover:text-ink">
             <IconExternal className="size-[17px] shrink-0" />
             Voir la boutique
           </a>

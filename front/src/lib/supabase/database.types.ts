@@ -390,6 +390,7 @@ export type Database = {
           p_name: string
           p_phone: string
           p_source: string
+          p_ip_hash?: string
         }
         Returns: undefined
       }
