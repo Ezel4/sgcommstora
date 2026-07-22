@@ -20,6 +20,7 @@
 # logs serveur dev (locaux)
 dev*.log
 .dev-server*.log
+.ui-smoke.*.log
 
 # production
 /build

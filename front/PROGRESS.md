@@ -1,4 +1,4 @@
-# PROGRESS.md — Stora AI
+# PROGRESS.md — Sigmood IA
 
 Suivi d'avancement du SaaS e-commerce AI-first. Mis à jour à chaque fin de phase.
 

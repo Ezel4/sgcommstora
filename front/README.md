@@ -1,6 +1,6 @@
-# Stora AI — front
+# Sigmood IA — front
 
-Application Next.js 16 du prototype Stora AI : landing page, onboarding, espace marchand, aperçu de boutique et back-office CRM.
+Application Next.js 16 du prototype Sigmood IA : landing page, onboarding, espace marchand, aperçu de boutique et back-office CRM.
 
 ## Prérequis
 
@@ -31,20 +31,36 @@ En développement uniquement, l'absence de ces variables active un mode de démo
 
 ```bash
 npm run dev        # serveur de développement (Webpack)
-npm run check      # ESLint puis vérification TypeScript
+npm run check      # ESLint + TypeScript + tests unitaires (Vitest)
+npm run test       # tests unitaires seuls
 npm run build      # build de production
 npm run start      # serveur à partir du build
 ```
+
+## Base de données Supabase
+
+Le schéma, les fonctions RPC et les politiques RLS sont versionnés dans
+[`supabase/`](supabase/README.md). Les appliquer avec `supabase db push`
+(ou le SQL Editor) avant toute utilisation authentifiée réelle.
 
 ## État fonctionnel
 
 - Authentification et garde admin : intégration Supabase.
 - CRM et planning admin : intégration Supabase, avec validation serveur.
-- Dashboard marchand, commandes, clients et statistiques : données locales de démonstration, signalées dans l'interface.
-- Boutique publique : seules les boutiques `published` sont accessibles en production ; les brouillons peuvent être prévisualisés en développement.
-- Paiement, livraison, domaine personnalisé, génération IA et envoi d'e-mails : interfaces de prototype, non connectées à des services réels.
+- Dashboard marchand (boutique, produits, commandes, clients) : lecture réelle
+  depuis Supabase quand l'utilisateur possède une boutique, sinon jeu de
+  démonstration signalé dans l'interface.
+- Statistiques : encore sur données de démonstration (pas de table d'événements).
+- Boutique publique : seules les boutiques `published` sont accessibles en
+  production ; les brouillons peuvent être prévisualisés en développement.
+- Formulaire de leads : ouvert en production, protégé par honeypot, contrôle de
+  timing et rate-limit par IP.
+- Paiement, livraison, domaine personnalisé, génération IA et envoi d'e-mails :
+  interfaces de prototype, non connectées à des services réels.
 
-Avant une mise en production métier, ajouter les migrations versionnées et politiques RLS Supabase, remplacer les jeux de données locaux, mettre en place l'anti-abus du formulaire public et ajouter une suite de tests automatisés.
+Restent à faire avant une mise en production métier : provisionnement d'une
+boutique à l'onboarding, écriture des vues Paramètres, tests E2E, et connexion
+des services externes (paiement, IA, e-mails).
 
 ## Déploiement
 
