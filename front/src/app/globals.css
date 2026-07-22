@@ -262,3 +262,82 @@ html[data-sigmood-reduce-motion="true"] *::after {
   .tilt-card__inner { transition:none; }
 }
 .has-gsap [data-reveal], .has-gsap [data-typewriter] { opacity:0; }
+
+/* ============================================================
+   STORE EDITOR — canvas (iframe) : survol, sélection, dynamique
+   Les contours combinent couleur ET style (tirets vs plein) pour
+   ne pas reposer uniquement sur la couleur.
+   ============================================================ */
+.sigmood-canvas-edit [data-sigmood-block-id] {
+  position: relative;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.sigmood-canvas-edit [data-sigmood-block-id]:hover {
+  outline: 2px dashed rgba(31, 197, 190, 0.6);
+  outline-offset: 3px;
+}
+.sigmood-canvas-edit [data-sigmood-block-id]:hover::after {
+  content: attr(data-sigmood-label);
+  position: absolute;
+  top: -1.55rem;
+  left: 0;
+  z-index: 40;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(31, 197, 190, 0.92);
+  color: #063a38;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.sigmood-canvas-edit [data-sigmood-selected="true"],
+.sigmood-canvas-edit [data-sigmood-selected="true"]:hover {
+  outline: 2px solid #1fc5be;
+  outline-offset: 3px;
+}
+.sigmood-canvas-edit [data-sigmood-selected="true"]::after {
+  display: none; /* la barre flottante remplace l'étiquette de survol */
+}
+.sigmood-canvas-edit [data-sigmood-field] {
+  border-radius: 4px;
+}
+.sigmood-canvas-edit [data-sigmood-field]:hover {
+  background: rgba(31, 197, 190, 0.12);
+}
+.sigmood-canvas-edit [data-sigmood-dynamic] {
+  position: relative;
+  cursor: help;
+}
+.sigmood-canvas-edit [data-sigmood-dynamic]:hover {
+  outline: 2px dotted rgba(36, 152, 200, 0.65);
+  outline-offset: 3px;
+}
+.sigmood-canvas-edit [data-sigmood-dynamic]:hover::before {
+  content: "Contenu dynamique — " attr(data-sigmood-dynamic);
+  position: absolute;
+  top: -1.55rem;
+  left: 0;
+  z-index: 40;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: rgba(36, 152, 200, 0.92);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.sigmood-canvas-edit [data-sigmood-hidden-section="true"] {
+  opacity: 0.62;
+  outline: 1px dashed rgba(20, 20, 20, 0.28);
+  outline-offset: -1px;
+}
+[data-sigmood-section-selected="true"] {
+  outline: 2px solid rgba(31, 197, 190, 0.85);
+  outline-offset: -2px;
+  border-radius: 6px;
+}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Panel } from "@/components/dashboard/Panel";
 import { StatusPill } from "@/components/dashboard/StatusPill";
 import { IconExternal } from "@/components/dashboard/icons";
@@ -29,16 +30,21 @@ export default async function Page() {
         description="Vérifiez son positionnement, son statut et les informations déjà configurées."
         aside={<StatusPill tone={status.tone}>{status.label}</StatusPill>}
         actions={
-          canViewStore ? (
-            <a
-              href={`/boutique/${activeStore.slug}`}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-light min-h-11 text-sm"
-            >
-              <IconExternal className="size-4" /> Voir l’aperçu
-            </a>
-          ) : undefined
+          <div className="flex flex-wrap items-center gap-2">
+            {canViewStore && (
+              <a
+                href={`/boutique/${activeStore.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-ghost min-h-11 text-sm"
+              >
+                <IconExternal className="size-4" /> Voir l’aperçu
+              </a>
+            )}
+            <Link href="/editeur" className="btn btn-light min-h-11 text-sm">
+              Modifier la boutique
+            </Link>
+          </div>
         }
       />
 
