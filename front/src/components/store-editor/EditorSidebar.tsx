@@ -146,6 +146,7 @@ export function EditorSidebar() {
                     </button>
                     <button
                       type="button"
+                      data-testid="sidebar-section-select"
                       onClick={() =>
                         dispatch({ type: "SELECT", selection: { kind: "section", pageId: state.pageId, sectionId: section.id } })
                       }
@@ -210,7 +211,7 @@ export function EditorSidebar() {
                         const selected = state.selection?.kind === "block" && state.selection.ref.blockId === blockItem.id;
                         const locked = !blockDefinition;
                         return (
-                          <li key={blockItem.id}>
+                          <li key={blockItem.id} data-testid="sidebar-block-item">
                             <button
                               type="button"
                               disabled={locked}

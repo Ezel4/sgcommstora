@@ -102,7 +102,7 @@ export function InspectorPanel() {
             // Un item dupliquable ne peut être supprimé que s'il en reste au moins un.
             const sameTypeCount = section.blocks.filter((item) => item.type === blockItem.type).length;
             return (
-              <li key={blockItem.id} className="flex items-center gap-1">
+              <li key={blockItem.id} data-testid="inspector-block-item" className="flex items-center gap-1">
                 <button
                   type="button"
                   disabled={!blockDefinition}
@@ -136,6 +136,7 @@ export function InspectorPanel() {
               <button
                 key={blockType}
                 type="button"
+                data-testid="inspector-add-item"
                 onClick={() => addItem(blockType)}
                 className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-line-strong px-3 py-2 text-[0.8rem] font-medium text-ink-2 transition hover:border-ink/30 hover:bg-surface-2 hover:text-ink"
               >
