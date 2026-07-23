@@ -102,3 +102,193 @@ describe("mergeSubmittedDocument", () => {
     expect(d2.version).toBe(0);
   });
 });
+
+function home(document: ReturnType<typeof mergeSubmittedDocument>["document"]) {
+  return document.pages.find((page) => page.id === "home")!;
+}
+
+describe("mergeSubmittedDocument — sections dynamiques", () => {
+  it("keeps a newly added section and sanitizes its fields", () => {
+    const payload = {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            { id: "hero-main", type: "hero", visible: true, blocks: [] },
+            {
+              id: "custom-benefits-1",
+              type: "benefits",
+              visible: true,
+              blocks: [
+                { id: "b-intro", type: "benefits-intro", content: { heading: { value: "<b>Nos</b> atouts" } } },
+                { id: "b-1", type: "benefit-item", content: { title: { value: "Rapide" }, description: { value: "Soigné" } } },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const { document } = mergeSubmittedDocument(seed, payload);
+    const added = home(document).sections.find((section) => section.id === "custom-benefits-1");
+    expect(added?.type).toBe("benefits");
+    const intro = added?.blocks.find((block) => block.id === "b-intro");
+    expect(intro && getFieldValue(intro, "heading")).toBe("Nos atouts");
+  });
+
+  it("drops a canonical section omitted from the submission (supports deletion)", () => {
+    const { document } = mergeSubmittedDocument(seed, {
+      pages: [{ id: "home", sections: [{ id: "hero-main", type: "hero", blocks: [] }] }],
+    });
+    expect(home(document).sections.some((section) => section.id === "hero-main")).toBe(true);
+    expect(home(document).sections.some((section) => section.id === "faq-main")).toBe(false);
+  });
+
+  it("reflects the submitted section order in positions (supports reordering)", () => {
+    const { document } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            { id: "faq-main", type: "faq", blocks: [] },
+            { id: "hero-main", type: "hero", blocks: [] },
+          ],
+        },
+      ],
+    });
+    const ordered = [...home(document).sections].sort((a, b) => a.position - b.position).map((section) => section.id);
+    expect(ordered).toEqual(["faq-main", "hero-main"]);
+  });
+
+  it("rejects dangerous content inside an added section field", () => {
+    const { document, issues } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "x-1",
+              type: "benefits",
+              blocks: [{ id: "i", type: "benefits-intro", content: { heading: { value: "javascript:alert(1)" } } }],
+            },
+          ],
+        },
+      ],
+    });
+    const intro = home(document).sections.find((section) => section.id === "x-1")?.blocks.find((block) => block.id === "i");
+    expect(intro && getFieldValue(intro, "heading")).toBe("");
+    expect(issues.some((issue) => issue.includes("dangereux"))).toBe(true);
+  });
+
+  it("ignores a submitted section whose type is unknown", () => {
+    const { document, issues } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            { id: "hero-main", type: "hero", blocks: [] },
+            { id: "evil-1", type: "evil", blocks: [] },
+          ],
+        },
+      ],
+    });
+    expect(home(document).sections.some((section) => section.id === "evil-1")).toBe(false);
+    expect(issues.some((issue) => issue.includes("type inconnu"))).toBe(true);
+  });
+
+  it("keeps a newly added repeatable item in a canonical section", () => {
+    const { document } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "faq-main",
+              type: "faq",
+              blocks: [
+                { id: "faq-intro", type: "faq-intro", content: { heading: { value: "Questions fréquentes" } } },
+                { id: "faq-1", type: "faq-item", content: { question: { value: "Q1 ?" }, answer: { value: "R1" } } },
+                { id: "faq-new", type: "faq-item", content: { question: { value: "Nouvelle ?" }, answer: { value: "Oui" } } },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const faq = home(document).sections.find((section) => section.id === "faq-main")!;
+    expect(faq.blocks.some((block) => block.id === "faq-new")).toBe(true);
+    expect(faq.blocks.filter((block) => block.type === "faq-item")).toHaveLength(2);
+  });
+
+  it("persists the removal of a repeatable item (fewer blocks submitted)", () => {
+    const { document } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "faq-main",
+              type: "faq",
+              blocks: [
+                { id: "faq-intro", type: "faq-intro", content: {} },
+                { id: "faq-1", type: "faq-item", content: {} },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const faq = home(document).sections.find((section) => section.id === "faq-main")!;
+    // Le document par défaut a 3 questions ; on n'en soumet qu'une.
+    expect(faq.blocks.filter((block) => block.type === "faq-item")).toHaveLength(1);
+  });
+
+  it("keeps a valid image URL but rejects a dangerous one", () => {
+    const buildImagePayload = (url: string) => ({
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "img-1",
+              type: "image-banner",
+              blocks: [{ id: "img-c", type: "image-banner-content", content: { imageUrl: { value: url }, caption: { value: "Légende" } } }],
+            },
+          ],
+        },
+      ],
+    });
+
+    const ok = mergeSubmittedDocument(seed, buildImagePayload("https://example.com/photo.jpg"));
+    const okBlock = home(ok.document).sections.find((s) => s.id === "img-1")?.blocks.find((b) => b.id === "img-c");
+    expect(okBlock && getFieldValue(okBlock, "imageUrl")).toBe("https://example.com/photo.jpg");
+
+    const bad = mergeSubmittedDocument(seed, buildImagePayload("javascript:alert(1)"));
+    const badBlock = home(bad.document).sections.find((s) => s.id === "img-1")?.blocks.find((b) => b.id === "img-c");
+    expect(badBlock && getFieldValue(badBlock, "imageUrl")).toBe("");
+    expect(bad.issues.some((issue) => issue.includes("dangereux"))).toBe(true);
+  });
+
+  it("rejects a non-repeatable block added to a canonical section", () => {
+    const { document, issues } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "faq-main",
+              type: "faq",
+              blocks: [
+                { id: "faq-intro", type: "faq-intro", content: {} },
+                { id: "faq-1", type: "faq-item", content: {} },
+                { id: "rogue-intro", type: "faq-intro", content: { heading: { value: "Deuxième intro" } } },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const faq = home(document).sections.find((section) => section.id === "faq-main")!;
+    expect(faq.blocks.filter((block) => block.type === "faq-intro")).toHaveLength(1);
+    expect(issues.some((issue) => issue.includes("hors périmètre"))).toBe(true);
+  });
+});

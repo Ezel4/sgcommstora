@@ -12,8 +12,8 @@
 // newsletter) existent dans le document mais sont masquées par défaut.
 // -----------------------------------------------------------------------------
 
-import type { EditableFieldType, StoreBlock, StoreDocument, StorePage } from "./document-schema";
-import { getBlockDefinition } from "./section-definitions";
+import type { StoreDocument, StorePage } from "./document-schema";
+import { buildBlock as block } from "./section-library";
 
 export interface StoreSeed {
   id: string;
@@ -21,27 +21,6 @@ export interface StoreSeed {
   slug: string;
   niche: string;
   audience: string;
-}
-
-/** Fabrique un champ éditable en héritant type et longueur de la bibliothèque. */
-function field(sectionType: string, blockType: string, fieldId: string, value: string) {
-  const definition = getBlockDefinition(sectionType, blockType)?.editableFields[fieldId];
-  return {
-    [fieldId]: {
-      value,
-      editable: Boolean(definition),
-      fieldType: (definition?.fieldType ?? "text") as EditableFieldType,
-      maxLength: definition?.maxLength,
-    },
-  };
-}
-
-function block(sectionType: string, blockType: string, id: string, values: Record<string, string>): StoreBlock {
-  return {
-    id,
-    type: blockType,
-    content: Object.assign({}, ...Object.entries(values).map(([fieldId, value]) => field(sectionType, blockType, fieldId, value))),
-  };
 }
 
 export function buildHomePage(store: StoreSeed): StorePage {
@@ -194,9 +173,234 @@ export function buildHomePage(store: StoreSeed): StorePage {
   };
 }
 
-/** Pages non configurées dans le MVP : listées, sélectionnables plus tard. */
-function placeholderPage(id: string, type: StorePage["type"], title: string, slug: string): StorePage {
-  return { id, type, title, slug, status: "not-configured", sections: [] };
+/**
+ * Gabarit de page produit : le visuel, le nom et le prix proviennent du
+ * catalogue (contenu dynamique) ; seuls les textes autour sont éditables.
+ * Ce gabarit s'applique à toutes les fiches produit.
+ */
+export function buildProductPage(store: StoreSeed): StorePage {
+  return {
+    id: "product-template",
+    type: "product",
+    title: "Page produit",
+    slug: "produit",
+    status: "configured",
+    sections: [
+      {
+        id: "product-header",
+        type: "header",
+        position: 0,
+        visible: true,
+        blocks: [block("header", "header-content", "product-header-content", { ctaLabel: "Voir la collection" })],
+      },
+      {
+        id: "product-overview-main",
+        type: "product-overview",
+        position: 1,
+        visible: true,
+        blocks: [
+          block("product-overview", "product-overview-content", "product-overview-content", {
+            ctaLabel: "Ajouter au panier",
+            reassurance: "Paiement sécurisé et service client à votre écoute.",
+            detailsHeading: "Détails du produit",
+          }),
+        ],
+      },
+      {
+        id: "product-benefits",
+        type: "benefits",
+        position: 2,
+        visible: true,
+        blocks: [
+          block("benefits", "benefits-intro", "product-benefits-intro", { heading: "Nos engagements" }),
+          block("benefits", "benefit-item", "product-benefit-1", {
+            title: "Une qualité vérifiée",
+            description: "Chaque produit est contrôlé avant expédition.",
+          }),
+          block("benefits", "benefit-item", "product-benefit-2", {
+            title: "Un achat serein",
+            description: "Paiement sécurisé et informations claires.",
+          }),
+          block("benefits", "benefit-item", "product-benefit-3", {
+            title: "Un service à l’écoute",
+            description: "Une question ? Nous vous répondons avec attention.",
+          }),
+        ],
+      },
+      {
+        id: "product-footer",
+        type: "footer",
+        position: 3,
+        visible: true,
+        blocks: [block("footer", "footer-content", "product-footer-content", { about: `${store.name} — ${store.niche}.` })],
+      },
+    ],
+  };
+}
+
+/** Gabarit de page collection : en-tête éditable + grille de produits dynamique. */
+export function buildCollectionPage(store: StoreSeed): StorePage {
+  return {
+    id: "collection-template",
+    type: "collection",
+    title: "Page collection",
+    slug: "collection",
+    status: "configured",
+    sections: [
+      {
+        id: "collection-header-nav",
+        type: "header",
+        position: 0,
+        visible: true,
+        blocks: [block("header", "header-content", "collection-header-content-nav", { ctaLabel: "Voir la collection" })],
+      },
+      {
+        id: "collection-header-main",
+        type: "collection-header",
+        position: 1,
+        visible: true,
+        blocks: [
+          block("collection-header", "collection-header-content", "collection-header-content", {
+            eyebrow: store.niche,
+            heading: "La collection",
+            description: "Parcourez l’ensemble de nos produits, sélectionnés avec soin.",
+          }),
+        ],
+      },
+      {
+        id: "collection-featured",
+        type: "featured-products",
+        position: 2,
+        visible: true,
+        blocks: [
+          block("featured-products", "featured-intro", "collection-featured-intro", {
+            heading: "Tous les produits",
+            description: "L’intégralité de la collection, mise à jour au fil des saisons.",
+          }),
+        ],
+      },
+      {
+        id: "collection-footer",
+        type: "footer",
+        position: 3,
+        visible: true,
+        blocks: [block("footer", "footer-content", "collection-footer-content", { about: `${store.name} — ${store.niche}.` })],
+      },
+    ],
+  };
+}
+
+/** En-tête + pied de page partagés par les pages de contenu (ids propres à la page). */
+function contentPageChrome(store: StoreSeed, prefix: string): { header: StorePage["sections"][number]; footer: StorePage["sections"][number] } {
+  return {
+    header: {
+      id: `${prefix}-header`,
+      type: "header",
+      position: 0,
+      visible: true,
+      blocks: [block("header", "header-content", `${prefix}-header-content`, { ctaLabel: "Voir la collection" })],
+    },
+    footer: {
+      id: `${prefix}-footer`,
+      type: "footer",
+      position: 99,
+      visible: true,
+      blocks: [block("footer", "footer-content", `${prefix}-footer-content`, { about: `${store.name} — ${store.niche}.` })],
+    },
+  };
+}
+
+/** Page « À propos » : présentation libre de la marque. */
+export function buildAboutPage(store: StoreSeed): StorePage {
+  const { header, footer } = contentPageChrome(store, "about");
+  return {
+    id: "about",
+    type: "content",
+    title: "À propos",
+    slug: "a-propos",
+    status: "configured",
+    sections: [
+      header,
+      {
+        id: "about-content",
+        type: "content-section",
+        position: 1,
+        visible: true,
+        blocks: [
+          block("content-section", "content-body", "about-body-1", {
+            heading: `À propos de ${store.name}`,
+            body: `Présentez ici votre marque : votre histoire, ce qui vous distingue et l’attention que vous portez à ${store.audience.toLocaleLowerCase("fr-FR")}.`,
+          }),
+          block("content-section", "content-body", "about-body-2", {
+            heading: "Notre engagement",
+            body: "Décrivez vos valeurs et ce que vos clients peuvent attendre de vous, sans promesse chiffrée non vérifiée.",
+          }),
+        ],
+      },
+      { ...footer, position: 2 },
+    ],
+  };
+}
+
+/** Page FAQ : questions fréquentes dédiées. */
+export function buildFaqPage(store: StoreSeed): StorePage {
+  const { header, footer } = contentPageChrome(store, "faq-page");
+  return {
+    id: "faq-page",
+    type: "content",
+    title: "FAQ",
+    slug: "faq",
+    status: "configured",
+    sections: [
+      header,
+      {
+        id: "faq-page-main",
+        type: "faq",
+        position: 1,
+        visible: true,
+        blocks: [
+          block("faq", "faq-intro", "faq-page-intro", { heading: "Questions fréquentes" }),
+          block("faq", "faq-item", "faq-page-1", {
+            question: "Comment passer commande ?",
+            answer: "Parcourez la collection, ajoutez vos articles au panier puis suivez les étapes de commande.",
+          }),
+          block("faq", "faq-item", "faq-page-2", {
+            question: "Comment vous contacter ?",
+            answer: "Écrivez-nous depuis la page Contact, nous vous répondrons dès que possible.",
+          }),
+        ],
+      },
+      { ...footer, position: 2 },
+    ],
+  };
+}
+
+/** Page Contact : informations de contact rédigées librement. */
+export function buildContactPage(store: StoreSeed): StorePage {
+  const { header, footer } = contentPageChrome(store, "contact");
+  return {
+    id: "contact",
+    type: "content",
+    title: "Contact",
+    slug: "contact",
+    status: "configured",
+    sections: [
+      header,
+      {
+        id: "contact-content",
+        type: "content-section",
+        position: 1,
+        visible: true,
+        blocks: [
+          block("content-section", "content-body", "contact-body-1", {
+            heading: "Nous contacter",
+            body: "Indiquez ici comment vos clients peuvent vous joindre : adresse e-mail, réseaux sociaux ou formulaire. Renseignez vos coordonnées réelles avant publication.",
+          }),
+        ],
+      },
+      { ...footer, position: 2 },
+    ],
+  };
 }
 
 export function buildDefaultDocument(store: StoreSeed): StoreDocument {
@@ -207,11 +411,11 @@ export function buildDefaultDocument(store: StoreSeed): StoreDocument {
     locale: "fr-FR",
     pages: [
       buildHomePage(store),
-      placeholderPage("product-template", "product", "Page produit", "produit"),
-      placeholderPage("collection-template", "collection", "Page collection", "collection"),
-      placeholderPage("about", "content", "À propos", "a-propos"),
-      placeholderPage("faq-page", "content", "FAQ", "faq"),
-      placeholderPage("contact", "content", "Contact", "contact"),
+      buildProductPage(store),
+      buildCollectionPage(store),
+      buildAboutPage(store),
+      buildFaqPage(store),
+      buildContactPage(store),
     ],
   };
 }

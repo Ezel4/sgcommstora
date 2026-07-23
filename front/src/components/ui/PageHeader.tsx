@@ -51,7 +51,7 @@ export function PageHeader({
             {eyebrow}
           </p>
         )}
-        <h1 className="font-[Manrope] text-[clamp(2rem,3.5vw,2.75rem)] font-normal leading-none tracking-[-0.055em] text-ink">
+        <h1 className="font-manrope text-[clamp(2rem,3.5vw,2.75rem)] font-normal leading-none tracking-[-0.055em] text-ink">
           {title}
         </h1>
         {description && (

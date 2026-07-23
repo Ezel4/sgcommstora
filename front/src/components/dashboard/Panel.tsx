@@ -21,7 +21,7 @@ export function Panel({
         <div className="flex flex-col gap-3 border-b border-line px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
           <div className="min-w-0">
             {typeof title === "string" ? (
-              <h2 className="font-[Manrope] text-[17px] font-medium tracking-[-.035em] text-ink">{title}</h2>
+              <h2 className="font-manrope text-[17px] font-medium tracking-[-.035em] text-ink">{title}</h2>
             ) : (
               title
             )}

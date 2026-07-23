@@ -13,8 +13,22 @@
 // -----------------------------------------------------------------------------
 
 import { createContext, useContext, useMemo, useReducer } from "react";
-import type { ElementReference, StoreDocument } from "@/lib/editor/document-schema";
-import { findBlock, getFieldValue, setFieldValue, setSectionVisibility, findSection } from "@/lib/editor/document-schema";
+import type { ElementReference, StoreBlock, StoreDocument, StoreSection } from "@/lib/editor/document-schema";
+import {
+  blockIndex,
+  findBlock,
+  findPage,
+  findSection,
+  getFieldValue,
+  insertBlock,
+  insertSection,
+  moveSection,
+  removeBlock,
+  removeSection,
+  sectionIndex,
+  setFieldValue,
+  setSectionVisibility,
+} from "@/lib/editor/document-schema";
 import type { EditorSelection, ViewportMode } from "@/lib/editor/messaging";
 import type { AiEditResponse } from "@/lib/editor/scoped-ai";
 import type { ValidatedChange } from "@/lib/editor/validate-ai-changes";
@@ -43,7 +57,52 @@ export interface VisibilityOperation {
   next: boolean;
 }
 
-export type EditorOperation = FieldOperation | VisibilityOperation;
+export interface AddSectionOperation {
+  kind: "add-section";
+  pageId: string;
+  section: StoreSection;
+  index: number;
+}
+
+export interface RemoveSectionOperation {
+  kind: "remove-section";
+  pageId: string;
+  section: StoreSection;
+  index: number;
+}
+
+export interface MoveSectionOperation {
+  kind: "move-section";
+  pageId: string;
+  sectionId: string;
+  fromIndex: number;
+  toIndex: number;
+}
+
+export interface AddBlockOperation {
+  kind: "add-block";
+  pageId: string;
+  sectionId: string;
+  block: StoreBlock;
+  index: number;
+}
+
+export interface RemoveBlockOperation {
+  kind: "remove-block";
+  pageId: string;
+  sectionId: string;
+  block: StoreBlock;
+  index: number;
+}
+
+export type EditorOperation =
+  | FieldOperation
+  | VisibilityOperation
+  | AddSectionOperation
+  | RemoveSectionOperation
+  | MoveSectionOperation
+  | AddBlockOperation
+  | RemoveBlockOperation;
 
 export interface HistoryEntry {
   id: string;
@@ -112,8 +171,14 @@ export interface EditorState {
 
 export type EditorAction =
   | { type: "SELECT"; selection: EditorSelection }
+  | { type: "SET_PAGE"; pageId: string }
   | { type: "UPDATE_FIELD"; ref: Omit<ElementReference, "fieldId">; field: string; value: string; source?: OperationSource }
   | { type: "TOGGLE_SECTION_VISIBILITY"; pageId: string; sectionId: string }
+  | { type: "ADD_SECTION"; pageId: string; section: StoreSection; index: number }
+  | { type: "REMOVE_SECTION"; pageId: string; sectionId: string }
+  | { type: "MOVE_SECTION"; pageId: string; sectionId: string; direction: "up" | "down" }
+  | { type: "ADD_BLOCK"; pageId: string; sectionId: string; block: StoreBlock; index: number }
+  | { type: "REMOVE_BLOCK"; pageId: string; sectionId: string; blockId: string }
   | { type: "APPLY_AI_CHANGES"; ref: Omit<ElementReference, "fieldId">; changes: ValidatedChange[] }
   | { type: "UNDO" }
   | { type: "REDO" }
@@ -165,12 +230,36 @@ export function createInitialState(init: EditorInit): EditorState {
 // --- Application des opérations ----------------------------------------------
 
 function applyOperation(document: StoreDocument, op: EditorOperation, direction: "do" | "undo"): StoreDocument {
-  if (op.kind === "field") {
-    const value = direction === "do" ? op.newValue : op.previousValue;
-    return setFieldValue(document, op, op.field, value);
+  switch (op.kind) {
+    case "field": {
+      const value = direction === "do" ? op.newValue : op.previousValue;
+      return setFieldValue(document, op, op.field, value);
+    }
+    case "visibility": {
+      const visible = direction === "do" ? op.next : op.previous;
+      return setSectionVisibility(document, op.pageId, op.sectionId, visible);
+    }
+    case "add-section":
+      return direction === "do"
+        ? insertSection(document, op.pageId, op.section, op.index)
+        : removeSection(document, op.pageId, op.section.id);
+    case "remove-section":
+      return direction === "do"
+        ? removeSection(document, op.pageId, op.section.id)
+        : insertSection(document, op.pageId, op.section, op.index);
+    case "move-section":
+      return direction === "do"
+        ? moveSection(document, op.pageId, op.sectionId, op.toIndex)
+        : moveSection(document, op.pageId, op.sectionId, op.fromIndex);
+    case "add-block":
+      return direction === "do"
+        ? insertBlock(document, op.pageId, op.sectionId, op.block, op.index)
+        : removeBlock(document, op.pageId, op.sectionId, op.block.id);
+    case "remove-block":
+      return direction === "do"
+        ? removeBlock(document, op.pageId, op.sectionId, op.block.id)
+        : insertBlock(document, op.pageId, op.sectionId, op.block, op.index);
   }
-  const visible = direction === "do" ? op.next : op.previous;
-  return setSectionVisibility(document, op.pageId, op.sectionId, visible);
 }
 
 function applyEntry(document: StoreDocument, entry: HistoryEntry, direction: "do" | "undo"): StoreDocument {
@@ -189,6 +278,14 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         state.selection?.kind === "block" &&
         action.selection.ref.blockId === state.selection.ref.blockId;
       return { ...state, selection: action.selection, ai: keepAi ? state.ai : { status: "idle" } };
+    }
+
+    case "SET_PAGE": {
+      if (action.pageId === state.pageId) return state;
+      const page = findPage(state.document, action.pageId);
+      // Navigation uniquement vers une page configurée ; jamais dans l'historique.
+      if (!page || page.status !== "configured") return state;
+      return { ...state, pageId: action.pageId, selection: null, ai: { status: "idle" } };
     }
 
     case "UPDATE_FIELD": {
@@ -241,6 +338,112 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
       };
       const document = setSectionVisibility(state.document, action.pageId, action.sectionId, !section.visible);
       return { ...state, document, past: [...state.past, entry], future: [], revision: state.revision + 1 };
+    }
+
+    case "ADD_SECTION": {
+      const entry: HistoryEntry = {
+        id: operationId(),
+        label: "Section ajoutée",
+        source: "manual",
+        timestamp: Date.now(),
+        operations: [{ kind: "add-section", pageId: action.pageId, section: action.section, index: action.index }],
+      };
+      const document = applyEntry(state.document, entry, "do");
+      // On sélectionne la nouvelle section pour la faire apparaître dans le panneau.
+      return {
+        ...state,
+        document,
+        past: [...state.past, entry],
+        future: [],
+        revision: state.revision + 1,
+        selection: { kind: "section", pageId: action.pageId, sectionId: action.section.id },
+      };
+    }
+
+    case "REMOVE_SECTION": {
+      const index = sectionIndex(state.document, action.pageId, action.sectionId);
+      const section = findSection(state.document, action.pageId, action.sectionId);
+      if (!section || index === -1) return state;
+      const entry: HistoryEntry = {
+        id: operationId(),
+        label: "Section supprimée",
+        source: "manual",
+        timestamp: Date.now(),
+        operations: [{ kind: "remove-section", pageId: action.pageId, section, index }],
+      };
+      const document = applyEntry(state.document, entry, "do");
+      const selectionHitsSection =
+        (state.selection?.kind === "section" && state.selection.sectionId === action.sectionId) ||
+        (state.selection?.kind === "block" && state.selection.ref.sectionId === action.sectionId) ||
+        (state.selection?.kind === "dynamic" && state.selection.sectionId === action.sectionId);
+      return {
+        ...state,
+        document,
+        past: [...state.past, entry],
+        future: [],
+        revision: state.revision + 1,
+        selection: selectionHitsSection ? null : state.selection,
+      };
+    }
+
+    case "MOVE_SECTION": {
+      const from = sectionIndex(state.document, action.pageId, action.sectionId);
+      if (from === -1) return state;
+      const to = action.direction === "up" ? from - 1 : from + 1;
+      const page = findPage(state.document, action.pageId);
+      if (!page || to < 0 || to >= page.sections.length) return state;
+      const entry: HistoryEntry = {
+        id: operationId(),
+        label: "Section déplacée",
+        source: "manual",
+        timestamp: Date.now(),
+        operations: [{ kind: "move-section", pageId: action.pageId, sectionId: action.sectionId, fromIndex: from, toIndex: to }],
+      };
+      const document = applyEntry(state.document, entry, "do");
+      return { ...state, document, past: [...state.past, entry], future: [], revision: state.revision + 1 };
+    }
+
+    case "ADD_BLOCK": {
+      const entry: HistoryEntry = {
+        id: operationId(),
+        label: "Élément ajouté",
+        source: "manual",
+        timestamp: Date.now(),
+        operations: [{ kind: "add-block", pageId: action.pageId, sectionId: action.sectionId, block: action.block, index: action.index }],
+      };
+      const document = applyEntry(state.document, entry, "do");
+      return {
+        ...state,
+        document,
+        past: [...state.past, entry],
+        future: [],
+        revision: state.revision + 1,
+        // Sélectionner le nouveau bloc pour ouvrir directement ses réglages.
+        selection: { kind: "block", ref: { pageId: action.pageId, sectionId: action.sectionId, blockId: action.block.id } },
+      };
+    }
+
+    case "REMOVE_BLOCK": {
+      const index = blockIndex(state.document, action.pageId, action.sectionId, action.blockId);
+      const block = findBlock(state.document, { pageId: action.pageId, sectionId: action.sectionId, blockId: action.blockId });
+      if (!block || index === -1) return state;
+      const entry: HistoryEntry = {
+        id: operationId(),
+        label: "Élément supprimé",
+        source: "manual",
+        timestamp: Date.now(),
+        operations: [{ kind: "remove-block", pageId: action.pageId, sectionId: action.sectionId, block, index }],
+      };
+      const document = applyEntry(state.document, entry, "do");
+      const selectionHitsBlock = state.selection?.kind === "block" && state.selection.ref.blockId === action.blockId;
+      return {
+        ...state,
+        document,
+        past: [...state.past, entry],
+        future: [],
+        revision: state.revision + 1,
+        selection: selectionHitsBlock ? { kind: "section", pageId: action.pageId, sectionId: action.sectionId } : state.selection,
+      };
     }
 
     case "APPLY_AI_CHANGES": {

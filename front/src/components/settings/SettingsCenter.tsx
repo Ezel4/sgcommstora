@@ -148,7 +148,7 @@ export function SettingsCenter() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,34rem)] lg:items-end">
           <div>
             <div className="flex flex-wrap items-center gap-2"><p className="text-xs font-semibold uppercase tracking-[0.13em] text-accent-ink">Centre de contrôle</p><Badge tone="neutral">Données locales / à connecter</Badge></div>
-            <h1 className="mt-3 font-[Manrope] text-[clamp(2.1rem,4vw,3.25rem)] font-normal leading-none tracking-[-0.055em] text-ink">Paramètres</h1>
+            <h1 className="mt-3 font-manrope text-[clamp(2.1rem,4vw,3.25rem)] font-normal leading-none tracking-[-0.055em] text-ink">Paramètres</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-3">Gérez votre compte, votre boutique et vos préférences Sigmood IA depuis un espace unique.</p>
           </div>
           <SettingsSearch query={query} onQueryChange={setQuery} onSelect={requestSection} />

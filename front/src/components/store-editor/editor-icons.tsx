@@ -107,6 +107,16 @@ export const IconRefresh = base(
   </>,
 );
 export const IconClose = base(<path d="M18 6L6 18M6 6l12 12" />);
+export const IconPlus = base(<path d="M12 5v14M5 12h14" />);
+export const IconTrash = base(
+  <>
+    <path d="M3 6h18" />
+    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14" />
+  </>,
+);
+export const IconArrowUp = base(<path d="M12 19V5M5 12l7-7 7 7" />);
+export const IconArrowDown = base(<path d="M12 5v14M5 12l7 7 7-7" />);
 export const IconEyeOff = base(
   <>
     <path d="M9.9 4.2A9.6 9.6 0 0 1 12 4c6.5 0 10 7 10 7a15.4 15.4 0 0 1-3.1 3.9" />

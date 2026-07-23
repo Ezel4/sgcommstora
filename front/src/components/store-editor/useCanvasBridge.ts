@@ -76,6 +76,30 @@ export function useCanvasBridge(frameRef: React.RefObject<HTMLIFrameElement | nu
     }
   }, [loadDocument, state.pageId]);
 
+  // Changement structurel (ajout / suppression / déplacement de section) →
+  // rechargement complet : la synchro incrémentale par bloc ne peut ni créer
+  // ni retirer une section dans le canvas. On ne se déclenche que lorsque la
+  // signature d'ordre/identifiants des sections change, pas à chaque frappe.
+  const currentPage = findPage(state.document, state.pageId);
+  // Signature d'ordre + composition : inclut les identifiants de blocs pour que
+  // l'ajout/retrait d'un item dans une section déclenche aussi le rechargement.
+  const structureKey = currentPage
+    ? [...currentPage.sections]
+        .sort((a, b) => a.position - b.position)
+        .map((section) => `${section.id}:${section.blocks.map((block) => block.id).join(",")}`)
+        .join("|")
+    : "";
+  const loadDocumentRef = useRef(loadDocument);
+  // La ref est mise à jour dans un effet (jamais pendant le rendu) pour que
+  // l'effet structurel, lui, ne dépende que de structureKey.
+  useEffect(() => {
+    loadDocumentRef.current = loadDocument;
+  });
+  useEffect(() => {
+    if (!readyRef.current) return;
+    loadDocumentRef.current();
+  }, [structureKey]);
+
   // Synchroniser la sélection.
   useEffect(() => {
     if (!readyRef.current) return;

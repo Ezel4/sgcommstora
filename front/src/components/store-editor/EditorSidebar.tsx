@@ -4,7 +4,20 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { getSectionDefinition } from "@/lib/editor/section-definitions";
 import type { StorePage } from "@/lib/editor/document-schema";
-import { IconChevron, IconEyeOff, IconFile, IconLayers, IconLock } from "./editor-icons";
+import { createSection, isSingletonSection } from "@/lib/editor/section-library";
+import {
+  IconArrowDown,
+  IconArrowUp,
+  IconChevron,
+  IconEye,
+  IconEyeOff,
+  IconFile,
+  IconLayers,
+  IconLock,
+  IconPlus,
+  IconTrash,
+} from "./editor-icons";
+import { SectionLibraryDrawer } from "./SectionLibraryDrawer";
 import { useEditor } from "./editor-store";
 
 type SidebarTab = "pages" | "sections";
@@ -21,6 +34,10 @@ export function EditorSidebar() {
   const { state, dispatch } = useEditor();
   const currentPage = state.document.pages.find((page) => page.id === state.pageId) ?? null;
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Ordre visuel (identique au canvas), pas l'ordre de stockage.
+  const orderedSections = currentPage ? [...currentPage.sections].sort((a, b) => a.position - b.position) : [];
 
   function toggleCollapsed(sectionId: string) {
     setCollapsed((prev) => {
@@ -29,6 +46,17 @@ export function EditorSidebar() {
       else next.add(sectionId);
       return next;
     });
+  }
+
+  function handleAddSection(type: string) {
+    if (!currentPage) return;
+    const section = createSection(type);
+    if (!section) return;
+    // Insérée avant le pied de page pour le garder en dernier.
+    const footerIndex = orderedSections.findIndex((item) => item.type === "footer");
+    const index = footerIndex === -1 ? orderedSections.length : footerIndex;
+    dispatch({ type: "ADD_SECTION", pageId: state.pageId, section, index });
+    setDrawerOpen(false);
   }
 
   return (
@@ -61,7 +89,10 @@ export function EditorSidebar() {
                   <button
                     type="button"
                     disabled={disabled}
-                    onClick={() => dispatch({ type: "SELECT", selection: null })}
+                    onClick={() => {
+                      dispatch({ type: "SET_PAGE", pageId: page.id });
+                      setTab("sections");
+                    }}
                     className={cn(
                       "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-left text-[0.8125rem] transition",
                       active ? "bg-surface-2 text-ink" : "text-ink-2 hover:bg-surface-2/70 hover:text-ink",
@@ -88,12 +119,17 @@ export function EditorSidebar() {
           </ul>
         ) : (
           <ul className="flex flex-col gap-0.5">
-            {currentPage?.sections.map((section) => {
+            {orderedSections.map((section, orderIndex) => {
               const definition = getSectionDefinition(section.type);
               const isCollapsed = collapsed.has(section.id);
               const sectionSelected = state.selection?.kind === "section" && state.selection.sectionId === section.id;
+              const singleton = isSingletonSection(section.type);
+              const prev = orderedSections[orderIndex - 1];
+              const next = orderedSections[orderIndex + 1];
+              const canMoveUp = !singleton && Boolean(prev) && !isSingletonSection(prev.type);
+              const canMoveDown = !singleton && Boolean(next) && !isSingletonSection(next.type);
               return (
-                <li key={section.id}>
+                <li key={section.id} data-testid="sidebar-section-item">
                   <div
                     className={cn(
                       "flex items-center gap-1 rounded-xl px-1.5 py-1.5 transition",
@@ -110,26 +146,62 @@ export function EditorSidebar() {
                     </button>
                     <button
                       type="button"
+                      data-testid="sidebar-section-select"
                       onClick={() =>
-                        dispatch({ type: "SELECT", selection: { kind: "section", pageId: currentPage.id, sectionId: section.id } })
+                        dispatch({ type: "SELECT", selection: { kind: "section", pageId: state.pageId, sectionId: section.id } })
                       }
                       className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1.5 py-1 text-left text-[0.8125rem] text-ink hover:text-ink"
                     >
                       <IconLayers className="size-3.5 shrink-0 text-ink-3" />
                       <span className="truncate font-medium">{definition?.label ?? section.type}</span>
+                      {!section.visible && <IconEyeOff className="size-3.5 shrink-0 text-ink-3" aria-label="Section masquée" />}
                     </button>
-                    {!section.visible && (
-                      <span title="Section masquée" className="shrink-0 text-ink-3">
-                        <IconEyeOff className="size-3.5" />
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => dispatch({ type: "TOGGLE_SECTION_VISIBILITY", pageId: currentPage.id, sectionId: section.id })}
-                      className="shrink-0 rounded-full px-2 py-0.5 text-[0.65rem] font-medium text-ink-3 transition hover:bg-black/5 hover:text-ink"
-                    >
-                      {section.visible ? "Masquer" : "Afficher"}
-                    </button>
+                    <div className="flex shrink-0 items-center gap-0.5">
+                      {!singleton && (
+                        <>
+                          <button
+                            type="button"
+                            disabled={!canMoveUp}
+                            onClick={() => dispatch({ type: "MOVE_SECTION", pageId: state.pageId, sectionId: section.id, direction: "up" })}
+                            className="grid size-6 place-items-center rounded-md text-ink-3 transition enabled:hover:bg-black/5 enabled:hover:text-ink disabled:opacity-30"
+                            aria-label="Monter la section"
+                            title="Monter"
+                          >
+                            <IconArrowUp className="size-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={!canMoveDown}
+                            onClick={() => dispatch({ type: "MOVE_SECTION", pageId: state.pageId, sectionId: section.id, direction: "down" })}
+                            className="grid size-6 place-items-center rounded-md text-ink-3 transition enabled:hover:bg-black/5 enabled:hover:text-ink disabled:opacity-30"
+                            aria-label="Descendre la section"
+                            title="Descendre"
+                          >
+                            <IconArrowDown className="size-3.5" />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => dispatch({ type: "TOGGLE_SECTION_VISIBILITY", pageId: state.pageId, sectionId: section.id })}
+                        className="grid size-6 place-items-center rounded-md text-ink-3 transition hover:bg-black/5 hover:text-ink"
+                        aria-label={section.visible ? "Masquer la section" : "Afficher la section"}
+                        title={section.visible ? "Masquer" : "Afficher"}
+                      >
+                        {section.visible ? <IconEye className="size-3.5" /> : <IconEyeOff className="size-3.5" />}
+                      </button>
+                      {!singleton && (
+                        <button
+                          type="button"
+                          onClick={() => dispatch({ type: "REMOVE_SECTION", pageId: state.pageId, sectionId: section.id })}
+                          className="grid size-6 place-items-center rounded-md text-ink-3 transition hover:bg-danger-soft hover:text-danger"
+                          aria-label="Supprimer la section"
+                          title="Supprimer"
+                        >
+                          <IconTrash className="size-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {!isCollapsed && (
@@ -139,14 +211,14 @@ export function EditorSidebar() {
                         const selected = state.selection?.kind === "block" && state.selection.ref.blockId === blockItem.id;
                         const locked = !blockDefinition;
                         return (
-                          <li key={blockItem.id}>
+                          <li key={blockItem.id} data-testid="sidebar-block-item">
                             <button
                               type="button"
                               disabled={locked}
                               onClick={() =>
                                 dispatch({
                                   type: "SELECT",
-                                  selection: { kind: "block", ref: { pageId: currentPage.id, sectionId: section.id, blockId: blockItem.id } },
+                                  selection: { kind: "block", ref: { pageId: state.pageId, sectionId: section.id, blockId: blockItem.id } },
                                 })
                               }
                               className={cn(
@@ -166,12 +238,28 @@ export function EditorSidebar() {
                 </li>
               );
             })}
-            {!currentPage?.sections.length && (
+            {!orderedSections.length && (
               <li className="px-2 py-6 text-center text-[0.8125rem] text-ink-3">Cette page n’a pas encore de sections.</li>
             )}
           </ul>
         )}
       </div>
+
+      {tab === "sections" && currentPage && (
+        <div className="border-t border-line p-2">
+          <button
+            type="button"
+            data-testid="add-section-button"
+            onClick={() => setDrawerOpen(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line-strong px-3 py-2.5 text-[0.8125rem] font-medium text-ink-2 transition hover:border-ink/30 hover:bg-surface-2 hover:text-ink"
+          >
+            <IconPlus className="size-4" />
+            Ajouter une section
+          </button>
+        </div>
+      )}
+
+      <SectionLibraryDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} onAdd={handleAddSection} />
     </aside>
   );
 }

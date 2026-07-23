@@ -19,6 +19,8 @@ export interface FieldDefinition {
 export interface BlockDefinition {
   type: string;
   label: string;
+  /** Bloc dupliquable dans sa section (ex. un avantage, une question FAQ). */
+  repeatable?: boolean;
   editableFields: Record<string, FieldDefinition>;
 }
 
@@ -113,6 +115,7 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       "benefit-item": {
         type: "benefit-item",
         label: "Avantage",
+        repeatable: true,
         editableFields: {
           title: { label: "Titre", fieldType: "text", maxLength: 60 },
           description: { label: "Description", fieldType: "textarea", maxLength: 160 },
@@ -160,6 +163,7 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       "testimonial-item": {
         type: "testimonial-item",
         label: "Témoignage",
+        repeatable: true,
         editableFields: {
           quote: { label: "Citation", fieldType: "textarea", maxLength: 280, help: "Uniquement un témoignage réel d’un client." },
           author: { label: "Auteur", fieldType: "text", maxLength: 60 },
@@ -187,6 +191,7 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       "faq-item": {
         type: "faq-item",
         label: "Question",
+        repeatable: true,
         editableFields: {
           question: { label: "Question", fieldType: "text", maxLength: 120 },
           answer: { label: "Réponse", fieldType: "textarea", maxLength: 400 },
@@ -211,6 +216,90 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
           heading: { label: "Titre", fieldType: "text", maxLength: 80 },
           description: { label: "Description", fieldType: "textarea", maxLength: 200 },
           buttonLabel: { label: "Bouton d’inscription", fieldType: "buttonLabel", maxLength: 30 },
+        },
+      },
+    },
+  },
+  "collection-header": {
+    type: "collection-header",
+    label: "En-tête de collection",
+    description: "Titre et introduction en haut d’une page collection.",
+    aiSuggestions: [
+      "Rendre le titre plus accrocheur",
+      "Clarifier ce que contient la collection",
+      "Raccourcir l’introduction",
+    ],
+    blocks: {
+      "collection-header-content": {
+        type: "collection-header-content",
+        label: "Contenu de l’en-tête",
+        editableFields: {
+          eyebrow: { label: "Surtitre", fieldType: "text", maxLength: 50 },
+          heading: { label: "Titre de la collection", fieldType: "text", maxLength: 80 },
+          description: { label: "Introduction", fieldType: "textarea", maxLength: 240 },
+        },
+      },
+    },
+  },
+  "product-overview": {
+    type: "product-overview",
+    label: "Aperçu produit",
+    description: "Gabarit d’une fiche produit : visuel, nom et prix proviennent du catalogue ; les textes autour sont éditables.",
+    aiSuggestions: [
+      "Améliorer le texte du bouton d’achat",
+      "Renforcer la réassurance",
+      "Clarifier le titre des détails",
+    ],
+    dynamicContent: [
+      "Le nom, le prix et le visuel du produit proviennent du module Produits.",
+      "Ce gabarit s’applique à toutes les fiches produit.",
+    ],
+    blocks: {
+      "product-overview-content": {
+        type: "product-overview-content",
+        label: "Gabarit de fiche",
+        editableFields: {
+          ctaLabel: { label: "Bouton d’achat", fieldType: "buttonLabel", maxLength: 30 },
+          reassurance: { label: "Réassurance", fieldType: "text", maxLength: 120, help: "Une ligne rassurante, sans promesse chiffrée." },
+          detailsHeading: { label: "Titre des détails", fieldType: "text", maxLength: 60 },
+        },
+      },
+    },
+  },
+  "image-banner": {
+    type: "image-banner",
+    label: "Image",
+    description: "Une image pleine largeur, avec une légende facultative.",
+    aiSuggestions: ["Améliorer la légende", "Raccourcir la légende", "Corriger les fautes"],
+    blocks: {
+      "image-banner-content": {
+        type: "image-banner-content",
+        label: "Image",
+        editableFields: {
+          imageUrl: {
+            label: "Adresse de l’image (URL)",
+            fieldType: "image",
+            maxLength: 2000,
+            help: "Collez le lien d’une image (https://…).",
+          },
+          caption: { label: "Légende", fieldType: "text", maxLength: 120 },
+        },
+      },
+    },
+  },
+  "content-section": {
+    type: "content-section",
+    label: "Bloc de texte",
+    description: "Texte libre : un ou plusieurs blocs titre + paragraphe (pages À propos, Contact…).",
+    aiSuggestions: [...suggestionsCommunes, "Structurer en titre + paragraphe"],
+    blocks: {
+      "content-body": {
+        type: "content-body",
+        label: "Bloc de texte",
+        repeatable: true,
+        editableFields: {
+          heading: { label: "Titre", fieldType: "text", maxLength: 100 },
+          body: { label: "Texte", fieldType: "textarea", maxLength: 800 },
         },
       },
     },
@@ -245,4 +334,9 @@ export function getBlockDefinition(sectionType: string, blockType: string): Bloc
 export function getAllowedFields(sectionType: string, blockType: string): string[] {
   const block = getBlockDefinition(sectionType, blockType);
   return block ? Object.keys(block.editableFields) : [];
+}
+
+/** Vrai si le bloc peut être dupliqué/supprimé dans sa section. */
+export function isRepeatableBlock(sectionType: string, blockType: string): boolean {
+  return Boolean(getBlockDefinition(sectionType, blockType)?.repeatable);
 }

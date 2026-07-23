@@ -196,7 +196,7 @@ function DashboardShowcase() {
               <div className="flex flex-col justify-between gap-5 border-b border-black/10 py-6 md:flex-row md:items-end md:py-7">
                 <div>
                   <p className="text-[10px] font-medium uppercase tracking-[.14em] text-ink-3">Vue d’ensemble</p>
-                  <h3 className="mt-2 font-[Urbanist] text-3xl font-light tracking-[-.05em] sm:text-4xl">Atelier Nival</h3>
+                  <h3 className="mt-2 font-urbanist text-3xl font-light tracking-[-.05em] sm:text-4xl">Atelier Nival</h3>
                 </div>
                 <div className="flex flex-wrap gap-x-8 gap-y-3 text-[10px] text-ink-3">
                   <span>Conversion<strong className="mt-1 block text-xs text-ink">3,8 %</strong></span>
@@ -209,7 +209,7 @@ function DashboardShowcase() {
                 {metrics.map(([label, value], index) => (
                   <div key={label} className={`rounded-[17px] bg-cream-muted p-3.5 sm:rounded-[20px] sm:p-4 ${index === 4 ? "hidden sm:block" : ""}`}>
                     <p className="min-h-7 text-[11px] leading-tight text-ink-3">{label}</p>
-                    <strong className="font-[Urbanist] text-xl font-light tracking-tight sm:text-2xl">{value}</strong>
+                    <strong className="font-urbanist text-xl font-light tracking-tight sm:text-2xl">{value}</strong>
                   </div>
                 ))}
               </div>
@@ -217,7 +217,7 @@ function DashboardShowcase() {
               <div className="grid gap-2.5 lg:grid-cols-[290px_1fr]">
                 <div className="rounded-[20px] bg-cream-muted p-5 sm:rounded-[22px]">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-[Urbanist] text-xl">Actions IA</h4>
+                    <h4 className="font-urbanist text-xl">Actions IA</h4>
                     <span className="rounded-full bg-black px-2.5 py-1 text-[9px] text-white">3 nouvelles</span>
                   </div>
                   <div className="mt-5 space-y-2">
@@ -231,7 +231,7 @@ function DashboardShowcase() {
 
                 <div className="overflow-hidden rounded-[20px] bg-[radial-gradient(circle_at_10%_20%,#4f8278,transparent_38%),radial-gradient(circle_at_85%_25%,#087f82,transparent_42%),linear-gradient(135deg,#3f716a,#155f7a)] p-5 text-white sm:rounded-[22px]">
                   <div className="flex items-center justify-between gap-4 border-b border-white/15 pb-4">
-                    <h4 className="font-[Urbanist] text-lg text-white sm:text-xl">Performance de la boutique</h4>
+                    <h4 className="font-urbanist text-lg text-white sm:text-xl">Performance de la boutique</h4>
                     <span className="shrink-0 rounded-full bg-white/15 px-3 py-1 text-[9px]">7 jours</span>
                   </div>
                   <svg viewBox="0 0 600 95" preserveAspectRatio="none" className="mt-4 h-24 w-full" aria-hidden>
@@ -269,7 +269,7 @@ export function HomeLanding() {
             Le commerce, réinventé par l’IA
           </div>
 
-          <h1 className="mx-auto max-w-[1380px] text-center font-[Urbanist] text-[clamp(1.45rem,6.6vw,7.35rem)] font-light leading-[.9] tracking-[-.075em]">
+          <h1 className="mx-auto max-w-[1380px] text-center font-urbanist text-[clamp(1.45rem,6.6vw,7.35rem)] font-light leading-[.9] tracking-[-.075em]">
             <span className="inline-block whitespace-nowrap">Votre boutique e‑commerce,</span>
             <span className="mt-2 block bg-gradient-to-r from-[#486f65] via-[#147976] to-[#176b8b] bg-clip-text text-transparent sm:mt-3">générée par l’IA.</span>
           </h1>
@@ -305,7 +305,7 @@ export function HomeLanding() {
             ["Contrôle total", "sur chaque texte et chaque visuel"],
           ].map(([title, body]) => (
             <div key={title} className="px-3 py-7 text-center sm:px-6 sm:py-9">
-              <strong className="font-[Urbanist] text-xl font-medium tracking-[-.03em]">{title}</strong>
+              <strong className="font-urbanist text-xl font-medium tracking-[-.03em]">{title}</strong>
               <p className="mt-1 text-xs text-ink-3">{body}</p>
             </div>
           ))}
@@ -317,7 +317,7 @@ export function HomeLanding() {
           <div className="max-w-5xl text-left">
             <p className="mb-8 text-xs font-medium uppercase tracking-[.18em] text-ink-3">Tout ce qu’il faut pour lancer</p>
             <div>
-              <h2 className="max-w-4xl font-[Urbanist] text-[clamp(2.7rem,5.6vw,5.9rem)] font-light leading-[.94] tracking-[-.065em]">
+              <h2 className="max-w-4xl font-urbanist text-[clamp(2.7rem,5.6vw,5.9rem)] font-light leading-[.94] tracking-[-.065em]">
                 Une seule IA pour concevoir, remplir et lancer votre boutique.
               </h2>
               <p className="mt-7 max-w-2xl text-base leading-relaxed text-ink-2 sm:text-lg">
@@ -337,7 +337,7 @@ export function HomeLanding() {
                   <h3 className="mt-4 text-2xl font-normal leading-tight tracking-[-.04em]">{benefit.title}</h3>
                   <p className="mt-4 text-sm leading-relaxed text-ink-2">{benefit.body}</p>
                   <div className="mt-8 border-t border-black/[0.08] pt-4">
-                    <strong className="font-[Urbanist] text-2xl font-medium tracking-[-.04em]">{benefit.metric}</strong>
+                    <strong className="font-urbanist text-2xl font-medium tracking-[-.04em]">{benefit.metric}</strong>
                     <span className="ml-2 text-xs text-ink-3">{benefit.metricLabel}</span>
                   </div>
                 </div>
@@ -351,7 +351,7 @@ export function HomeLanding() {
         <div className="mx-auto max-w-[1440px] px-5 sm:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-xs font-medium uppercase tracking-[.18em] text-ink-3">Comment ça marche</p>
-            <h2 className="mt-6 font-[Urbanist] text-[clamp(2.8rem,5.8vw,6rem)] font-light leading-[.94] tracking-[-.065em]">De l’idée à la première vente, sans détour.</h2>
+            <h2 className="mt-6 font-urbanist text-[clamp(2.8rem,5.8vw,6rem)] font-light leading-[.94] tracking-[-.065em]">De l’idée à la première vente, sans détour.</h2>
             <p className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-ink-2">Vous donnez la direction. Sigmood IA exécute et vous gardez le contrôle à chaque étape.</p>
           </div>
 
@@ -373,7 +373,7 @@ export function HomeLanding() {
         <div className="mx-auto max-w-[1440px] px-5 sm:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-xs font-medium uppercase tracking-[.18em] text-ink-3">Des offres qui grandissent avec vous</p>
-            <h2 className="mt-6 font-[Urbanist] text-[clamp(2.8rem,5.8vw,6rem)] font-light leading-[.94] tracking-[-.065em]">Commencez simplement. Évoluez librement.</h2>
+            <h2 className="mt-6 font-urbanist text-[clamp(2.8rem,5.8vw,6rem)] font-light leading-[.94] tracking-[-.065em]">Commencez simplement. Évoluez librement.</h2>
             <p className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-ink-2">Testez sans carte bancaire, puis choisissez l’offre adaptée à votre activité.</p>
           </div>
 
@@ -382,7 +382,7 @@ export function HomeLanding() {
               <article key={plan.name} className={`relative flex min-h-[470px] flex-col overflow-hidden rounded-[28px] p-7 sm:p-9 ${plan.featured ? "bg-gradient-to-br from-[#3f716a] via-[#087f82] to-[#155f7a] text-white" : "bg-surface-2"}`}>
                 {plan.featured && <span className="absolute right-6 top-6 rounded-full bg-white/18 px-3 py-1 text-xs font-medium text-white">Le plus choisi</span>}
                 <p className={`text-xs font-medium uppercase tracking-[.16em] ${plan.featured ? "text-white/70" : "text-ink-3"}`}>{plan.name}</p>
-                <p className={`mt-7 font-[Urbanist] text-[clamp(2.8rem,4.4vw,4.6rem)] font-light leading-none tracking-[-.065em] ${plan.featured ? "text-white" : "text-ink"}`}>
+                <p className={`mt-7 font-urbanist text-[clamp(2.8rem,4.4vw,4.6rem)] font-light leading-none tracking-[-.065em] ${plan.featured ? "text-white" : "text-ink"}`}>
                   {plan.price}{plan.period && <span className={`ml-2 text-sm tracking-normal ${plan.featured ? "text-white/70" : "text-ink-3"}`}>{plan.period}</span>}
                 </p>
                 <p className={`mt-5 min-h-12 max-w-sm text-sm leading-relaxed ${plan.featured ? "text-white/80" : "text-ink-2"}`}>{plan.tagline}</p>
@@ -403,7 +403,7 @@ export function HomeLanding() {
         <div className="mx-auto grid max-w-[1200px] gap-14 px-5 sm:px-8 lg:grid-cols-[.7fr_1.3fr] lg:gap-20">
           <div>
             <p className="text-xs font-medium uppercase tracking-[.18em] text-ink-3">Questions fréquentes</p>
-            <h2 className="mt-5 font-[Urbanist] text-[clamp(2.8rem,5vw,5.4rem)] font-light leading-[.94] tracking-[-.06em]">Tout ce qu’il faut savoir avant de vous lancer.</h2>
+            <h2 className="mt-5 font-urbanist text-[clamp(2.8rem,5vw,5.4rem)] font-light leading-[.94] tracking-[-.06em]">Tout ce qu’il faut savoir avant de vous lancer.</h2>
             <p className="mt-6 max-w-md text-sm leading-relaxed text-ink-2">Une question reste sans réponse ? Commencez gratuitement et découvrez Sigmood IA directement dans l’interface.</p>
           </div>
           <div className="divide-y divide-black/10 border-y border-black/10">
@@ -425,7 +425,7 @@ export function HomeLanding() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_5%,rgba(31,197,190,.4),transparent_42%)]" aria-hidden />
           <div className="relative mx-auto max-w-[1100px]">
             <p className="text-xs uppercase tracking-[.18em] text-white/50">Votre prochaine boutique commence ici</p>
-            <h2 className="mt-8 font-[Urbanist] text-[clamp(3.1rem,7.2vw,7.2rem)] font-light leading-[.9] tracking-[-.07em] text-white">Transformez votre idée en activité.</h2>
+            <h2 className="mt-8 font-urbanist text-[clamp(3.1rem,7.2vw,7.2rem)] font-light leading-[.9] tracking-[-.07em] text-white">Transformez votre idée en activité.</h2>
             <p className="mx-auto mt-7 max-w-xl text-sm leading-relaxed text-white/65 sm:text-base">Créez une première version gratuitement, ajustez-la à votre façon et publiez quand vous êtes prêt.</p>
             <a href="/login?mode=signup" className="mt-10 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-medium text-black transition duration-300 hover:-translate-y-0.5 hover:bg-white/90">
               Créer ma boutique <ArrowIcon />

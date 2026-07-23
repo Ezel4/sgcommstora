@@ -81,6 +81,19 @@ export function ContentEditor({ pageId, sectionId, blockItem, definition, origin
             </div>
             {fieldDef.fieldType === "textarea" ? (
               <Textarea {...commonProps} rows={4} onChange={(event) => update(fieldId, event.target.value, fieldDef.maxLength)} />
+            ) : fieldDef.fieldType === "image" ? (
+              <div className="flex flex-col gap-2">
+                <Input {...commonProps} placeholder="https://…" onChange={(event) => update(fieldId, event.target.value, fieldDef.maxLength)} />
+                {value ? (
+                  // Aperçu de l'image saisie (URL libre) → balise <img> simple.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={value} alt="" className="h-24 w-full rounded-lg border border-line object-cover" />
+                ) : (
+                  <div className="flex h-24 w-full items-center justify-center rounded-lg border border-dashed border-line text-[0.75rem] text-ink-3">
+                    Aperçu de l’image
+                  </div>
+                )}
+              </div>
             ) : (
               <Input {...commonProps} onChange={(event) => update(fieldId, event.target.value, fieldDef.maxLength)} />
             )}

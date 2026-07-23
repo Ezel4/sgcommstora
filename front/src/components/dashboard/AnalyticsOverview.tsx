@@ -55,6 +55,18 @@ export function AnalyticsOverview({ data }: { data: typeof analyticsByPeriod }) 
         actions={periodControl}
       />
 
+      <div
+        role="note"
+        className="flex items-start gap-3 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-sm leading-relaxed text-ink-2"
+      >
+        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-accent-ink" aria-hidden />
+        <p>
+          <strong className="font-semibold text-ink">Données illustratives.</strong>{" "}
+          Ces indicateurs d’audience proviennent d’un jeu de démonstration. La mesure réelle — visiteurs,
+          sources de trafic et conversions — s’affichera ici une fois le suivi analytique connecté à votre boutique.
+        </p>
+      </div>
+
       <p className="sr-only" role="status" aria-live="polite">
         Période sélectionnée : {periodLabel}. Chiffre d’affaires {formatCurrency(current.summary.revenue.value)},
         évolution {formatChange(current.summary.revenue.changePct)} par rapport à la période précédente.

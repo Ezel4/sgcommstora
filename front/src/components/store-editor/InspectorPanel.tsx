@@ -10,10 +10,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { findBlock, findPage, findSection, getFieldValue } from "@/lib/editor/document-schema";
-import { getBlockDefinition, getSectionDefinition } from "@/lib/editor/section-definitions";
+import { getBlockDefinition, getSectionDefinition, isRepeatableBlock } from "@/lib/editor/section-definitions";
+import { createBlock } from "@/lib/editor/section-library";
 import { AiBlockEditor } from "./AiBlockEditor";
 import { ContentEditor } from "./ContentEditor";
-import { IconLayers, IconLock, IconSparkles, IconText } from "./editor-icons";
+import { IconLayers, IconLock, IconPlus, IconSparkles, IconText, IconTrash } from "./editor-icons";
 import { useEditor } from "./editor-store";
 
 type InspectorTab = "content" | "ai";
@@ -70,6 +71,25 @@ export function InspectorPanel() {
     const section = findSection(state.document, selection.pageId, selection.sectionId);
     const definition = section ? getSectionDefinition(section.type) : null;
     if (!page || !section || !definition) return <EmptyInspector />;
+    // Types d'items dupliquables présents dans la section (pour les boutons « Ajouter »).
+    const repeatableTypes = Array.from(
+      new Set(section.blocks.filter((blockItem) => isRepeatableBlock(section.type, blockItem.type)).map((blockItem) => blockItem.type)),
+    );
+
+    const addItem = (blockType: string) => {
+      const block = createBlock(section.type, blockType);
+      if (!block) return;
+      // Insérer juste après le dernier item du même type.
+      let index = section.blocks.length;
+      for (let i = section.blocks.length - 1; i >= 0; i--) {
+        if (section.blocks[i].type === blockType) {
+          index = i + 1;
+          break;
+        }
+      }
+      dispatch({ type: "ADD_BLOCK", pageId: page.id, sectionId: section.id, block, index });
+    };
+
     return (
       <div className="flex flex-1 flex-col gap-3 px-4 py-6">
         <p className="text-[0.7rem] font-medium uppercase tracking-[0.1em] text-ink-3">{page.title}</p>
@@ -78,23 +98,54 @@ export function InspectorPanel() {
         <ul className="mt-1 flex flex-col gap-1">
           {section.blocks.map((blockItem) => {
             const blockDefinition = definition.blocks[blockItem.type];
+            const repeatable = isRepeatableBlock(section.type, blockItem.type);
+            // Un item dupliquable ne peut être supprimé que s'il en reste au moins un.
+            const sameTypeCount = section.blocks.filter((item) => item.type === blockItem.type).length;
             return (
-              <li key={blockItem.id}>
+              <li key={blockItem.id} data-testid="inspector-block-item" className="flex items-center gap-1">
                 <button
                   type="button"
                   disabled={!blockDefinition}
                   onClick={() =>
                     dispatch({ type: "SELECT", selection: { kind: "block", ref: { pageId: page.id, sectionId: section.id, blockId: blockItem.id } } })
                   }
-                  className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-[0.8125rem] text-ink-2 transition enabled:hover:bg-surface-2 enabled:hover:text-ink disabled:opacity-50"
+                  className="flex min-w-0 flex-1 items-center gap-2 rounded-xl px-2.5 py-2 text-left text-[0.8125rem] text-ink-2 transition enabled:hover:bg-surface-2 enabled:hover:text-ink disabled:opacity-50"
                 >
                   {blockDefinition ? <IconText className="size-3.5 shrink-0" /> : <IconLock className="size-3.5 shrink-0" />}
                   <span className="truncate">{blockDefinition?.label ?? blockItem.type}</span>
                 </button>
+                {repeatable && sameTypeCount > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => dispatch({ type: "REMOVE_BLOCK", pageId: page.id, sectionId: section.id, blockId: blockItem.id })}
+                    className="grid size-7 shrink-0 place-items-center rounded-lg text-ink-3 transition hover:bg-danger-soft hover:text-danger"
+                    aria-label={`Supprimer : ${blockDefinition?.label ?? blockItem.type}`}
+                    title="Supprimer cet élément"
+                  >
+                    <IconTrash className="size-3.5" />
+                  </button>
+                )}
               </li>
             );
           })}
         </ul>
+
+        {repeatableTypes.length > 0 && (
+          <div className="mt-1 flex flex-col gap-1.5">
+            {repeatableTypes.map((blockType) => (
+              <button
+                key={blockType}
+                type="button"
+                data-testid="inspector-add-item"
+                onClick={() => addItem(blockType)}
+                className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-line-strong px-3 py-2 text-[0.8rem] font-medium text-ink-2 transition hover:border-ink/30 hover:bg-surface-2 hover:text-ink"
+              >
+                <IconPlus className="size-3.5" />
+                Ajouter : {definition.blocks[blockType]?.label ?? blockType}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
