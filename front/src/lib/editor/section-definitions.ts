@@ -266,6 +266,27 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       },
     },
   },
+  "image-banner": {
+    type: "image-banner",
+    label: "Image",
+    description: "Une image pleine largeur, avec une légende facultative.",
+    aiSuggestions: ["Améliorer la légende", "Raccourcir la légende", "Corriger les fautes"],
+    blocks: {
+      "image-banner-content": {
+        type: "image-banner-content",
+        label: "Image",
+        editableFields: {
+          imageUrl: {
+            label: "Adresse de l’image (URL)",
+            fieldType: "image",
+            maxLength: 2000,
+            help: "Collez le lien d’une image (https://…).",
+          },
+          caption: { label: "Légende", fieldType: "text", maxLength: 120 },
+        },
+      },
+    },
+  },
   "content-section": {
     type: "content-section",
     label: "Bloc de texte",

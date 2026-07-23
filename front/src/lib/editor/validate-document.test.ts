@@ -242,6 +242,32 @@ describe("mergeSubmittedDocument — sections dynamiques", () => {
     expect(faq.blocks.filter((block) => block.type === "faq-item")).toHaveLength(1);
   });
 
+  it("keeps a valid image URL but rejects a dangerous one", () => {
+    const buildImagePayload = (url: string) => ({
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "img-1",
+              type: "image-banner",
+              blocks: [{ id: "img-c", type: "image-banner-content", content: { imageUrl: { value: url }, caption: { value: "Légende" } } }],
+            },
+          ],
+        },
+      ],
+    });
+
+    const ok = mergeSubmittedDocument(seed, buildImagePayload("https://example.com/photo.jpg"));
+    const okBlock = home(ok.document).sections.find((s) => s.id === "img-1")?.blocks.find((b) => b.id === "img-c");
+    expect(okBlock && getFieldValue(okBlock, "imageUrl")).toBe("https://example.com/photo.jpg");
+
+    const bad = mergeSubmittedDocument(seed, buildImagePayload("javascript:alert(1)"));
+    const badBlock = home(bad.document).sections.find((s) => s.id === "img-1")?.blocks.find((b) => b.id === "img-c");
+    expect(badBlock && getFieldValue(badBlock, "imageUrl")).toBe("");
+    expect(bad.issues.some((issue) => issue.includes("dangereux"))).toBe(true);
+  });
+
   it("rejects a non-repeatable block added to a canonical section", () => {
     const { document, issues } = mergeSubmittedDocument(seed, {
       pages: [

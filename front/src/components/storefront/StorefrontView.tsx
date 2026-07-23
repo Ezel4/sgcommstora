@@ -380,6 +380,41 @@ function ProductOverviewSection({ ctx, section }: { ctx: RenderContext; section:
   );
 }
 
+function ImageBannerSection({ ctx, section }: { ctx: RenderContext; section: StoreSection }) {
+  const blockItem = section.blocks[0];
+  if (!blockItem) return null;
+  const url = getFieldValue(blockItem, "imageUrl");
+  const caption = getFieldValue(blockItem, "caption");
+  return (
+    <section className="mx-auto max-w-5xl px-6 py-10 sm:px-8">
+      <figure {...blockAttrs(ctx, section, blockItem)}>
+        {url ? (
+          // Image fournie par le marchand (URL libre) → balise <img> simple.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt={caption || "Image de la boutique"}
+            className="max-h-[520px] w-full rounded-[24px] object-cover"
+            {...fieldAttrs(ctx, "imageUrl")}
+          />
+        ) : ctx.editing ? (
+          <div
+            className="flex aspect-[16/7] w-full items-center justify-center rounded-[24px] bg-gradient-to-br from-[#b8ccc6] to-[#e9eeee] text-sm text-ink-3"
+            {...fieldAttrs(ctx, "imageUrl")}
+          >
+            Ajoutez l’adresse d’une image depuis le panneau
+          </div>
+        ) : null}
+        {(caption || ctx.editing) && (
+          <figcaption className="mt-3 text-center text-xs text-ink-3">
+            <FieldText ctx={ctx} blockItem={blockItem} fieldId="caption" as="span" />
+          </figcaption>
+        )}
+      </figure>
+    </section>
+  );
+}
+
 function ContentSection({ ctx, section }: { ctx: RenderContext; section: StoreSection }) {
   const items = section.blocks.filter((blockItem) => blockItem.type === "content-body");
   if (items.length === 0) return null;
@@ -412,6 +447,7 @@ const SECTION_RENDERERS: Record<string, (props: { ctx: RenderContext; section: S
   newsletter: NewsletterSection,
   "collection-header": CollectionHeaderSection,
   "product-overview": ProductOverviewSection,
+  "image-banner": ImageBannerSection,
   "content-section": ContentSection,
   footer: FooterSection,
 };

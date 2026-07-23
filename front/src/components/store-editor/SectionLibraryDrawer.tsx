@@ -92,6 +92,19 @@ function SectionPreview({ type }: { type: string }) {
           <Bar className="h-1 w-2/3" />
         </div>
       );
+    case "image-banner":
+      return (
+        <div className={cn(frame, "gap-1.5")}>
+          <div className="flex flex-1 items-center justify-center rounded-md bg-current/15">
+            <svg viewBox="0 0 24 24" className="size-6 opacity-40" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <circle cx="8.5" cy="10" r="1.5" />
+              <path d="M21 16l-5-5-9 8" />
+            </svg>
+          </div>
+          <Bar className="mx-auto h-1 w-1/3" />
+        </div>
+      );
     default:
       return <div className={frame} />;
   }

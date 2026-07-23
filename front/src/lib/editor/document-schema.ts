@@ -14,7 +14,7 @@ export type PageType = "home" | "product" | "collection" | "content";
 /** Statut d'une page dans l'éditeur (MVP : seule la home est configurée). */
 export type PageStatus = "configured" | "not-configured";
 
-export type EditableFieldType = "text" | "textarea" | "buttonLabel";
+export type EditableFieldType = "text" | "textarea" | "buttonLabel" | "image";
 
 export interface EditableValue {
   value: string;

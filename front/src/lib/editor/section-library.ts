@@ -126,6 +126,9 @@ const SECTION_BLOCK_TEMPLATES: Record<string, () => StoreBlock[]> = {
       body: "Rédigez ici votre texte. Ce bloc convient aux pages À propos, Contact ou à toute présentation libre.",
     }),
   ],
+  "image-banner": () => [
+    buildBlock("image-banner", "image-banner-content", editorUid("image"), { imageUrl: "", caption: "" }),
+  ],
 };
 
 /** Blocs par défaut d'un type de section (vide si le type n'est pas ajoutable). */
@@ -171,6 +174,7 @@ export const ADDABLE_SECTIONS: AddableSection[] = [
   { type: "faq", label: "FAQ", description: "Questions fréquentes et réponses courtes." },
   { type: "testimonials", label: "Témoignages", description: "Avis de clients réels, à renseigner vous-même." },
   { type: "newsletter", label: "Newsletter", description: "Invitation à s’inscrire à votre liste e-mail." },
+  { type: "image-banner", label: "Image", description: "Une image pleine largeur avec une légende." },
   { type: "content-section", label: "Bloc de texte", description: "Un ou plusieurs blocs titre + paragraphe libres." },
 ];
 
