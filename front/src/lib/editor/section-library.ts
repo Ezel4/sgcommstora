@@ -127,6 +127,23 @@ export function createSectionBlocks(type: string): StoreBlock[] {
   return SECTION_BLOCK_TEMPLATES[type]?.() ?? [];
 }
 
+// Valeurs par défaut d'un bloc ajouté à la volée dans une section (items répétables).
+const BLOCK_DEFAULTS: Record<string, Record<string, string>> = {
+  "benefit-item": { title: "Nouvel atout", description: "Décrivez ici un bénéfice concret pour vos clients." },
+  "faq-item": { question: "Nouvelle question ?", answer: "Ajoutez ici une réponse claire." },
+  "testimonial-item": { quote: "Ajoutez ici le témoignage réel d’un client.", author: "Prénom N." },
+};
+
+/** Fabrique un bloc prêt à insérer dans une section, ou null si le type est inconnu. */
+export function createBlock(sectionType: string, blockType: string): StoreBlock | null {
+  const definition = getBlockDefinition(sectionType, blockType);
+  if (!definition) return null;
+  const values =
+    BLOCK_DEFAULTS[blockType] ??
+    Object.fromEntries(Object.keys(definition.editableFields).map((fieldId) => [fieldId, ""]));
+  return buildBlock(sectionType, blockType, editorUid(blockType), values);
+}
+
 /** Fabrique une nouvelle section prête à insérer, ou null si le type est inconnu. */
 export function createSection(type: string): StoreSection | null {
   if (!SECTION_DEFINITIONS[type] || !SECTION_BLOCK_TEMPLATES[type]) return null;

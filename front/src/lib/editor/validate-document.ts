@@ -17,7 +17,7 @@
 
 import type { StoreBlock, StoreDocument, StorePage, StoreSection } from "./document-schema";
 import { buildDefaultDocument, type StoreSeed } from "./default-document";
-import { SECTION_DEFINITIONS, getBlockDefinition } from "./section-definitions";
+import { SECTION_DEFINITIONS, getBlockDefinition, isRepeatableBlock } from "./section-definitions";
 import { buildBlock, createSectionBlocks, editorUid } from "./section-library";
 import { containsDangerousContent, sanitizeText } from "./sanitize";
 
@@ -34,41 +34,108 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/** Recopie, dans une section canonique, les valeurs éditables et la visibilité soumises. */
+/** Construit un bloc à partir d'une soumission : seuls les champs déclarés survivent. */
+function buildSubmittedBlock(
+  sectionType: string,
+  blockType: string,
+  id: string,
+  submittedContent: Record<string, unknown>,
+  issues: string[],
+): StoreBlock {
+  const definition = getBlockDefinition(sectionType, blockType);
+  const values: Record<string, string> = {};
+  for (const [fieldId, fieldDefinition] of Object.entries(definition?.editableFields ?? {})) {
+    const rawEntry = submittedContent[fieldId];
+    const rawValue = isRecord(rawEntry) ? rawEntry.value : undefined;
+    if (typeof rawValue !== "string") {
+      values[fieldId] = "";
+      continue;
+    }
+    if (containsDangerousContent(rawValue)) {
+      issues.push(`valeur rejetée (contenu dangereux) : ${sectionType}/${id}/${fieldId}`);
+      values[fieldId] = "";
+      continue;
+    }
+    values[fieldId] = sanitizeText(rawValue, fieldDefinition.maxLength);
+  }
+  return buildBlock(sectionType, blockType, id, values);
+}
+
+/** Fusionne les valeurs éditables soumises dans un bloc canonique existant. */
+function mergeCanonicalBlock(
+  sectionType: string,
+  sectionId: string,
+  canonicalBlock: StoreBlock,
+  submittedBlock: Record<string, unknown>,
+  issues: string[],
+): StoreBlock {
+  if (!isRecord(submittedBlock.content)) return canonicalBlock;
+  const definition = getBlockDefinition(sectionType, canonicalBlock.type);
+  const content = { ...canonicalBlock.content };
+  for (const [fieldId, fieldValue] of Object.entries(submittedBlock.content)) {
+    const fieldDefinition = definition?.editableFields[fieldId];
+    const canonicalField = content[fieldId];
+    if (!fieldDefinition || !canonicalField?.editable) {
+      issues.push(`champ ignoré (non éditable) : ${sectionId}/${canonicalBlock.id}/${fieldId}`);
+      continue;
+    }
+    const rawValue = isRecord(fieldValue) ? fieldValue.value : undefined;
+    if (typeof rawValue !== "string") {
+      issues.push(`valeur invalide : ${sectionId}/${canonicalBlock.id}/${fieldId}`);
+      continue;
+    }
+    if (containsDangerousContent(rawValue)) {
+      issues.push(`valeur rejetée (contenu dangereux) : ${sectionId}/${canonicalBlock.id}/${fieldId}`);
+      continue;
+    }
+    content[fieldId] = { ...canonicalField, value: sanitizeText(rawValue, fieldDefinition.maxLength) };
+  }
+  return { ...canonicalBlock, content };
+}
+
+/**
+ * Blocs d'une section canonique. On part de la soumission (dans son ordre) pour
+ * permettre l'ajout/suppression d'items dupliquables, sans jamais élargir le
+ * périmètre : un bloc non canonique n'est admis que si c'est un item répétable
+ * connu de la section. Une soumission sans bloc conserve le squelette canonique.
+ */
 function mergeCanonicalBlocks(
   section: StoreSection,
   submittedBlocks: Record<string, unknown>[],
   issues: string[],
 ): StoreBlock[] {
-  return section.blocks.map((blockItem) => {
-    const submittedBlock = submittedBlocks.find((candidate) => candidate.id === blockItem.id);
-    if (!submittedBlock || !isRecord(submittedBlock.content)) return blockItem;
+  if (submittedBlocks.length === 0) return section.blocks;
 
-    const definition = getBlockDefinition(section.type, blockItem.type);
-    const content = { ...blockItem.content };
-    for (const [fieldId, fieldValue] of Object.entries(submittedBlock.content)) {
-      const fieldDefinition = definition?.editableFields[fieldId];
-      const canonicalField = content[fieldId];
-      if (!fieldDefinition || !canonicalField?.editable) {
-        issues.push(`champ ignoré (non éditable) : ${section.id}/${blockItem.id}/${fieldId}`);
-        continue;
-      }
-      const rawValue = isRecord(fieldValue) ? fieldValue.value : undefined;
-      if (typeof rawValue !== "string") {
-        issues.push(`valeur invalide : ${section.id}/${blockItem.id}/${fieldId}`);
-        continue;
-      }
-      if (containsDangerousContent(rawValue)) {
-        issues.push(`valeur rejetée (contenu dangereux) : ${section.id}/${blockItem.id}/${fieldId}`);
-        continue;
-      }
-      content[fieldId] = { ...canonicalField, value: sanitizeText(rawValue, fieldDefinition.maxLength) };
+  const usedIds = new Set<string>();
+  const result: StoreBlock[] = [];
+  for (const submitted of submittedBlocks) {
+    if (result.length >= MAX_BLOCKS_PER_SECTION) break;
+    const canonicalBlock =
+      typeof submitted.id === "string" ? section.blocks.find((block) => block.id === submitted.id) : undefined;
+
+    if (canonicalBlock) {
+      if (usedIds.has(canonicalBlock.id)) continue;
+      usedIds.add(canonicalBlock.id);
+      result.push(mergeCanonicalBlock(section.type, section.id, canonicalBlock, submitted, issues));
+      continue;
     }
-    return { ...blockItem, content };
-  });
+
+    const blockType = typeof submitted.type === "string" ? submitted.type : undefined;
+    if (!blockType || !isRepeatableBlock(section.type, blockType)) {
+      issues.push(`bloc ignoré (hors périmètre) : ${section.id}/${String(submitted.type)}`);
+      continue;
+    }
+    let id = typeof submitted.id === "string" && submitted.id ? submitted.id : editorUid(blockType);
+    if (usedIds.has(id)) id = editorUid(blockType);
+    usedIds.add(id);
+    result.push(buildSubmittedBlock(section.type, blockType, id, isRecord(submitted.content) ? submitted.content : {}, issues));
+  }
+
+  // Garde-fou : ne jamais vider une section canonique par accident.
+  return result.length ? result : section.blocks;
 }
 
-/** Reconstruit les blocs d'une section ajoutée, uniquement à partir du périmètre autorisé. */
+/** Reconstruit les blocs d'une section ajoutée : tout type déclaré pour la section est admis. */
 function buildAddedSectionBlocks(
   sectionType: string,
   submittedBlocks: Record<string, unknown>[],
@@ -81,32 +148,14 @@ function buildAddedSectionBlocks(
   for (const submitted of submittedBlocks) {
     if (blocks.length >= MAX_BLOCKS_PER_SECTION) break;
     const blockType = typeof submitted.type === "string" ? submitted.type : undefined;
-    const blockDefinition = blockType ? definition.blocks[blockType] : undefined;
-    if (!blockType || !blockDefinition) {
+    if (!blockType || !definition.blocks[blockType]) {
       issues.push(`bloc ignoré (type inconnu) : ${sectionType}/${String(submitted.type)}`);
       continue;
     }
     let id = typeof submitted.id === "string" && submitted.id ? submitted.id : editorUid(blockType);
     if (usedIds.has(id)) id = editorUid(blockType);
     usedIds.add(id);
-
-    const submittedContent = isRecord(submitted.content) ? submitted.content : {};
-    const values: Record<string, string> = {};
-    for (const [fieldId, fieldDefinition] of Object.entries(blockDefinition.editableFields)) {
-      const rawEntry = submittedContent[fieldId];
-      const rawValue = isRecord(rawEntry) ? rawEntry.value : undefined;
-      if (typeof rawValue !== "string") {
-        values[fieldId] = "";
-        continue;
-      }
-      if (containsDangerousContent(rawValue)) {
-        issues.push(`valeur rejetée (contenu dangereux) : ${sectionType}/${id}/${fieldId}`);
-        values[fieldId] = "";
-        continue;
-      }
-      values[fieldId] = sanitizeText(rawValue, fieldDefinition.maxLength);
-    }
-    blocks.push(buildBlock(sectionType, blockType, id, values));
+    blocks.push(buildSubmittedBlock(sectionType, blockType, id, isRecord(submitted.content) ? submitted.content : {}, issues));
   }
 
   // Une section ajoutée sans aucun bloc valide retombe sur son contenu par défaut.

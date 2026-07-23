@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { buildDefaultDocument } from "./default-document";
-import { insertSection, moveSection, removeSection, sectionIndex } from "./document-schema";
-import { getBlockDefinition, getSectionDefinition } from "./section-definitions";
-import { ADDABLE_SECTIONS, createSection, isSingletonSection } from "./section-library";
+import { blockIndex, findSection, insertBlock, insertSection, moveSection, removeBlock, removeSection, sectionIndex } from "./document-schema";
+import { getBlockDefinition, getSectionDefinition, isRepeatableBlock } from "./section-definitions";
+import { ADDABLE_SECTIONS, createBlock, createSection, isSingletonSection } from "./section-library";
 
 const seed = { id: "store_1", name: "Atelier Nival", slug: "atelier-nival", niche: "Cosmétiques", audience: "Femmes 25-40" };
 
@@ -75,6 +75,30 @@ describe("section structure helpers", () => {
     expect(sectionIndex(appended, "home", faq.id)).toBe(
       appended.pages.find((p) => p.id === "home")!.sections.length - 1,
     );
+  });
+});
+
+describe("block structure helpers", () => {
+  it("creates a repeatable block with a unique id and default values", () => {
+    expect(isRepeatableBlock("faq", "faq-item")).toBe(true);
+    const block = createBlock("faq", "faq-item");
+    expect(block).not.toBeNull();
+    expect(block!.type).toBe("faq-item");
+    expect(getBlockDefinition("faq", "faq-item")).not.toBeNull();
+    expect(createBlock("faq", "faq-item")!.id).not.toBe(block!.id);
+    expect(createBlock("faq", "does-not-exist")).toBeNull();
+  });
+
+  it("inserts and removes a block inside a section", () => {
+    const doc = buildDefaultDocument(seed);
+    const item = createBlock("faq", "faq-item")!;
+    const withItem = insertBlock(doc, "home", "faq-main", item, 99);
+    const section = findSection(withItem, "home", "faq-main")!;
+    expect(section.blocks.some((b) => b.id === item.id)).toBe(true);
+    expect(blockIndex(withItem, "home", "faq-main", item.id)).toBe(section.blocks.length - 1);
+
+    const removed = removeBlock(withItem, "home", "faq-main", item.id);
+    expect(findSection(removed, "home", "faq-main")!.blocks.some((b) => b.id === item.id)).toBe(false);
   });
 });
 

@@ -205,3 +205,52 @@ export function moveSection(doc: StoreDocument, pageId: string, sectionId: strin
     return next;
   });
 }
+
+// --- Structure des blocs (ajout / suppression d'items dans une section) ------
+
+function withSectionBlocks(
+  doc: StoreDocument,
+  pageId: string,
+  sectionId: string,
+  transform: (blocks: StoreBlock[]) => StoreBlock[],
+): StoreDocument {
+  return {
+    ...doc,
+    pages: doc.pages.map((page) =>
+      page.id !== pageId
+        ? page
+        : {
+            ...page,
+            sections: page.sections.map((section) =>
+              section.id !== sectionId ? section : { ...section, blocks: transform(section.blocks) },
+            ),
+          },
+    ),
+  };
+}
+
+/** Index d'un bloc dans sa section (ordre du tableau), ou -1 si absent. */
+export function blockIndex(doc: StoreDocument, pageId: string, sectionId: string, blockId: string): number {
+  return findSection(doc, pageId, sectionId)?.blocks.findIndex((block) => block.id === blockId) ?? -1;
+}
+
+/** Insère un bloc à un index (borné) dans une section. */
+export function insertBlock(
+  doc: StoreDocument,
+  pageId: string,
+  sectionId: string,
+  block: StoreBlock,
+  index: number,
+): StoreDocument {
+  return withSectionBlocks(doc, pageId, sectionId, (blocks) => {
+    const clamped = Math.max(0, Math.min(index, blocks.length));
+    const next = [...blocks];
+    next.splice(clamped, 0, block);
+    return next;
+  });
+}
+
+/** Retire un bloc d'une section par identifiant. */
+export function removeBlock(doc: StoreDocument, pageId: string, sectionId: string, blockId: string): StoreDocument {
+  return withSectionBlocks(doc, pageId, sectionId, (blocks) => blocks.filter((block) => block.id !== blockId));
+}

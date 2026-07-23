@@ -19,6 +19,8 @@ export interface FieldDefinition {
 export interface BlockDefinition {
   type: string;
   label: string;
+  /** Bloc dupliquable dans sa section (ex. un avantage, une question FAQ). */
+  repeatable?: boolean;
   editableFields: Record<string, FieldDefinition>;
 }
 
@@ -113,6 +115,7 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       "benefit-item": {
         type: "benefit-item",
         label: "Avantage",
+        repeatable: true,
         editableFields: {
           title: { label: "Titre", fieldType: "text", maxLength: 60 },
           description: { label: "Description", fieldType: "textarea", maxLength: 160 },
@@ -160,6 +163,7 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       "testimonial-item": {
         type: "testimonial-item",
         label: "Témoignage",
+        repeatable: true,
         editableFields: {
           quote: { label: "Citation", fieldType: "textarea", maxLength: 280, help: "Uniquement un témoignage réel d’un client." },
           author: { label: "Auteur", fieldType: "text", maxLength: 60 },
@@ -187,6 +191,7 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       "faq-item": {
         type: "faq-item",
         label: "Question",
+        repeatable: true,
         editableFields: {
           question: { label: "Question", fieldType: "text", maxLength: 120 },
           answer: { label: "Réponse", fieldType: "textarea", maxLength: 400 },
@@ -291,4 +296,9 @@ export function getBlockDefinition(sectionType: string, blockType: string): Bloc
 export function getAllowedFields(sectionType: string, blockType: string): string[] {
   const block = getBlockDefinition(sectionType, blockType);
   return block ? Object.keys(block.editableFields) : [];
+}
+
+/** Vrai si le bloc peut être dupliqué/supprimé dans sa section. */
+export function isRepeatableBlock(sectionType: string, blockType: string): boolean {
+  return Boolean(getBlockDefinition(sectionType, blockType)?.repeatable);
 }

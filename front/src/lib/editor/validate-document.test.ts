@@ -194,4 +194,75 @@ describe("mergeSubmittedDocument — sections dynamiques", () => {
     expect(home(document).sections.some((section) => section.id === "evil-1")).toBe(false);
     expect(issues.some((issue) => issue.includes("type inconnu"))).toBe(true);
   });
+
+  it("keeps a newly added repeatable item in a canonical section", () => {
+    const { document } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "faq-main",
+              type: "faq",
+              blocks: [
+                { id: "faq-intro", type: "faq-intro", content: { heading: { value: "Questions fréquentes" } } },
+                { id: "faq-1", type: "faq-item", content: { question: { value: "Q1 ?" }, answer: { value: "R1" } } },
+                { id: "faq-new", type: "faq-item", content: { question: { value: "Nouvelle ?" }, answer: { value: "Oui" } } },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const faq = home(document).sections.find((section) => section.id === "faq-main")!;
+    expect(faq.blocks.some((block) => block.id === "faq-new")).toBe(true);
+    expect(faq.blocks.filter((block) => block.type === "faq-item")).toHaveLength(2);
+  });
+
+  it("persists the removal of a repeatable item (fewer blocks submitted)", () => {
+    const { document } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "faq-main",
+              type: "faq",
+              blocks: [
+                { id: "faq-intro", type: "faq-intro", content: {} },
+                { id: "faq-1", type: "faq-item", content: {} },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const faq = home(document).sections.find((section) => section.id === "faq-main")!;
+    // Le document par défaut a 3 questions ; on n'en soumet qu'une.
+    expect(faq.blocks.filter((block) => block.type === "faq-item")).toHaveLength(1);
+  });
+
+  it("rejects a non-repeatable block added to a canonical section", () => {
+    const { document, issues } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "faq-main",
+              type: "faq",
+              blocks: [
+                { id: "faq-intro", type: "faq-intro", content: {} },
+                { id: "faq-1", type: "faq-item", content: {} },
+                { id: "rogue-intro", type: "faq-intro", content: { heading: { value: "Deuxième intro" } } },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const faq = home(document).sections.find((section) => section.id === "faq-main")!;
+    expect(faq.blocks.filter((block) => block.type === "faq-intro")).toHaveLength(1);
+    expect(issues.some((issue) => issue.includes("hors périmètre"))).toBe(true);
+  });
 });
