@@ -380,6 +380,27 @@ function ProductOverviewSection({ ctx, section }: { ctx: RenderContext; section:
   );
 }
 
+function ContentSection({ ctx, section }: { ctx: RenderContext; section: StoreSection }) {
+  const items = section.blocks.filter((blockItem) => blockItem.type === "content-body");
+  if (items.length === 0) return null;
+  return (
+    <section className="mx-auto max-w-3xl space-y-8 px-6 py-12 sm:px-8">
+      {items.map((blockItem) => (
+        <div key={blockItem.id} {...blockAttrs(ctx, section, blockItem)}>
+          <FieldText ctx={ctx} blockItem={blockItem} fieldId="heading" as="h2" className="text-2xl font-normal tracking-tight" />
+          <FieldText
+            ctx={ctx}
+            blockItem={blockItem}
+            fieldId="body"
+            as="p"
+            className="mt-4 whitespace-pre-line text-sm leading-relaxed text-ink-2 sm:text-[1rem]"
+          />
+        </div>
+      ))}
+    </section>
+  );
+}
+
 const SECTION_RENDERERS: Record<string, (props: { ctx: RenderContext; section: StoreSection }) => React.ReactNode> = {
   "announcement-bar": AnnouncementSection,
   header: HeaderSection,
@@ -391,6 +412,7 @@ const SECTION_RENDERERS: Record<string, (props: { ctx: RenderContext; section: S
   newsletter: NewsletterSection,
   "collection-header": CollectionHeaderSection,
   "product-overview": ProductOverviewSection,
+  "content-section": ContentSection,
   footer: FooterSection,
 };
 

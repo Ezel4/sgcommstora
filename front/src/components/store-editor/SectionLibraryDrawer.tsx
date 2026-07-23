@@ -83,6 +83,15 @@ function SectionPreview({ type }: { type: string }) {
           </div>
         </div>
       );
+    case "content-section":
+      return (
+        <div className={cn(frame, "gap-2")}>
+          <Bar className="h-1.5 w-1/3" />
+          <Bar className="h-1 w-full" />
+          <Bar className="h-1 w-full" />
+          <Bar className="h-1 w-2/3" />
+        </div>
+      );
     default:
       return <div className={frame} />;
   }

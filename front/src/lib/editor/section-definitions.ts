@@ -266,6 +266,23 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       },
     },
   },
+  "content-section": {
+    type: "content-section",
+    label: "Bloc de texte",
+    description: "Texte libre : un ou plusieurs blocs titre + paragraphe (pages À propos, Contact…).",
+    aiSuggestions: [...suggestionsCommunes, "Structurer en titre + paragraphe"],
+    blocks: {
+      "content-body": {
+        type: "content-body",
+        label: "Bloc de texte",
+        repeatable: true,
+        editableFields: {
+          heading: { label: "Titre", fieldType: "text", maxLength: 100 },
+          body: { label: "Texte", fieldType: "textarea", maxLength: 800 },
+        },
+      },
+    },
+  },
   footer: {
     type: "footer",
     label: "Footer",

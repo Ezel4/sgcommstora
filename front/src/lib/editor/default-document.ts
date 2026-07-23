@@ -290,9 +290,117 @@ export function buildCollectionPage(store: StoreSeed): StorePage {
   };
 }
 
-/** Pages non configurées dans le MVP : listées, sélectionnables plus tard. */
-function placeholderPage(id: string, type: StorePage["type"], title: string, slug: string): StorePage {
-  return { id, type, title, slug, status: "not-configured", sections: [] };
+/** En-tête + pied de page partagés par les pages de contenu (ids propres à la page). */
+function contentPageChrome(store: StoreSeed, prefix: string): { header: StorePage["sections"][number]; footer: StorePage["sections"][number] } {
+  return {
+    header: {
+      id: `${prefix}-header`,
+      type: "header",
+      position: 0,
+      visible: true,
+      blocks: [block("header", "header-content", `${prefix}-header-content`, { ctaLabel: "Voir la collection" })],
+    },
+    footer: {
+      id: `${prefix}-footer`,
+      type: "footer",
+      position: 99,
+      visible: true,
+      blocks: [block("footer", "footer-content", `${prefix}-footer-content`, { about: `${store.name} — ${store.niche}.` })],
+    },
+  };
+}
+
+/** Page « À propos » : présentation libre de la marque. */
+export function buildAboutPage(store: StoreSeed): StorePage {
+  const { header, footer } = contentPageChrome(store, "about");
+  return {
+    id: "about",
+    type: "content",
+    title: "À propos",
+    slug: "a-propos",
+    status: "configured",
+    sections: [
+      header,
+      {
+        id: "about-content",
+        type: "content-section",
+        position: 1,
+        visible: true,
+        blocks: [
+          block("content-section", "content-body", "about-body-1", {
+            heading: `À propos de ${store.name}`,
+            body: `Présentez ici votre marque : votre histoire, ce qui vous distingue et l’attention que vous portez à ${store.audience.toLocaleLowerCase("fr-FR")}.`,
+          }),
+          block("content-section", "content-body", "about-body-2", {
+            heading: "Notre engagement",
+            body: "Décrivez vos valeurs et ce que vos clients peuvent attendre de vous, sans promesse chiffrée non vérifiée.",
+          }),
+        ],
+      },
+      { ...footer, position: 2 },
+    ],
+  };
+}
+
+/** Page FAQ : questions fréquentes dédiées. */
+export function buildFaqPage(store: StoreSeed): StorePage {
+  const { header, footer } = contentPageChrome(store, "faq-page");
+  return {
+    id: "faq-page",
+    type: "content",
+    title: "FAQ",
+    slug: "faq",
+    status: "configured",
+    sections: [
+      header,
+      {
+        id: "faq-page-main",
+        type: "faq",
+        position: 1,
+        visible: true,
+        blocks: [
+          block("faq", "faq-intro", "faq-page-intro", { heading: "Questions fréquentes" }),
+          block("faq", "faq-item", "faq-page-1", {
+            question: "Comment passer commande ?",
+            answer: "Parcourez la collection, ajoutez vos articles au panier puis suivez les étapes de commande.",
+          }),
+          block("faq", "faq-item", "faq-page-2", {
+            question: "Comment vous contacter ?",
+            answer: "Écrivez-nous depuis la page Contact, nous vous répondrons dès que possible.",
+          }),
+        ],
+      },
+      { ...footer, position: 2 },
+    ],
+  };
+}
+
+/** Page Contact : informations de contact rédigées librement. */
+export function buildContactPage(store: StoreSeed): StorePage {
+  const { header, footer } = contentPageChrome(store, "contact");
+  return {
+    id: "contact",
+    type: "content",
+    title: "Contact",
+    slug: "contact",
+    status: "configured",
+    sections: [
+      header,
+      {
+        id: "contact-content",
+        type: "content-section",
+        position: 1,
+        visible: true,
+        blocks: [
+          block("content-section", "content-body", "contact-body-1", {
+            heading: "Nous contacter",
+            body: "Indiquez ici comment vos clients peuvent vous joindre : adresse e-mail, réseaux sociaux ou formulaire. Renseignez vos coordonnées réelles avant publication.",
+          }),
+        ],
+      },
+      { ...footer, position: 2 },
+    ],
+  };
 }
 
 export function buildDefaultDocument(store: StoreSeed): StoreDocument {
@@ -305,9 +413,9 @@ export function buildDefaultDocument(store: StoreSeed): StoreDocument {
       buildHomePage(store),
       buildProductPage(store),
       buildCollectionPage(store),
-      placeholderPage("about", "content", "À propos", "a-propos"),
-      placeholderPage("faq-page", "content", "FAQ", "faq"),
-      placeholderPage("contact", "content", "Contact", "contact"),
+      buildAboutPage(store),
+      buildFaqPage(store),
+      buildContactPage(store),
     ],
   };
 }
