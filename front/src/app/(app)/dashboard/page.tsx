@@ -23,6 +23,9 @@ export default async function DashboardOverviewPage() {
   const aiSuggestions = aiTasks
     .filter((task) => !task.title.toLocaleLowerCase("fr-FR").includes("stock"))
     .slice(0, 2);
+  // Le widget est un aperçu « récent » (lien « Tout voir » vers /commandes) :
+  // on borne l'affichage aux dernières commandes plutôt que la requête entière.
+  const recentOrders = orders.slice(0, 6);
 
   const kpis = [
     { ...dashboardMetrics[0], period: "30 derniers jours" },
@@ -80,7 +83,7 @@ export default async function DashboardOverviewPage() {
           {kpis.map((metric) => (
             <article key={metric.label} className="rounded-[23px] bg-surface-2 px-5 py-4">
               <p className="text-sm font-medium text-ink-2">{metric.label}</p>
-              <p className="mt-3 font-[Urbanist] text-[2.25rem] font-light leading-none tracking-[-.055em] text-ink">
+              <p className="mt-3 font-urbanist text-[2.25rem] font-light leading-none tracking-[-.055em] text-ink">
                 {metric.value.replace("EUR", "€")}
               </p>
               <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3 text-xs">
@@ -100,7 +103,7 @@ export default async function DashboardOverviewPage() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-ink">État de la boutique</p>
-                <h2 id="store-state-title" className="mt-2 font-[Urbanist] text-3xl font-light tracking-[-.045em] text-ink">{activeStore.name}</h2>
+                <h2 id="store-state-title" className="mt-2 font-urbanist text-3xl font-light tracking-[-.045em] text-ink">{activeStore.name}</h2>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-3">{storeMessage}</p>
               </div>
               <StatusPill tone={storeState.tone}>{storeState.label}</StatusPill>
@@ -133,7 +136,7 @@ export default async function DashboardOverviewPage() {
           <section aria-labelledby="priorities-title" className="rounded-[22px] bg-surface-2 p-6 sm:p-7">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-ink">À traiter ensuite</p>
-              <h2 id="priorities-title" className="mt-2 font-[Urbanist] text-3xl font-light tracking-[-.045em] text-ink">Priorités recommandées</h2>
+              <h2 id="priorities-title" className="mt-2 font-urbanist text-3xl font-light tracking-[-.045em] text-ink">Priorités recommandées</h2>
               <p className="mt-2 text-sm leading-6 text-ink-3">Le stock est actionnable maintenant. Les suggestions IA restent informatives tant que l’assistant n’est pas actif.</p>
             </div>
 
@@ -168,12 +171,12 @@ export default async function DashboardOverviewPage() {
           <div className="flex items-center justify-between gap-4 border-b border-line px-5 py-5 sm:px-6">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent-ink">Activité</p>
-              <h2 id="recent-orders-title" className="mt-1 font-[Urbanist] text-2xl font-medium tracking-[-.04em] text-ink">Commandes récentes</h2>
+              <h2 id="recent-orders-title" className="mt-1 font-urbanist text-2xl font-medium tracking-[-.04em] text-ink">Commandes récentes</h2>
             </div>
             <Link href="/dashboard/commandes" className="rounded-full px-3 py-2 text-sm font-semibold text-ink-2 transition hover:bg-white/55 hover:text-ink">Tout voir</Link>
           </div>
           <div className="divide-y divide-line">
-            {orders.map((order) => {
+            {recentOrders.map((order) => {
               const status = orderStatus[order.status];
               return (
                 <Link key={order.id} href="/dashboard/commandes" className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 py-4 transition hover:bg-white/35 sm:px-6">

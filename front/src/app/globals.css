@@ -3,10 +3,15 @@
    Ivoire lumineux · surfaces calmes · accents organiques
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=Urbanist:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
+  /* Familles de polices (auto-hébergées via next/font, cf. app/layout.tsx).
+     Génèrent les utilitaires font-sans / font-urbanist / font-manrope. */
+  --font-sans: var(--ff-jakarta), system-ui, sans-serif;
+  --font-urbanist: var(--ff-urbanist), var(--ff-manrope), sans-serif;
+  --font-manrope: var(--ff-manrope), system-ui, sans-serif;
+
   --color-base: #f8f7f3;
   --color-surface: #ffffff;
   --color-surface-2: #f2efe8;
@@ -90,7 +95,7 @@ html {
 }
 body {
   margin: 0;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: var(--ff-jakarta), system-ui, sans-serif;
   background:
     radial-gradient(circle at 8% -8%, rgba(142,221,216,.14), transparent 26rem),
     radial-gradient(circle at 94% 5%, rgba(36,152,200,.09), transparent 30rem),
@@ -104,7 +109,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Urbanist', 'Manrope', 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--ff-urbanist), var(--ff-manrope), var(--ff-jakarta), sans-serif;
   font-weight: 400;
   letter-spacing: 0.005em !important;
   line-height: 1.08;

@@ -215,6 +215,52 @@ export const SECTION_DEFINITIONS: Record<string, SectionDefinition> = {
       },
     },
   },
+  "collection-header": {
+    type: "collection-header",
+    label: "En-tête de collection",
+    description: "Titre et introduction en haut d’une page collection.",
+    aiSuggestions: [
+      "Rendre le titre plus accrocheur",
+      "Clarifier ce que contient la collection",
+      "Raccourcir l’introduction",
+    ],
+    blocks: {
+      "collection-header-content": {
+        type: "collection-header-content",
+        label: "Contenu de l’en-tête",
+        editableFields: {
+          eyebrow: { label: "Surtitre", fieldType: "text", maxLength: 50 },
+          heading: { label: "Titre de la collection", fieldType: "text", maxLength: 80 },
+          description: { label: "Introduction", fieldType: "textarea", maxLength: 240 },
+        },
+      },
+    },
+  },
+  "product-overview": {
+    type: "product-overview",
+    label: "Aperçu produit",
+    description: "Gabarit d’une fiche produit : visuel, nom et prix proviennent du catalogue ; les textes autour sont éditables.",
+    aiSuggestions: [
+      "Améliorer le texte du bouton d’achat",
+      "Renforcer la réassurance",
+      "Clarifier le titre des détails",
+    ],
+    dynamicContent: [
+      "Le nom, le prix et le visuel du produit proviennent du module Produits.",
+      "Ce gabarit s’applique à toutes les fiches produit.",
+    ],
+    blocks: {
+      "product-overview-content": {
+        type: "product-overview-content",
+        label: "Gabarit de fiche",
+        editableFields: {
+          ctaLabel: { label: "Bouton d’achat", fieldType: "buttonLabel", maxLength: 30 },
+          reassurance: { label: "Réassurance", fieldType: "text", maxLength: 120, help: "Une ligne rassurante, sans promesse chiffrée." },
+          detailsHeading: { label: "Titre des détails", fieldType: "text", maxLength: 60 },
+        },
+      },
+    },
+  },
   footer: {
     type: "footer",
     label: "Footer",

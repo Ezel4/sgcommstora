@@ -23,7 +23,7 @@ export function MetricCard({
         <p className="text-sm font-medium leading-5 text-ink-3">{metric.label}</p>
         {period && <span className="shrink-0 rounded-full bg-white/55 px-2.5 py-1 text-xs text-ink-3">{period}</span>}
       </div>
-      <p className="mt-2 break-words font-[Manrope] text-[clamp(1.65rem,4vw,2rem)] font-normal leading-none tracking-[-0.045em] text-ink tabular-nums">
+      <p className="mt-2 break-words font-manrope text-[clamp(1.65rem,4vw,2rem)] font-normal leading-none tracking-[-0.045em] text-ink tabular-nums">
         {metric.value}
       </p>
       <p className={cn("mt-4 flex items-center gap-1.5 text-sm leading-5", changeColor[metric.tone])}>

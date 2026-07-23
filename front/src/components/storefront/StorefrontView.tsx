@@ -323,6 +323,63 @@ function FooterSection({ ctx, section }: { ctx: RenderContext; section: StoreSec
   );
 }
 
+function CollectionHeaderSection({ ctx, section }: { ctx: RenderContext; section: StoreSection }) {
+  const blockItem = section.blocks[0];
+  if (!blockItem) return null;
+  return (
+    <section className="mx-auto max-w-5xl px-6 pb-10 pt-12 sm:px-8">
+      <div {...blockAttrs(ctx, section, blockItem)}>
+        <FieldText ctx={ctx} blockItem={blockItem} fieldId="eyebrow" as="p" className="text-xs font-medium uppercase tracking-[0.2em] text-ink-3" />
+        <FieldText ctx={ctx} blockItem={blockItem} fieldId="heading" as="h1" className="mt-3 text-3xl font-normal tracking-tight sm:text-4xl" />
+        <FieldText ctx={ctx} blockItem={blockItem} fieldId="description" as="p" className="mt-4 max-w-2xl text-sm leading-relaxed text-ink-2 sm:text-[1rem]" />
+      </div>
+    </section>
+  );
+}
+
+function ProductOverviewSection({ ctx, section }: { ctx: RenderContext; section: StoreSection }) {
+  const blockItem = section.blocks[0];
+  if (!blockItem) return null;
+  // Produit représentatif : le gabarit s'applique à toute fiche produit.
+  const product = ctx.products[0] ?? null;
+  const ctaLabel = getFieldValue(blockItem, "ctaLabel");
+  const showPrice = product != null && product.status !== "draft" && product.price > 0;
+  return (
+    <section className="mx-auto max-w-5xl px-6 py-10 sm:px-8">
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div
+          aria-hidden
+          className="aspect-square rounded-[28px] bg-gradient-to-br from-[#b8ccc6] to-[#e9eeee]"
+          {...dynamicAttrs(ctx, section, "Visuel du produit")}
+        />
+        <div {...blockAttrs(ctx, section, blockItem)}>
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-ink-3" {...dynamicAttrs(ctx, section, "Catégorie du produit")}>
+            {product?.category || "Catégorie"}
+          </p>
+          <h1 className="mt-3 text-3xl font-normal tracking-tight sm:text-4xl" {...dynamicAttrs(ctx, section, "Nom du produit")}>
+            {product?.name || "Nom du produit"}
+          </h1>
+          <p className="mt-3 text-xl font-medium tabular-nums" {...dynamicAttrs(ctx, section, "Prix du produit")}>
+            {showPrice ? formatCurrency(product.price) : "Prix à définir"}
+          </p>
+          <div className="mt-6">
+            <span className="inline-flex rounded-full bg-ink px-6 py-3 text-sm font-medium text-white">
+              <span {...fieldAttrs(ctx, "ctaLabel")}>{ctaLabel || "Ajouter au panier"}</span>
+            </span>
+          </div>
+          <FieldText ctx={ctx} blockItem={blockItem} fieldId="reassurance" as="p" className="mt-4 text-xs text-ink-3" />
+          <div className="mt-8 border-t border-line pt-6">
+            <FieldText ctx={ctx} blockItem={blockItem} fieldId="detailsHeading" as="h2" className="text-sm font-medium uppercase tracking-[0.16em] text-ink-3" />
+            <p className="mt-3 text-sm leading-relaxed text-ink-2" {...dynamicAttrs(ctx, section, "Description du produit")}>
+              La description du produit provient du module Produits.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const SECTION_RENDERERS: Record<string, (props: { ctx: RenderContext; section: StoreSection }) => React.ReactNode> = {
   "announcement-bar": AnnouncementSection,
   header: HeaderSection,
@@ -332,6 +389,8 @@ const SECTION_RENDERERS: Record<string, (props: { ctx: RenderContext; section: S
   testimonials: TestimonialsSection,
   faq: FaqSection,
   newsletter: NewsletterSection,
+  "collection-header": CollectionHeaderSection,
+  "product-overview": ProductOverviewSection,
   footer: FooterSection,
 };
 

@@ -102,3 +102,96 @@ describe("mergeSubmittedDocument", () => {
     expect(d2.version).toBe(0);
   });
 });
+
+function home(document: ReturnType<typeof mergeSubmittedDocument>["document"]) {
+  return document.pages.find((page) => page.id === "home")!;
+}
+
+describe("mergeSubmittedDocument — sections dynamiques", () => {
+  it("keeps a newly added section and sanitizes its fields", () => {
+    const payload = {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            { id: "hero-main", type: "hero", visible: true, blocks: [] },
+            {
+              id: "custom-benefits-1",
+              type: "benefits",
+              visible: true,
+              blocks: [
+                { id: "b-intro", type: "benefits-intro", content: { heading: { value: "<b>Nos</b> atouts" } } },
+                { id: "b-1", type: "benefit-item", content: { title: { value: "Rapide" }, description: { value: "Soigné" } } },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const { document } = mergeSubmittedDocument(seed, payload);
+    const added = home(document).sections.find((section) => section.id === "custom-benefits-1");
+    expect(added?.type).toBe("benefits");
+    const intro = added?.blocks.find((block) => block.id === "b-intro");
+    expect(intro && getFieldValue(intro, "heading")).toBe("Nos atouts");
+  });
+
+  it("drops a canonical section omitted from the submission (supports deletion)", () => {
+    const { document } = mergeSubmittedDocument(seed, {
+      pages: [{ id: "home", sections: [{ id: "hero-main", type: "hero", blocks: [] }] }],
+    });
+    expect(home(document).sections.some((section) => section.id === "hero-main")).toBe(true);
+    expect(home(document).sections.some((section) => section.id === "faq-main")).toBe(false);
+  });
+
+  it("reflects the submitted section order in positions (supports reordering)", () => {
+    const { document } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            { id: "faq-main", type: "faq", blocks: [] },
+            { id: "hero-main", type: "hero", blocks: [] },
+          ],
+        },
+      ],
+    });
+    const ordered = [...home(document).sections].sort((a, b) => a.position - b.position).map((section) => section.id);
+    expect(ordered).toEqual(["faq-main", "hero-main"]);
+  });
+
+  it("rejects dangerous content inside an added section field", () => {
+    const { document, issues } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            {
+              id: "x-1",
+              type: "benefits",
+              blocks: [{ id: "i", type: "benefits-intro", content: { heading: { value: "javascript:alert(1)" } } }],
+            },
+          ],
+        },
+      ],
+    });
+    const intro = home(document).sections.find((section) => section.id === "x-1")?.blocks.find((block) => block.id === "i");
+    expect(intro && getFieldValue(intro, "heading")).toBe("");
+    expect(issues.some((issue) => issue.includes("dangereux"))).toBe(true);
+  });
+
+  it("ignores a submitted section whose type is unknown", () => {
+    const { document, issues } = mergeSubmittedDocument(seed, {
+      pages: [
+        {
+          id: "home",
+          sections: [
+            { id: "hero-main", type: "hero", blocks: [] },
+            { id: "evil-1", type: "evil", blocks: [] },
+          ],
+        },
+      ],
+    });
+    expect(home(document).sections.some((section) => section.id === "evil-1")).toBe(false);
+    expect(issues.some((issue) => issue.includes("type inconnu"))).toBe(true);
+  });
+});

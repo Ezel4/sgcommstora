@@ -1,3 +1,6 @@
 # Ancienne copie complète du projet, laissée sur disque mais retirée du suivi
 # git (le projet réel est à la racine + dans front/). Ne pas re-commiter.
 /sgcommstora-main/
+
+# Dépendances éventuellement installées à la racine (l'app vit dans front/).
+/node_modules/

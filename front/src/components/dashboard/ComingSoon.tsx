@@ -29,7 +29,7 @@ export function ComingSoon({
             <span className="mt-6 inline-flex rounded-full border border-line bg-white/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-ink-3">
               En préparation
             </span>
-            <h2 className="mt-4 max-w-xl font-[Urbanist] text-3xl font-light tracking-[-.045em] text-ink">Un espace pensé pour rester sous votre contrôle.</h2>
+            <h2 className="mt-4 max-w-xl font-urbanist text-3xl font-light tracking-[-.045em] text-ink">Un espace pensé pour rester sous votre contrôle.</h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-ink-3">
               Cette interface n’est pas encore active. Aucun réglage ni contenu ne peut être créé depuis cet écran pour le moment.
             </p>
